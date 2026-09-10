@@ -79,6 +79,7 @@ import {
 } from "../ui/Toast";
 import {
   Avatar,
+  resolveImageSource,
 } from "../ui/Avatar";
 
 const STORY_DURATION = 5000;
@@ -460,22 +461,18 @@ export const StoryViewer = ({
       return;
     }
 
-    if (
-      !isOwnStory
-    ) {
-      api
-        .put(
-          `/api/stories/${currentStory._id}/view`,
-        )
-        .catch(
-          (
+    api
+      .put(
+        `/api/stories/${currentStory._id}/view`,
+      )
+      .catch(
+        (
+          error,
+        ) =>
+          console.error(
             error,
-          ) =>
-            console.error(
-              error,
-            ),
-        );
-    }
+          ),
+      );
 
     /*
      * Preserve the original UI behavior by updating the local
@@ -1947,6 +1944,11 @@ export const StoryViewer = ({
       }
     };
 
+  const [
+    viewerSearch,
+    setViewerSearch,
+  ] = useState("");
+
   /*
    * The original source checks viewer.username. A viewer may also be
    * represented as only an id, so those entries remain visible as User.
@@ -1967,21 +1969,16 @@ export const StoryViewer = ({
         }
 
         return (
-          viewer.username
+          viewer?.username
             ?.toLowerCase()
             .includes(
-              viewerSearch
+              (viewerSearch || "")
                 .toLowerCase(),
             ) ??
           false
         );
       },
     );
-
-  const [
-    viewerSearch,
-    setViewerSearch,
-  ] = useState("");
 
   const panResponder =
     useMemo(
@@ -2314,10 +2311,11 @@ export const StoryViewer = ({
                 />
               ) : (
                 <Image
-                  source={{
-                    uri:
-                      currentMediaUrl,
-                  }}
+                  source={
+                    resolveImageSource(currentMediaUrl) || {
+                      uri: currentMediaUrl,
+                    }
+                  }
                   style={
                     styles.media
                   }

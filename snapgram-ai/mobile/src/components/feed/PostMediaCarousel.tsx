@@ -26,6 +26,7 @@ import {
   Video,
   ResizeMode,
 } from "expo-av";
+import { resolveImageSource } from "../ui/Avatar";
 
 interface MediaItem {
   url: string;
@@ -382,6 +383,8 @@ export const PostMediaCarousel = ({
       item.type ===
       "video";
 
+    const resolvedImageSource = resolveImageSource(item.url);
+
     return (
       <View
         style={[
@@ -394,11 +397,9 @@ export const PostMediaCarousel = ({
           },
         ]}
       >
-        {!isVideo ? (
+        {!isVideo && resolvedImageSource ? (
           <Image
-            source={{
-              uri: item.url,
-            }}
+            source={resolvedImageSource}
             style={[
               styles.blurredBackground,
               {
@@ -450,11 +451,9 @@ export const PostMediaCarousel = ({
                 index
               }
             />
-          ) : (
+          ) : resolvedImageSource ? (
             <Image
-              source={{
-                uri: item.url,
-              }}
+              source={resolvedImageSource}
               style={
                 styles.foregroundImage
               }
@@ -464,6 +463,8 @@ export const PostMediaCarousel = ({
                 "Post content"
               }
             />
+          ) : (
+            <View style={styles.darkOverlay} />
           )}
         </Pressable>
       </View>

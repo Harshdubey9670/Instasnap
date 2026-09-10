@@ -25,6 +25,7 @@ import {
   Video,
 } from "lucide-react-native";
 import api from "../../services/api";
+import { resolveImageSource } from "../../components/ui/Avatar";
 
 const { width } = Dimensions.get("window");
 const ITEM_WIDTH = (width - 24) / 3;
@@ -362,7 +363,7 @@ export default function ExplorePage() {
                     style={styles.dropCard}
                   >
                     <Image
-                      source={{ uri: post.media?.[0]?.url || "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500" }}
+                      source={resolveImageSource(post.media?.[0]?.url) || { uri: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500" }}
                       style={styles.dropCardImg}
                     />
                     <View style={styles.dropCardFooter}>
@@ -371,7 +372,7 @@ export default function ExplorePage() {
                         <Text style={styles.likesText}>{post.likes?.length || 0}</Text>
                       </View>
                       <Image
-                        source={{ uri: post.user?.profilePicture || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" }}
+                        source={resolveImageSource(post.user?.profilePicture || post.user?.avatar) || { uri: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" }}
                         style={styles.dropAvatar}
                       />
                     </View>
@@ -396,7 +397,7 @@ export default function ExplorePage() {
                     style={styles.dropCard}
                   >
                     <Image
-                      source={{ uri: post.media?.[0]?.url || "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500" }}
+                      source={resolveImageSource(post.media?.[0]?.url) || { uri: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500" }}
                       style={styles.dropCardImg}
                     />
                     <View style={styles.dropCardFooter}>
@@ -426,7 +427,7 @@ export default function ExplorePage() {
                 style={styles.gridItem}
               >
                 <Image
-                  source={{ uri: post.media?.[0]?.url || "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500" }}
+                  source={resolveImageSource(post.media?.[0]?.url) || { uri: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500" }}
                   style={styles.gridImg}
                 />
               </Pressable>

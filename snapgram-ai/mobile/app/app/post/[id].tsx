@@ -55,6 +55,7 @@ import {
 } from "../../../src/components/ui/Toast";
 import {
   Avatar,
+  resolveImageSource,
 } from "../../../src/components/ui/Avatar";
 
 type User = {
@@ -766,13 +767,13 @@ function InstagramPostCard({
             </View>
           ) : (
             <Image
-              source={{
-                uri:
+              source={
+                resolveImageSource(
                   mediaList[
                     activeMediaIndex
-                  ]
-                    ?.url,
-              }}
+                  ]?.url,
+                ) || undefined
+              }
               style={
                 styles.postMedia
               }

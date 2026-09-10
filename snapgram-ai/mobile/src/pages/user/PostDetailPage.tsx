@@ -36,6 +36,7 @@ import {
   Send,
 } from "lucide-react-native";
 import api from "../../services/api";
+import { resolveImageSource } from "../../components/ui/Avatar";
 
 const { width } = Dimensions.get("window");
 
@@ -340,7 +341,7 @@ function PostCardView({ post, isMain, authUser, onArchive, onDelete, onEdit }: a
           style={styles.authorInfo}
         >
           <Image
-            source={{ uri: post.user?.profilePicture || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" }}
+            source={resolveImageSource(post.user?.profilePicture || post.user?.avatar) || { uri: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" }}
             style={styles.authorAvatar}
           />
           <View>
@@ -414,7 +415,7 @@ function PostCardView({ post, isMain, authUser, onArchive, onDelete, onEdit }: a
       {/* Media View */}
       <View style={styles.mediaContainer}>
         <Image
-          source={{ uri: mediaList[activeMediaIdx]?.url || "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600" }}
+          source={resolveImageSource(mediaList[activeMediaIdx]?.url) || { uri: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600" }}
           style={styles.mediaImage}
         />
         {mediaList.length > 1 && (

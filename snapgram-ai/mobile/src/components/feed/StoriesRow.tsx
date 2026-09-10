@@ -118,6 +118,7 @@ export const StoriesRow = ({
     onStoryClick,
     handleOwnStory,
     authUserId,
+    authUser,
   );
 
   return (
@@ -130,7 +131,7 @@ export const StoriesRow = ({
         contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={StorySeparator}
         renderItem={({ item }) => (
-          <StoryCard data={item} isDark={isDark} />
+          <StoryCard data={item} isDark={isDark} authUser={authUser} />
         )}
         snapToAlignment="start"
         decelerationRate="fast"
@@ -149,6 +150,7 @@ const buildStoryCards = (
   onStoryClick: ((index: number) => void) | undefined,
   handleOwnStory: () => void,
   authUserId?: string,
+  authUser?: any,
 ): StoryCardData[] => {
   const cards: StoryCardData[] = [];
 
@@ -157,14 +159,22 @@ const buildStoryCards = (
       ? myStoryGroup.user
       : undefined;
 
+  const myAvatar =
+    myUser?.avatar ||
+    myUser?.profilePicture ||
+    authUser?.avatar ||
+    authUser?.profilePicture;
+
+  const hasMyStory = Boolean(myStoryGroup && myStoryGroup.stories && myStoryGroup.stories.length > 0);
+
   // "Your story" card
   cards.push({
     key: "my-story",
     type: "mine",
     groupIndex: myStoryIndex >= 0 ? myStoryIndex : undefined,
     username: "Your story",
-    image: myUser?.profilePicture || myUser?.avatar,
-    hasStory: Boolean(myStoryGroup && myStoryGroup.stories.length > 0),
+    image: myAvatar,
+    hasStory: hasMyStory,
     allSeen: myAllSeen,
     onPress: handleOwnStory,
   });
@@ -207,9 +217,11 @@ const buildStoryCards = (
 const StoryCard = ({
   data,
   isDark,
+  authUser,
 }: {
   data: StoryCardData;
   isDark: boolean;
+  authUser?: any;
 }) => {
   const scale = useRef(new Animated.Value(1)).current;
 
@@ -272,6 +284,10 @@ const StoryCard = ({
 
   // 2. "Your story" item
   if (data.type === "mine") {
+    const isSeen = data.allSeen;
+    const hasStory = data.hasStory;
+    const fallbackLetter = authUser?.username?.charAt(0)?.toUpperCase() || "U";
+
     return (
       <Animated.View style={{ transform: [{ scale }] }}>
         <Pressable
@@ -282,35 +298,111 @@ const StoryCard = ({
           accessibilityRole="button"
           accessibilityLabel="Your story"
         >
-          <View
-            style={[
-              styles.ownStoryCircle,
-              {
-                borderColor: isDark ? "#2a173d" : "#e2e8f0",
-                backgroundColor: gapColor,
-              },
-            ]}
-          >
-            <Avatar
-              src={data.image}
-              alt="Your story"
-              size="lg"
-              fallback="U"
-            />
+          {hasStory ? (
+            isSeen ? (
+              // Seen / deactivated story ring (muted gray border)
+              <View
+                style={[
+                  styles.seenStoryRing,
+                  {
+                    borderColor: isDark ? "#3f3050" : "#cbd5e1",
+                  },
+                ]}
+              >
+                <View style={[styles.gapRing, { backgroundColor: gapColor }]}>
+                  <Avatar
+                    src={data.image}
+                    alt="Your story"
+                    size="lg"
+                    fallback={fallbackLetter}
+                  />
+                </View>
 
-            {/* Purple circular + badge */}
-            <Pressable
-              onPress={() => router.push("/app/story/create")}
+                {/* Purple circular + badge to upload new story */}
+                <Pressable
+                  onPress={(e) => {
+                    e.stopPropagation?.();
+                    router.push("/app/story/create");
+                  }}
+                  style={[
+                    styles.addButton,
+                    { borderColor: gapColor },
+                  ]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Upload story"
+                >
+                  <Plus size={13} color="#ffffff" strokeWidth={3} />
+                </Pressable>
+              </View>
+            ) : (
+              // Active / unread story with vibrant gradient ring
+              <LinearGradient
+                colors={["#f97316", "#ec4899", "#a855f7"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.gradientRing}
+              >
+                <View style={[styles.gapRing, { backgroundColor: gapColor }]}>
+                  <Avatar
+                    src={data.image}
+                    alt="Your story"
+                    size="lg"
+                    fallback={fallbackLetter}
+                  />
+                </View>
+
+                {/* Purple circular + badge to upload new story */}
+                <Pressable
+                  onPress={(e) => {
+                    e.stopPropagation?.();
+                    router.push("/app/story/create");
+                  }}
+                  style={[
+                    styles.addButton,
+                    { borderColor: gapColor },
+                  ]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Upload story"
+                >
+                  <Plus size={13} color="#ffffff" strokeWidth={3} />
+                </Pressable>
+              </LinearGradient>
+            )
+          ) : (
+            // No active story: avatar with simple border and prominent + badge
+            <View
               style={[
-                styles.addButton,
-                { borderColor: gapColor },
+                styles.ownStoryCircle,
+                {
+                  borderColor: isDark ? "#2a173d" : "#e2e8f0",
+                  backgroundColor: gapColor,
+                },
               ]}
-              accessibilityRole="button"
-              accessibilityLabel="Upload story"
             >
-              <Plus size={13} color="#ffffff" strokeWidth={3} />
-            </Pressable>
-          </View>
+              <Avatar
+                src={data.image}
+                alt="Your story"
+                size="lg"
+                fallback={fallbackLetter}
+              />
+
+              {/* Purple circular + badge */}
+              <Pressable
+                onPress={(e) => {
+                  e.stopPropagation?.();
+                  router.push("/app/story/create");
+                }}
+                style={[
+                  styles.addButton,
+                  { borderColor: gapColor },
+                ]}
+                accessibilityRole="button"
+                accessibilityLabel="Upload story"
+              >
+                <Plus size={13} color="#ffffff" strokeWidth={3} />
+              </Pressable>
+            </View>
+          )}
 
           <Text style={[styles.username, { color: myTextColor }]} numberOfLines={1}>
             Your story
@@ -453,7 +545,7 @@ const areAllStoriesSeen = (
   }
   return stories.every(
     (story) =>
-      story.viewers?.some((viewer) => getViewerId(viewer) === authUserId) ??
+      story.viewers?.some((viewer) => String(getViewerId(viewer)) === String(authUserId)) ??
       false,
   );
 };
@@ -518,6 +610,7 @@ const styles = StyleSheet.create({
     padding: 2.5,
     alignItems: "center",
     justifyContent: "center",
+    position: "relative",
   },
   seenStoryRing: {
     width: 74,
@@ -526,6 +619,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     alignItems: "center",
     justifyContent: "center",
+    position: "relative",
   },
   gapRing: {
     width: 68,

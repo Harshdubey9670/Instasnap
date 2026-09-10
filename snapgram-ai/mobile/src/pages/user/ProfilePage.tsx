@@ -750,7 +750,8 @@ export default function ProfilePage() {
   );
 
   const renderPost = ({ item }: { item: ProfilePost }) => {
-    const media = item.media?.[0];
+    const media = item.media?.[0] || (item.mediaUrl ? { url: item.mediaUrl, type: item.mediaType || "image" } : undefined);
+    const resolvedMediaSource = resolveImageSource(media?.url);
 
     return (
       <Pressable
@@ -767,19 +768,22 @@ export default function ProfilePage() {
         accessibilityRole="button"
         accessibilityLabel="Open post"
       >
-        {media?.type === "image" && media.url ? (
+        {media?.type === "video" && media.url ? (
+          <View style={styles.postMedia}>
+            <Image
+              source={resolveImageSource(media.url.replace(/\.[^/.]+$/, ".jpg")) || { uri: media.url }}
+              style={StyleSheet.absoluteFillObject}
+              resizeMode="cover"
+            />
+            <View style={styles.mediaBadge}>
+              <PlaySquare size={14} color="#ffffff" />
+            </View>
+          </View>
+        ) : resolvedMediaSource ? (
           <Image
-            source={{ uri: media.url }}
+            source={resolvedMediaSource}
             style={styles.postMedia}
             resizeMode="cover"
-          />
-        ) : media?.type === "video" && media.url ? (
-          <Video
-            source={{ uri: media.url }}
-            style={styles.postMedia}
-            resizeMode={ResizeMode.COVER}
-            shouldPlay={false}
-            isMuted
           />
         ) : (
           <View style={styles.noMedia}>

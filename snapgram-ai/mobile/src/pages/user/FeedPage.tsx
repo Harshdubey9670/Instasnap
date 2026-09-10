@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { useFocusEffect } from "expo-router";
 import { useSelector } from "react-redux";
 
 import { StoriesRow } from "../../components/feed/StoriesRow";
@@ -83,7 +84,11 @@ const FeedPage = () => {
     }
   }, []);
 
-  useEffect(() => { fetchData(1); }, [fetchData]);
+  useFocusEffect(
+    useCallback(() => {
+      fetchData(1, true);
+    }, [fetchData])
+  );
 
   const handleLoadMore = () => {
     if (!isFetchingMore && hasMore && !isLoading) {
@@ -148,7 +153,17 @@ const FeedPage = () => {
         <StoryViewer
           stories={activeStories}
           initialUserIndex={activeStoryIndex}
-          onClose={() => setActiveStoryIndex(null)}
+          onClose={() => {
+            setActiveStoryIndex(null);
+            api
+              .get("/api/stories")
+              .then((res) => {
+                if (res.data?.data) {
+                  setStories(res.data.data);
+                }
+              })
+              .catch(() => {});
+          }}
         />
       )}
 
