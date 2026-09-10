@@ -33,6 +33,7 @@ import {
   PlaySquare,
   Send,
   Settings,
+  Sparkles,
   Tag,
   type LucideIcon,
 } from "lucide-react-native";
@@ -50,6 +51,7 @@ import api from "../../services/api";
 import type { RootState } from "../../store/store";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useToast } from "../../components/ui/Toast";
+import { resolveImageSource } from "../../components/ui/Avatar";
 import { EditProfileModal } from "../../components/profile/EditProfileModal";
 import { FollowButton } from "../../components/profile/FollowButton";
 import { UserOptionsModal } from "../../components/profile/UserOptionsModal";
@@ -201,6 +203,11 @@ export default function ProfilePage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
   const [isNavigatingToChat, setIsNavigatingToChat] = useState(false);
+  const [avatarFailedProxy, setAvatarFailedProxy] = useState(false);
+
+  useEffect(() => {
+    setAvatarFailedProxy(false);
+  }, [profile?.avatar, profile?.profilePicture]);
 
   const listRef = useRef<FlatList<ProfilePost>>(null);
   const currentScrollOffset = useRef(0);
@@ -516,8 +523,19 @@ export default function ProfilePage() {
           <View style={styles.profileAvatar}>
             {profile.avatar || profile.profilePicture ? (
               <Image
-                source={{ uri: profile.avatar || profile.profilePicture }}
+                source={
+                  resolveImageSource(
+                    profile.avatar || profile.profilePicture,
+                    avatarFailedProxy,
+                  ) || undefined
+                }
                 style={styles.profileAvatarImage}
+                resizeMode="cover"
+                onError={() => {
+                  if (!avatarFailedProxy) {
+                    setAvatarFailedProxy(true);
+                  }
+                }}
               />
             ) : (
               <View style={[styles.profileAvatarFallback, { backgroundColor: colors.surfaceHover }]}>
@@ -575,11 +593,11 @@ export default function ProfilePage() {
                   />
                   <Pressable
                     onPress={() => router.push("/app/settings")}
-                    style={styles.iconButton}
+                    style={[styles.iconButton, { borderColor: colors.border, borderWidth: 1, borderRadius: 9, backgroundColor: colors.surface }]}
                     accessibilityRole="button"
                     accessibilityLabel="Open settings"
                   >
-                    <Settings size={21} color={colors.textPrimary} />
+                    <Settings size={18} color={colors.textPrimary} />
                   </Pressable>
                 </>
               ) : (
@@ -599,11 +617,11 @@ export default function ProfilePage() {
                   />
                   <Pressable
                     onPress={() => setIsOptionsModalOpen(true)}
-                    style={styles.iconButton}
+                    style={[styles.iconButton, { borderColor: colors.border, borderWidth: 1, borderRadius: 9, backgroundColor: colors.surface }]}
                     accessibilityRole="button"
                     accessibilityLabel="Open profile options"
                   >
-                    <MoreHorizontal size={22} color={colors.textPrimary} />
+                    <MoreHorizontal size={20} color={colors.textPrimary} />
                   </Pressable>
                 </>
               )}
@@ -613,11 +631,11 @@ export default function ProfilePage() {
           <View
             style={[
               styles.statsRow,
-              compact && { borderColor: colors.border },
+              { borderColor: colors.border },
             ]}
           >
             <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: colors.textPrimary }]}>{posts.length}</Text>
+              <Text style={[styles.statNumber, { color: colors.textPrimary }]}>{posts.length} </Text>
               <Text style={[styles.statLabel, { color: colors.textSecondary }]}>posts</Text>
             </View>
             <Pressable
@@ -627,7 +645,7 @@ export default function ProfilePage() {
               style={styles.statItem}
             >
               <Text style={[styles.statNumber, { color: colors.textPrimary }]}>
-                {profile.followers?.length || 0}
+                {profile.followers?.length || 0}{" "}
               </Text>
               <Text style={[styles.statLabel, { color: colors.textSecondary }]}>followers</Text>
             </Pressable>
@@ -638,7 +656,7 @@ export default function ProfilePage() {
               style={styles.statItem}
             >
               <Text style={[styles.statNumber, { color: colors.textPrimary }]}>
-                {profile.following?.length || 0}
+                {profile.following?.length || 0}{" "}
               </Text>
               <Text style={[styles.statLabel, { color: colors.textSecondary }]}>following</Text>
             </Pressable>
@@ -705,7 +723,7 @@ export default function ProfilePage() {
                 style={[
                   styles.tab,
                   {
-                    borderColor: selected
+                    borderTopColor: selected
                       ? colors.textPrimary
                       : "transparent",
                   },
@@ -715,16 +733,14 @@ export default function ProfilePage() {
                   size={16}
                   color={selected ? colors.textPrimary : colors.textSecondary}
                 />
-                {!compact ? (
-                  <Text
-                    style={[
-                      styles.tabText,
-                      { color: selected ? colors.textPrimary : colors.textSecondary },
-                    ]}
-                  >
-                    {tab.label}
-                  </Text>
-                ) : null}
+                <Text
+                  style={[
+                    styles.tabText,
+                    { color: selected ? colors.textPrimary : colors.textSecondary },
+                  ]}
+                >
+                  {tab.label}
+                </Text>
               </Pressable>
             );
           })}
@@ -826,8 +842,13 @@ export default function ProfilePage() {
                 </View>
               ) : (
                 <View style={styles.noPosts}>
-                  <Grid size={46} color={colors.textSecondary} />
+                  <View style={styles.noPostsIconCircle}>
+                    <Grid size={40} color={colors.textSecondary} />
+                  </View>
                   <Text style={[styles.noPostsTitle, { color: colors.textPrimary }]}>No posts yet</Text>
+                  <Text style={[styles.noPostsSubtitle, { color: colors.textSecondary }]}>
+                    When you share photos and reels, they'll appear on your profile.
+                  </Text>
                 </View>
               )
             ) : null
@@ -837,25 +858,11 @@ export default function ProfilePage() {
 
         <Pressable
           onPress={() => router.push("/app/chat")}
-          style={[
-            styles.messagesButton,
-            { backgroundColor: colors.surface, borderColor: colors.border },
-          ]}
+          style={styles.floatingFab}
           accessibilityRole="button"
-          accessibilityLabel="Open messages"
+          accessibilityLabel="AI Assistant"
         >
-          <Send size={17} color="#38bdf8" />
-          {!compact ? (
-            <Text style={[styles.messagesText, { color: colors.textPrimary }]}>Messages</Text>
-          ) : null}
-          <View style={styles.messageAvatars}>
-            <View style={[styles.messageAvatar, { backgroundColor: "#f43f5e" }]}>
-              <Text style={styles.messageAvatarText}>S</Text>
-            </View>
-            <View style={[styles.messageAvatar, styles.messageAvatarOverlap, { backgroundColor: "#a855f7" }]}>
-              <Text style={styles.messageAvatarText}>A</Text>
-            </View>
-          </View>
+          <Sparkles size={24} color="#ffffff" />
         </Pressable>
 
         <EditProfileModal
@@ -882,30 +889,30 @@ const styles = StyleSheet.create({
   listContent: { paddingTop: 22 },
   profileHeaderContainer: { width: "100%" },
   profileHeader: { flexDirection: "row", alignItems: "flex-start", gap: 48, paddingHorizontal: 12, paddingBottom: 26 },
-  profileHeaderCompact: { flexDirection: "column", alignItems: "center", gap: 18 },
+  profileHeaderCompact: { flexDirection: "column", alignItems: "center", gap: 14, paddingHorizontal: 12, paddingBottom: 16 },
   avatarColumn: { alignItems: "center", flexShrink: 0 },
   musicBadge: { maxWidth: 150, minHeight: 27, marginBottom: 8, paddingHorizontal: 11, borderRadius: 99, backgroundColor: "rgba(38,38,38,0.94)", borderWidth: 1, borderColor: "#404040", flexDirection: "row", alignItems: "center", gap: 6 },
   musicText: { flexShrink: 1, color: "#e5e5e5", fontSize: 11, fontWeight: "700" },
-  profileAvatar: { width: 138, height: 138, borderRadius: 69, borderWidth: 2, borderColor: "#262626", backgroundColor: "#000000", overflow: "hidden", shadowColor: "#000000", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.25, shadowRadius: 14, elevation: 10 },
+  profileAvatar: { width: 128, height: 128, borderRadius: 64, borderWidth: 2, borderColor: "#262626", backgroundColor: "#171717", overflow: "hidden", alignItems: "center", justifyContent: "center", shadowColor: "#000000", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.25, shadowRadius: 14, elevation: 10 },
   profileAvatarImage: { width: "100%", height: "100%" },
   profileAvatarFallback: { flex: 1, alignItems: "center", justifyContent: "center" },
   profileAvatarLetter: { fontSize: 42, fontWeight: "800" },
   profileDetails: { flex: 1, minWidth: 0, alignItems: "flex-start" },
   profileDetailsCompact: { width: "100%", alignItems: "center" },
   usernameActions: { width: "100%", marginBottom: 16, flexDirection: "row", alignItems: "center", flexWrap: "wrap", gap: 12 },
-  usernameActionsCompact: { flexDirection: "column", justifyContent: "center" },
-  usernameRow: { minWidth: 0, flexDirection: "row", alignItems: "center", gap: 7 },
-  profileUsername: { maxWidth: 250, fontSize: 23, fontWeight: "800" },
+  usernameActionsCompact: { flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 },
+  usernameRow: { minWidth: 0, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 7 },
+  profileUsername: { maxWidth: 250, fontSize: 22, fontWeight: "800" },
   actionsRow: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 8 },
   smallAction: { minHeight: 35, paddingHorizontal: 14, borderWidth: 1, borderRadius: 9, alignItems: "center", justifyContent: "center" },
   smallActionText: { fontSize: 13, fontWeight: "700" },
   iconButton: { width: 38, height: 38, alignItems: "center", justifyContent: "center" },
-  statsRow: { width: "100%", marginBottom: 16, paddingVertical: 9, flexDirection: "row", alignItems: "center", justifyContent: "flex-start", gap: 32, borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth },
-  statItem: { flexDirection: "row", alignItems: "center", gap: 5 },
-  statNumber: { fontSize: 14, fontWeight: "800" },
-  statLabel: { fontSize: 14 },
+  statsRow: { width: "100%", marginVertical: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-around", borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth },
+  statItem: { flexDirection: "row", alignItems: "baseline", gap: 4 },
+  statNumber: { fontSize: 15, fontWeight: "800" },
+  statLabel: { fontSize: 14, fontWeight: "500" },
   bioSection: { width: "100%", alignItems: "flex-start", gap: 4 },
-  bioSectionCompact: { alignItems: "center", paddingHorizontal: 10 },
+  bioSectionCompact: { alignItems: "center", paddingHorizontal: 16, marginBottom: 16 },
   fullName: { fontSize: 16, fontWeight: "800", textAlign: "center" },
   pronouns: { fontWeight: "400" },
   category: { fontSize: 13, fontWeight: "600" },
@@ -929,15 +936,12 @@ const styles = StyleSheet.create({
   postStat: { flexDirection: "row", alignItems: "center", gap: 4 },
   postStatText: { color: "#ffffff", fontSize: 12, fontWeight: "800" },
   postsLoading: { minHeight: 230, alignItems: "center", justifyContent: "center" },
-  noPosts: { minHeight: 230, alignItems: "center", justifyContent: "center", gap: 10 },
-  noPostsTitle: { fontSize: 16, fontWeight: "700" },
+  noPosts: { minHeight: 220, alignItems: "center", justifyContent: "center", gap: 8, paddingHorizontal: 32 },
+  noPostsIconCircle: { width: 68, height: 68, borderRadius: 34, borderWidth: 1.5, borderColor: "#333333", alignItems: "center", justifyContent: "center", marginBottom: 6 },
+  noPostsTitle: { fontSize: 17, fontWeight: "700" },
+  noPostsSubtitle: { fontSize: 13, textAlign: "center", lineHeight: 18 },
   listFooter: { height: 110 },
-  messagesButton: { position: "absolute", right: 14, bottom: 18, minHeight: 48, paddingHorizontal: 14, borderRadius: 24, borderWidth: 1, flexDirection: "row", alignItems: "center", gap: 9, shadowColor: "#000000", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 15, elevation: 12 },
-  messagesText: { fontSize: 13, fontWeight: "700" },
-  messageAvatars: { flexDirection: "row" },
-  messageAvatar: { width: 25, height: 25, borderRadius: 13, borderWidth: 2, borderColor: "#000000", alignItems: "center", justifyContent: "center" },
-  messageAvatarOverlap: { marginLeft: -7 },
-  messageAvatarText: { color: "#ffffff", fontSize: 9, fontWeight: "800" },
+  floatingFab: { position: "absolute", right: 20, bottom: 24, width: 54, height: 54, borderRadius: 27, backgroundColor: "#a855f7", alignItems: "center", justifyContent: "center", shadowColor: "#a855f7", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 12, elevation: 10 },
   loadingProfile: { width: "100%", maxWidth: 896, alignSelf: "center", padding: 24, flexDirection: "row", alignItems: "center", gap: 40 },
   loadingAvatar: { width: 138, height: 138, borderRadius: 69, backgroundColor: "#262626" },
   loadingDetails: { flex: 1, gap: 16 },

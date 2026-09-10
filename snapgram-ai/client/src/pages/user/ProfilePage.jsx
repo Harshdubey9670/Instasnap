@@ -174,147 +174,151 @@ const ProfilePage = () => {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-4xl mx-auto pt-6 md:pt-10 pb-24 px-4 text-text-primary">
       
-      {/* Instagram Header Layout (Screenshot 3) */}
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-16 mb-8">
+      {/* Instagram Header Layout (Matching Screenshot) */}
+      <div className="flex flex-col items-center mb-6 w-full max-w-lg mx-auto">
         
-        {/* Left Column: Avatar & Profile Music Note Badge */}
-        <div className="relative shrink-0 flex flex-col items-center">
-          {/* Profile Music Note Badge (Screenshot 3) */}
-          {profile.music && (
-            <div className="mb-2 px-3 py-1 bg-neutral-800/90 backdrop-blur-md rounded-full border border-neutral-700 text-[11px] font-semibold text-neutral-200 flex items-center gap-1.5 shadow-md">
-              <Music2 className="w-3.5 h-3.5 text-sky-400" />
-              <span className="truncate max-w-[110px]">{profile.music.title || 'Let Me Love You'}</span>
-            </div>
-          )}
+        {/* Profile Music Note Badge (if present) */}
+        {profile.music && (
+          <div className="mb-3 px-3 py-1 bg-neutral-800/90 backdrop-blur-md rounded-full border border-neutral-700 text-[11px] font-semibold text-neutral-200 flex items-center gap-1.5 shadow-md">
+            <Music2 className="w-3.5 h-3.5 text-sky-400" />
+            <span className="truncate max-w-[120px]">{profile.music.title || 'Let Me Love You'}</span>
+          </div>
+        )}
 
-          <div className="w-32 h-32 md:w-36 md:h-36 rounded-full p-0.5 border-2 border-neutral-800 overflow-hidden bg-black shadow-xl">
-            <Avatar 
-              src={profile.avatar || profile.profilePicture} 
-              alt={profile.username} 
-              className="w-full h-full object-cover"
-              fallback={profile.username?.charAt(0).toUpperCase()}
-            />
+        {/* Centered Circular Avatar with Perfect Cover Fit (No Black Crescent) */}
+        <div className="relative group cursor-pointer mb-4" onClick={() => isOwner && setIsEditModalOpen(true)}>
+          <div className="w-32 h-32 md:w-36 md:h-36 rounded-full border-2 border-neutral-300 dark:border-neutral-700 overflow-hidden bg-neutral-900 shadow-xl flex items-center justify-center">
+            {profile.avatar || profile.profilePicture ? (
+              <img
+                src={profile.avatar || profile.profilePicture}
+                alt={profile.username}
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300 font-bold text-3xl">
+                {profile.username?.charAt(0).toUpperCase() || 'U'}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Right Column: User Actions, Stats & Bio */}
-        <div className="flex-1 flex flex-col items-center md:items-start w-full">
-          
-          {/* Username & Action Buttons */}
-          <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mb-4 w-full justify-center md:justify-start">
-            <h1 className="text-xl md:text-2xl font-bold text-text-primary flex items-center gap-2">
-              {profile.username}
-              {profile.isVerified && <img src="/verified-badge.png" className="w-5 h-5" alt="Verified" />}
-              {profile.isPrivate && <Lock className="w-4 h-4 text-text-secondary" />}
-            </h1>
+        {/* Username & Verification Badge */}
+        <div className="flex items-center gap-2 mb-3">
+          <h1 className="text-xl md:text-2xl font-bold text-text-primary text-center">
+            {profile.username}
+          </h1>
+          {profile.isVerified && <img src="/verified-badge.png" className="w-5 h-5 inline-block" alt="Verified" />}
+          {profile.isPrivate && <Lock className="w-4 h-4 text-text-secondary inline-block" />}
+        </div>
 
-            <div className="flex items-center gap-2 flex-wrap justify-center">
-              {isOwner ? (
-                <>
-                  <button 
-                    onClick={() => setIsEditModalOpen(true)}
-                    className="px-4 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors"
-                  >
-                    Edit profile
-                  </button>
-
-                  <button 
-                    onClick={() => navigate('/app/archive')}
-                    className="px-4 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors"
-                  >
-                    View archive
-                  </button>
-
-                  <button 
-                    onClick={() => navigate('/app/settings')}
-                    className="p-2 text-text-primary hover:opacity-70 transition-opacity"
-                  >
-                    <Settings className="w-5 h-5" />
-                  </button>
-                </>
-              ) : (
-                <>
-                  <FollowButton 
-                    userId={profile._id} 
-                    targetUser={profile}
-                    onToggle={({ isFollowing }) => {
-                      setProfile(prev => {
-                        if (!prev) return prev;
-                        const authIdStr = authUser?._id?.toString();
-                        const currentFollowers = prev.followers || [];
-                        const exists = currentFollowers.some(
-                          id => (typeof id === 'string' ? id : id?._id || id)?.toString() === authIdStr
-                        );
-                        let newFollowers = [...currentFollowers];
-                        if (isFollowing && !exists) {
-                          newFollowers.push(authUser._id);
-                        } else if (!isFollowing) {
-                          newFollowers = newFollowers.filter(
-                            id => (typeof id === 'string' ? id : id?._id || id)?.toString() !== authIdStr
-                          );
-                        }
-                        return { ...prev, followers: newFollowers };
-                      });
-                    }} 
-                  />
-
-                  <button 
-                    onClick={handleChat}
-                    disabled={isNavigatingToChat}
-                    className="px-4 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    Message
-                  </button>
-
-                  <button 
-                    onClick={() => setIsOptionsModalOpen(true)} 
-                    className="p-2 text-text-primary hover:opacity-70 transition-opacity"
-                  >
-                    <MoreHorizontal className="w-5 h-5" />
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-
-          {/* Stats Row (Posts, Followers, Following) */}
-          <div className="flex items-center justify-around sm:justify-start gap-8 md:gap-10 w-full mb-4 py-2 border-y sm:border-y-0 border-border-soft">
-            <div className="text-center md:text-left text-sm">
-              <span className="font-bold text-text-primary mr-1.5">{posts.length}</span>
-              <span className="text-text-secondary">posts</span>
-            </div>
-            <Link to={`/app/profile/${profile._id}/followers`} className="text-center md:text-left text-sm hover:opacity-80 transition-opacity">
-              <span className="font-bold text-text-primary mr-1.5">{profile.followers?.length || 0}</span>
-              <span className="text-text-secondary">followers</span>
-            </Link>
-            <Link to={`/app/profile/${profile._id}/following`} className="text-center md:text-left text-sm hover:opacity-80 transition-opacity">
-              <span className="font-bold text-text-primary mr-1.5">{profile.following?.length || 0}</span>
-              <span className="text-text-secondary">following</span>
-            </Link>
-          </div>
-
-          {/* Bio & Details */}
-          <div className="text-center md:text-left w-full space-y-1 text-sm">
-            <h2 className="font-bold text-text-primary text-base">
-              {profile.fullName || profile.username}
-              {profile.pronouns && <span className="text-text-secondary font-normal ml-2">{profile.pronouns}</span>}
-            </h2>
-
-            {profile.category && <p className="text-text-secondary font-medium">{profile.category}</p>}
-            {profile.bio && <p className="text-text-primary whitespace-pre-wrap leading-relaxed">{profile.bio}</p>}
-            
-            {profile.website && (
-              <a 
-                href={profile.website} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="inline-flex items-center gap-1.5 text-sky-400 font-semibold hover:underline mt-1"
+        {/* Action Buttons Row */}
+        <div className="flex items-center gap-2.5 mb-5 flex-wrap justify-center w-full">
+          {isOwner ? (
+            <>
+              <button 
+                onClick={() => setIsEditModalOpen(true)}
+                className="px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors shadow-sm"
               >
-                <LinkIcon className="w-3.5 h-3.5" />
-                <span>@{profile.website.replace(/^https?:\/\//, '')}</span>
-              </a>
-            )}
+                Edit profile
+              </button>
+
+              <button 
+                onClick={() => navigate('/app/archive')}
+                className="px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors shadow-sm"
+              >
+                View archive
+              </button>
+
+              <button 
+                onClick={() => navigate('/app/settings')}
+                className="p-2 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary rounded-lg transition-colors shadow-sm"
+                aria-label="Settings"
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+            </>
+          ) : (
+            <>
+              <FollowButton 
+                userId={profile._id} 
+                targetUser={profile}
+                onToggle={({ isFollowing }) => {
+                  setProfile(prev => {
+                    if (!prev) return prev;
+                    const authIdStr = authUser?._id?.toString();
+                    const currentFollowers = prev.followers || [];
+                    const exists = currentFollowers.some(
+                      id => (typeof id === 'string' ? id : id?._id || id)?.toString() === authIdStr
+                    );
+                    let newFollowers = [...currentFollowers];
+                    if (isFollowing && !exists) {
+                      newFollowers.push(authUser._id);
+                    } else if (!isFollowing) {
+                      newFollowers = newFollowers.filter(
+                        id => (typeof id === 'string' ? id : id?._id || id)?.toString() !== authIdStr
+                      );
+                    }
+                    return { ...prev, followers: newFollowers };
+                  });
+                }} 
+              />
+
+              <button 
+                onClick={handleChat}
+                disabled={isNavigatingToChat}
+                className="px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 shadow-sm"
+              >
+                Message
+              </button>
+
+              <button 
+                onClick={() => setIsOptionsModalOpen(true)} 
+                className="p-2 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary rounded-lg transition-colors shadow-sm"
+                aria-label="More options"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </>
+          )}
+        </div>
+
+        {/* Stats Row with Horizontal Dividers Top & Bottom */}
+        <div className="flex items-center justify-around w-full py-3.5 border-y border-border-soft mb-4">
+          <div className="text-center text-sm">
+            <span className="font-bold text-text-primary mr-1.5">{posts.length}</span>
+            <span className="text-text-secondary">posts</span>
           </div>
+          <Link to={`/app/profile/${profile._id}/followers`} className="text-center text-sm hover:opacity-80 transition-opacity">
+            <span className="font-bold text-text-primary mr-1.5">{profile.followers?.length || 0}</span>
+            <span className="text-text-secondary">followers</span>
+          </Link>
+          <Link to={`/app/profile/${profile._id}/following`} className="text-center text-sm hover:opacity-80 transition-opacity">
+            <span className="font-bold text-text-primary mr-1.5">{profile.following?.length || 0}</span>
+            <span className="text-text-secondary">following</span>
+          </Link>
+        </div>
+
+        {/* Centered Full Name & Bio Details */}
+        <div className="text-center w-full space-y-1 mb-2">
+          <h2 className="font-bold text-text-primary text-base md:text-lg">
+            {profile.fullName || profile.username}
+            {profile.pronouns && <span className="text-text-secondary font-normal text-sm ml-2">{profile.pronouns}</span>}
+          </h2>
+
+          {profile.category && <p className="text-text-secondary text-xs font-semibold uppercase tracking-wider">{profile.category}</p>}
+          {profile.bio && <p className="text-text-primary text-sm whitespace-pre-wrap leading-relaxed max-w-md mx-auto">{profile.bio}</p>}
+          
+          {profile.website && (
+            <a 
+              href={profile.website} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-1.5 text-sky-400 font-semibold hover:underline text-sm mt-1"
+            >
+              <LinkIcon className="w-3.5 h-3.5" />
+              <span>@{profile.website.replace(/^https?:\/\//, '')}</span>
+            </a>
+          )}
         </div>
       </div>
 

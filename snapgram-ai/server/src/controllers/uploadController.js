@@ -9,11 +9,37 @@ const uploadImage = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'No file provided' });
     }
 
+    let uploadOptions = { folder: 'snapgram-ai', resource_type: 'auto' };
+
+    if (req.body && req.body.crop) {
+      try {
+        const cropData = typeof req.body.crop === 'string' ? JSON.parse(req.body.crop) : req.body.crop;
+        if (cropData && cropData.width && cropData.height) {
+          uploadOptions.transformation = [
+            {
+              x: Math.max(0, Math.round(cropData.x || 0)),
+              y: Math.max(0, Math.round(cropData.y || 0)),
+              width: Math.round(cropData.width),
+              height: Math.round(cropData.height),
+              crop: 'crop',
+            },
+            {
+              width: 512,
+              height: 512,
+              crop: 'fill',
+            },
+          ];
+        }
+      } catch (cropErr) {
+        console.warn('Crop transformation error:', cropErr);
+      }
+    }
+
     // Wrap Cloudinary upload stream in a Promise
     const streamUpload = (fileBuffer) => {
       return new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
-          { folder: 'snapgram-ai', resource_type: 'auto' }, // Keep organized, auto-detect image/video
+          uploadOptions,
           (error, result) => {
             if (result) {
               resolve(result);

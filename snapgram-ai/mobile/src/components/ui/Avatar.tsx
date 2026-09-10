@@ -1,9 +1,11 @@
 import React, {
   forwardRef,
+  useEffect,
   useState,
 } from "react";
 import {
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -56,6 +58,13 @@ const Avatar = forwardRef<
   ) => {
     const [error, setError] =
       useState(false);
+    const [useProxy, setUseProxy] =
+      useState(false);
+
+    useEffect(() => {
+      setError(false);
+      setUseProxy(false);
+    }, [src]);
 
     const {
       effectiveTheme,
@@ -86,7 +95,7 @@ const Avatar = forwardRef<
         : "#7e22ce";
 
     const imageSource =
-      resolveImageSource(src);
+      resolveImageSource(src, useProxy);
 
     return (
       <View
@@ -139,9 +148,17 @@ const Avatar = forwardRef<
               accessibilityLabel={
                 alt
               }
-              onError={() =>
-                setError(true)
-              }
+              onError={() => {
+                if (
+                  !useProxy &&
+                  typeof src === "string" &&
+                  (src.startsWith("http://") || src.startsWith("https://"))
+                ) {
+                  setUseProxy(true);
+                } else {
+                  setError(true);
+                }
+              }}
             />
           ) : (
             <View
@@ -221,12 +238,17 @@ const Avatar = forwardRef<
 Avatar.displayName =
   "Avatar";
 
-function resolveImageSource(
+const API_URL =
+  process.env.EXPO_PUBLIC_API_URL ||
+  (Platform.OS === "android" ? "http://10.0.2.2:5001" : "http://localhost:5001");
+
+export function resolveImageSource(
   src:
     | ImageProps["source"]
     | string
     | null
     | undefined,
+  useProxy = false,
 ): ImageProps["source"] | null {
   if (!src) {
     return null;
@@ -235,8 +257,30 @@ function resolveImageSource(
   if (
     typeof src === "string"
   ) {
+    let clean = src.trim();
+    if (!clean || clean === "null" || clean === "undefined") {
+      return null;
+    }
+    if (clean.startsWith("/")) {
+      clean = `${API_URL}${clean}`;
+    }
+    if (clean.includes("localhost:5001")) {
+      clean = clean.replace(
+        "localhost:5001",
+        Platform.OS === "android" ? "10.0.2.2:5001" : "localhost:5001"
+      );
+    }
+    const isExternal =
+      (clean.startsWith("http://") || clean.startsWith("https://")) &&
+      !clean.includes("10.0.2.2") &&
+      !clean.includes("localhost") &&
+      !clean.includes("/api/proxy/image");
+
+    if ((useProxy || Platform.OS === "android") && isExternal) {
+      clean = `${API_URL}/api/proxy/image?url=${encodeURIComponent(clean)}`;
+    }
     return {
-      uri: src,
+      uri: clean,
     };
   }
 

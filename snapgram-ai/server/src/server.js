@@ -120,6 +120,27 @@ app.use('/api/vault', vaultRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notes', noteRoutes);
 
+app.get('/api/proxy/image', async (req, res) => {
+  try {
+    const { url } = req.query;
+    if (!url || typeof url !== 'string') {
+      return res.status(400).send('Missing url parameter');
+    }
+    const decodedUrl = decodeURIComponent(url);
+    const response = await fetch(decodedUrl);
+    if (!response.ok) {
+      return res.status(response.status).send('Failed to fetch upstream image');
+    }
+    const contentType = response.headers.get('content-type') || 'image/jpeg';
+    res.set('Content-Type', contentType);
+    res.set('Cache-Control', 'public, max-age=86400');
+    const arrayBuffer = await response.arrayBuffer();
+    return res.send(Buffer.from(arrayBuffer));
+  } catch (err) {
+    return res.status(500).send('Proxy error');
+  }
+});
+
 app.get('/health', (req, res) => {
   res.send('SnapGram AI API is running...');
 });

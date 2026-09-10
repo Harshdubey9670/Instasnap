@@ -17,6 +17,7 @@ import {
   Switch,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 import {
@@ -33,6 +34,8 @@ import api from "../../services/api";
 import { loginSuccess } from "../../store/authSlice";
 import { useTheme } from "../../contexts/ThemeContext";
 import { useToast } from "../ui/Toast";
+import { resolveImageSource } from "../ui/Avatar";
+import { AvatarCropModal } from "./AvatarCropModal";
 
 type AccountType = "personal" | "creator" | "business";
 type ImageField = "avatar" | "coverPhoto";
@@ -136,6 +139,8 @@ export const EditProfileModal = ({
     useState(false);
   const [uploadingCover, setUploadingCover] =
     useState(false);
+  const [cropModalVisible, setCropModalVisible] = useState(false);
+  const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
 
   const darkMode = effectiveTheme === "dark";
   const colors = useMemo(
@@ -185,45 +190,125 @@ export const EditProfileModal = ({
     [],
   );
 
-  const handleImageUpload = useCallback(
-    async (field: ImageField) => {
-      const permission =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-      if (!permission.granted) {
-        showToast(
-          "error",
-          "Permission Required",
-          "Allow photo-library access to select an image.",
-        );
-        return;
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: field === "avatar" ? [1, 1] : [16, 9],
-        quality: 0.9,
-      });
-
-      if (result.canceled || !result.assets[0]) {
-        return;
-      }
-
-      const asset = result.assets[0];
-
-      if (asset.fileSize && asset.fileSize > 5 * 1024 * 1024) {
-        showToast("Image must be less than 5MB", "error");
-        return;
-      }
-
-      const setUploading =
-        field === "avatar" ? setUploadingAvatar : setUploadingCover;
-
-      setUploading(true);
+  const handleCropDone = useCallback(
+    async ({
+      uri: croppedUri,
+      crop,
+    }: {
+      uri: string;
+      crop: { x: number; y: number; width: number; height: number };
+    }) => {
+      console.log("[EditProfileModal] handleCropDone received:", croppedUri, crop);
+      setCropModalVisible(false);
+      setSelectedImageUri(null);
+      setUploadingAvatar(true);
 
       try {
-        showToast(`Uploading ${field}...`, "info");
+        showToast("Uploading avatar...", "info");
+
+        const uploadData = new FormData();
+        uploadData.append(
+          "image",
+          {
+            uri: croppedUri,
+            name: "avatar.jpg",
+            type: "image/jpeg",
+          } as unknown as Blob,
+        );
+        uploadData.append("crop", JSON.stringify(crop));
+
+        console.log("[EditProfileModal] posting to /api/upload...");
+        const response = await api.post<
+          ApiResponse<{ url?: string }>
+        >("/api/upload", uploadData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        console.log("[EditProfileModal] upload response:", response.data);
+        const uploadedUrl = response.data.data?.url;
+
+        if (response.data.success && uploadedUrl) {
+          updateField("avatar", uploadedUrl);
+          showToast("Profile photo updated!", "success");
+        }
+      } catch (error) {
+        console.error("[EditProfileModal] upload error:", error);
+        showToast(getErrorMessage(error, "Upload failed"), "error");
+      } finally {
+        setUploadingAvatar(false);
+      }
+    },
+    [showToast, updateField],
+  );
+
+  const handleImageUpload = useCallback(
+    async (field: ImageField) => {
+      console.log("[EditProfileModal] handleImageUpload invoked for:", field);
+      try {
+        let hasPermission = true;
+        try {
+          const check = await Promise.race([
+            ImagePicker.getMediaLibraryPermissionsAsync(),
+            new Promise<{ granted: boolean; canAskAgain: boolean } | null>(
+              (resolve) => setTimeout(() => resolve(null), 1200),
+            ),
+          ]);
+          if (check && !check.granted && check.canAskAgain) {
+            const req = await Promise.race([
+              ImagePicker.requestMediaLibraryPermissionsAsync(),
+              new Promise<{ granted: boolean } | null>(
+                (resolve) => setTimeout(() => resolve(null), 2500),
+              ),
+            ]);
+            if (req && !req.granted) {
+              hasPermission = false;
+            }
+          }
+        } catch {
+          // fallback to opening picker
+        }
+
+        if (!hasPermission) {
+          showToast(
+            "error",
+            "Permission Required",
+            "Allow photo-library access to select an image.",
+          );
+          return;
+        }
+
+        console.log("[EditProfileModal] opening image picker...");
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: field !== "avatar", // Avatar has our rich custom crop & zoom adjuster!
+          aspect: [16, 9],
+          quality: 1.0,
+        });
+
+        console.log("[EditProfileModal] picker result:", result.canceled, result.assets?.length);
+
+        if (result.canceled || !result.assets[0]) {
+          return;
+        }
+
+        const asset = result.assets[0];
+
+        if (asset.fileSize && asset.fileSize > 15 * 1024 * 1024) {
+          showToast("Image must be less than 15MB", "error");
+          return;
+        }
+
+        if (field === "avatar") {
+          console.log("[EditProfileModal] selected avatar uri:", asset.uri);
+          setSelectedImageUri(asset.uri);
+          setCropModalVisible(true);
+          return;
+        }
+
+        setUploadingCover(true);
+        showToast(`Uploading cover photo...`, "info");
 
         const uploadData = new FormData();
         const extension =
@@ -233,7 +318,7 @@ export const EditProfileModal = ({
           "image",
           {
             uri: asset.uri,
-            name: asset.fileName || `${field}.${extension}`,
+            name: asset.fileName || `coverPhoto.${extension}`,
             type: asset.mimeType || "image/jpeg",
           } as unknown as Blob,
         );
@@ -245,15 +330,15 @@ export const EditProfileModal = ({
         const uploadedUrl = response.data.data?.url;
 
         if (response.data.success && uploadedUrl) {
-          updateField(field, uploadedUrl);
-          const label =
-            field.charAt(0).toUpperCase() + field.slice(1);
-          showToast(`${label} uploaded!`, "success");
+          updateField("coverPhoto", uploadedUrl);
+          showToast("Cover photo uploaded!", "success");
         }
       } catch (error) {
         showToast(getErrorMessage(error, "Upload failed"), "error");
       } finally {
-        setUploading(false);
+        if (field !== "avatar") {
+          setUploadingCover(false);
+        }
       }
     },
     [showToast, updateField],
@@ -278,6 +363,7 @@ export const EditProfileModal = ({
   }, [showToast, updateField]);
 
   const handleSubmit = useCallback(async () => {
+    console.log("[EditProfileModal] handleSubmit called with formData:", formData);
     if (loading || !formData.username.trim()) {
       return;
     }
@@ -289,6 +375,7 @@ export const EditProfileModal = ({
         "/api/users/update",
         formData,
       );
+      console.log("[EditProfileModal] profile update response:", response.data);
 
       if (response.data.success && response.data.data) {
         showToast("Profile updated successfully!", "success");
@@ -297,6 +384,7 @@ export const EditProfileModal = ({
         onClose();
       }
     } catch (error) {
+      console.error("[EditProfileModal] profile update error:", error);
       showToast(
         getErrorMessage(error, "Failed to update profile"),
         "error",
@@ -422,10 +510,15 @@ export const EditProfileModal = ({
                 </View>
               </Pressable>
 
-              <View style={styles.avatarSection}>
-                <Pressable
-                  onPress={() => void handleImageUpload("avatar")}
+              <View style={styles.avatarSection} pointerEvents="box-none">
+                <TouchableOpacity
+                  onPress={() => {
+                    console.log("[EditProfileModal] avatar touched");
+                    void handleImageUpload("avatar");
+                  }}
+                  activeOpacity={0.7}
                   disabled={uploadingAvatar}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                   style={[
                     styles.avatar,
                     {
@@ -436,20 +529,36 @@ export const EditProfileModal = ({
                 >
                   {formData.avatar ? (
                     <Image
-                      source={{ uri: formData.avatar }}
+                      source={resolveImageSource(formData.avatar) || undefined}
                       style={styles.avatarImage}
+                      resizeMode="cover"
                     />
                   ) : (
                     <Text style={[styles.avatarFallback, { color: colors.textSecondary }]}>Avatar</Text>
                   )}
-                  <View style={styles.avatarOverlay}>
+                  <View style={styles.avatarOverlay} pointerEvents="none">
                     {uploadingAvatar ? (
                       <ActivityIndicator color="#ffffff" />
                     ) : (
                       <Camera size={25} color="#ffffff" />
                     )}
                   </View>
-                </Pressable>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => {
+                    console.log("[EditProfileModal] Change Profile Photo touched");
+                    void handleImageUpload("avatar");
+                  }}
+                  activeOpacity={0.7}
+                  disabled={uploadingAvatar}
+                  hitSlop={{ top: 15, bottom: 15, left: 20, right: 20 }}
+                  style={{ marginTop: 8, paddingVertical: 8, paddingHorizontal: 16 }}
+                >
+                  <Text style={{ color: "#a855f7", fontWeight: "700", fontSize: 14 }}>
+                    {uploadingAvatar ? "Uploading..." : "Change Profile Photo"}
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               <View style={styles.section}>
@@ -663,6 +772,16 @@ export const EditProfileModal = ({
             </View>
           </View>
         </KeyboardAvoidingView>
+
+        <AvatarCropModal
+          visible={cropModalVisible}
+          imageUri={selectedImageUri}
+          onClose={() => {
+            setCropModalVisible(false);
+            setSelectedImageUri(null);
+          }}
+          onCropDone={handleCropDone}
+        />
       </SafeAreaView>
     </Modal>
   );
@@ -682,8 +801,8 @@ const styles = StyleSheet.create({
   emptyMediaText: { fontSize: 14, fontWeight: "600" },
   mediaOverlay: { position: "absolute", left: 0, right: 0, bottom: 0, minHeight: 48, paddingHorizontal: 14, backgroundColor: "rgba(0,0,0,0.48)", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 },
   mediaOverlayText: { color: "#ffffff", fontSize: 12, fontWeight: "700" },
-  avatarSection: { marginTop: -48, marginBottom: 8, alignItems: "center" },
-  avatar: { width: 112, height: 112, borderRadius: 56, borderWidth: 4, overflow: "hidden", alignItems: "center", justifyContent: "center", shadowColor: "#000000", shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 9 },
+  avatarSection: { marginTop: -48, marginBottom: 8, alignItems: "center", zIndex: 20, elevation: 12 },
+  avatar: { width: 112, height: 112, borderRadius: 56, borderWidth: 4, overflow: "hidden", alignItems: "center", justifyContent: "center", shadowColor: "#000000", shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 12, zIndex: 21 },
   avatarImage: { width: "100%", height: "100%" },
   avatarFallback: { fontSize: 14, fontWeight: "600" },
   avatarOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(0,0,0,0.38)", alignItems: "center", justifyContent: "center" },

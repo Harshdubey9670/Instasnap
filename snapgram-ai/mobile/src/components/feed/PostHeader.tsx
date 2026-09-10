@@ -62,7 +62,7 @@ export const PostHeader = ({
             <Avatar
               src={user?.profilePicture || user?.avatar}
               alt={user?.username || "User"}
-              size="xs"
+              size="sm"
               fallback={user?.username?.charAt(0)?.toUpperCase() || "U"}
             />
           </View>

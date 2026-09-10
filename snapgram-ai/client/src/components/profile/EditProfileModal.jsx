@@ -8,6 +8,7 @@ import api from '../../services/api';
 import { loginSuccess } from '../../store/authSlice';
 import { Image as ImageIcon, Camera, Loader2, CheckCircle, ShieldAlert } from 'lucide-react';
 import { cn } from '../../utils/cn';
+import { AvatarCropModal } from './AvatarCropModal';
 
 export const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) => {
   const [formData, setFormData] = useState({
@@ -26,6 +27,8 @@ export const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) =>
   const [loading, setLoading] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [rawImageToCrop, setRawImageToCrop] = useState(null);
   const { showToast } = useToast();
   const dispatch = useDispatch();
 
@@ -55,18 +58,52 @@ export const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) =>
     }));
   };
 
-  const handleImageUpload = async (e, type) => {
+  const handleImageSelected = (e, type) => {
     const file = e.target.files[0];
     if (!file) return;
     
-    if (file.size > 5 * 1024 * 1024) {
-      return showToast('Image must be less than 5MB', 'error');
+    if (file.size > 8 * 1024 * 1024) {
+      return showToast('Image must be less than 8MB', 'error');
     }
 
+    if (type === 'avatar') {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setRawImageToCrop(reader.result);
+        setCropModalOpen(true);
+      };
+      reader.readAsDataURL(file);
+      e.target.value = ''; // allow re-selecting same file
+      return;
+    }
+
+    handleDirectUpload(file, type);
+  };
+
+  const handleCroppedAvatarComplete = async (croppedBlob) => {
+    setUploadingAvatar(true);
+    const uploadData = new FormData();
+    uploadData.append('image', croppedBlob, 'avatar.jpg');
+
+    try {
+      showToast('Uploading profile picture...', 'info');
+      const response = await api.post('/api/upload', uploadData);
+      if (response.data.success) {
+        setFormData(prev => ({ ...prev, avatar: response.data.data.url }));
+        showToast('Profile picture adjusted and uploaded!', 'success');
+      }
+    } catch (error) {
+      showToast(error.response?.data?.message || 'Upload failed', 'error');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
+  const handleDirectUpload = async (file, type) => {
     const uploadData = new FormData();
     uploadData.append('image', file);
     
-    const setLoader = type === 'avatar' ? setUploadingAvatar : setUploadingCover;
+    const setLoader = setUploadingCover;
     setLoader(true);
     
     try {
@@ -136,13 +173,13 @@ export const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) =>
             <label className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
               {uploadingCover ? <Loader2 className="w-6 h-6 text-white animate-spin" /> : <Camera className="w-6 h-6 text-white mb-1" />}
               <span className="text-white text-xs font-medium">{uploadingCover ? 'Uploading...' : 'Change Cover'}</span>
-              <input type="file" accept="image/jpeg, image/png, image/webp" className="hidden" onChange={(e) => handleImageUpload(e, 'coverPhoto')} disabled={uploadingCover} />
+              <input type="file" accept="image/jpeg, image/png, image/webp" className="hidden" onChange={(e) => handleImageSelected(e, 'coverPhoto')} disabled={uploadingCover} />
             </label>
           </div>
 
           {/* Avatar */}
           <div className="flex flex-col items-center -mt-16 md:-mt-20 relative z-10">
-            <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full group cursor-pointer border-4 border-bg-base bg-bg-surface-hover shadow-lg">
+            <div className="relative w-24 h-24 md:w-32 md:h-32 rounded-full group cursor-pointer border-4 border-bg-base bg-bg-surface-hover shadow-lg overflow-hidden">
               {formData.avatar ? (
                 <img src={formData.avatar} alt="Avatar" className="w-full h-full object-cover rounded-full" />
               ) : (
@@ -152,7 +189,7 @@ export const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) =>
               )}
               <label className="absolute inset-0 flex items-center justify-center bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                 {uploadingAvatar ? <Loader2 className="w-6 h-6 animate-spin" /> : <Camera className="w-6 h-6" />}
-                <input type="file" accept="image/jpeg, image/png, image/webp" className="hidden" onChange={(e) => handleImageUpload(e, 'avatar')} disabled={uploadingAvatar} />
+                <input type="file" accept="image/jpeg, image/png, image/webp" className="hidden" onChange={(e) => handleImageSelected(e, 'avatar')} disabled={uploadingAvatar} />
               </label>
             </div>
           </div>
@@ -296,6 +333,19 @@ export const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) =>
           </Button>
         </div>
       </form>
+
+      {/* Interactive Avatar Crop & Zoom Modal */}
+      {cropModalOpen && (
+        <AvatarCropModal
+          isOpen={cropModalOpen}
+          onClose={() => {
+            setCropModalOpen(false);
+            setRawImageToCrop(null);
+          }}
+          imageSrc={rawImageToCrop}
+          onCropComplete={handleCroppedAvatarComplete}
+        />
+      )}
     </Modal>
   );
 };
