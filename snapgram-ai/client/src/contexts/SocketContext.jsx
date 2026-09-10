@@ -16,14 +16,33 @@ export const SocketContextProvider = ({ children }) => {
   const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const rawToken = localStorage.getItem('token');
+    const token = rawToken?.startsWith('Bearer ') ? rawToken.slice(7).trim() : rawToken;
     
     if (user && token) {
       const socketInstance = io(import.meta.env.VITE_API_URL || "http://localhost:5001", {
         auth: {
           token: token,
         },
-        transports: ["websocket"],
+        transports: ["polling", "websocket"],
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+      });
+
+      // Handle connection errors gracefully without infinite loop
+      socketInstance.on("connect_error", (err) => {
+        if (err?.message?.includes("Authentication error")) {
+          console.warn("[Socket] Auth error received from server. Disconnecting socket:", err.message);
+          socketInstance.disconnect();
+        }
+      });
+
+      socketInstance.on("disconnect", (reason) => {
+        if (reason === "io server disconnect") {
+          // Disconnected by the server, auth rejected
+          socketInstance.disconnect();
+        }
       });
 
       // Handle Back-Forward Cache (BFCache) restores
@@ -42,7 +61,7 @@ export const SocketContextProvider = ({ children }) => {
 
       socketInstance.on("newMessage", (msg) => {
         // If we receive a message that isn't ours, mark it as delivered
-        if (msg.sender._id !== user._id) {
+        if (msg?.sender?._id && msg.sender._id !== user._id) {
           socketInstance.emit("markDelivered", { 
             messageId: msg._id, 
             senderId: msg.sender._id 

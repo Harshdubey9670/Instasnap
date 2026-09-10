@@ -18,15 +18,24 @@ const getOnlineUsersList = () => {
 
 const initSocket = (io) => {
   ioInstance = io;
-  // Authentication middleware
   io.use(async (socket, next) => {
     try {
-      const token = socket.handshake.auth?.token || socket.handshake.query?.token;
+      let token = socket.handshake.auth?.token || socket.handshake.query?.token;
       if (!token) {
         return next(new Error('Authentication error: No token provided'));
       }
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (typeof token === 'string' && token.startsWith('Bearer ')) {
+        token = token.slice(7).trim();
+      }
+
+      let decoded;
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+      } catch (jwtErr) {
+        return next(new Error(`Authentication error: ${jwtErr.message}`));
+      }
+
       const user = await User.findById(decoded.id).select('-password');
       
       if (!user) {

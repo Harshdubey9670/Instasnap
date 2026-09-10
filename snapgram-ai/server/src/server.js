@@ -28,7 +28,11 @@ const io = new Server(httpServer, {
     },
     methods: ['GET', 'POST'],
     credentials: true
-  }
+  },
+  transports: ['polling', 'websocket'],
+  allowEIO3: true,
+  pingTimeout: 60000,
+  pingInterval: 25000
 });
 
 // Rate Limiting
