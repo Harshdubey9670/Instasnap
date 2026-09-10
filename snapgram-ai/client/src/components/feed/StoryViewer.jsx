@@ -74,9 +74,12 @@ export const StoryViewer = ({ stories, initialUserIndex, onClose }) => {
 
   // Track View
   useEffect(() => {
-    if (currentStory) {
+    if (currentStory && authUser?._id) {
       const alreadyViewed = currentStory.viewers?.some((v) => (typeof v === 'string' ? v : v._id) === authUser._id);
-        api.put(`/api/stories/${currentStory._id}/view`).catch((e) => console.error(e));
+      if (!alreadyViewed) {
+        if (!isOwnStory) {
+          api.put(`/api/stories/${currentStory._id}/view`).catch((e) => console.error(e));
+        }
         if (currentStory.viewers) currentStory.viewers.push(authUser);
         else currentStory.viewers = [authUser];
       }

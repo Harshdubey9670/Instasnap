@@ -1,7 +1,4 @@
-import React, {
-  useMemo,
-  useState,
-} from "react";
+import React, { useMemo, useState } from "react";
 import {
   Pressable,
   ScrollView,
@@ -9,13 +6,9 @@ import {
   Text,
   View,
 } from "react-native";
-import {
-  router,
-} from "expo-router";
-import {
-  useDispatch,
-  useSelector,
-} from "react-redux";
+import { router } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   User,
   Lock,
@@ -37,12 +30,9 @@ import {
 } from "lucide-react-native";
 
 import type { RootState } from "../../src/store/store";
-import {
-  logout,
-} from "../../src/store/authSlice";
-import {
-  Input,
-} from "../../src/components/ui/Input";
+import { logout } from "../../src/store/authSlice";
+import { Input } from "../../src/components/ui/Input";
+import { useTheme } from "../../src/contexts/ThemeContext";
 
 import AccountSettings from "../../src/components/settings/AccountSettings";
 import PrivacySettings from "../../src/components/settings/PrivacySettings";
@@ -86,280 +76,159 @@ const SETTINGS_CATEGORIES: SettingsCategory[] = [
   {
     id: "account",
     label: "Account",
-    description:
-      "Manage your profile, email, password, and account information.",
+    description: "Manage your profile, email, password, and account information.",
     icon: User,
     component: AccountSettings,
-    keywords: [
-      "username",
-      "email",
-      "phone",
-      "password",
-      "personal",
-      "profile",
-    ],
+    keywords: ["username", "email", "phone", "password", "personal", "profile"],
   },
   {
     id: "privacy",
     label: "Privacy",
-    description:
-      "Control who can interact with you and see your activity.",
+    description: "Control who can interact with you and see your activity.",
     icon: Lock,
     component: PrivacySettings,
-    keywords: [
-      "private",
-      "activity",
-      "status",
-      "blocked",
-      "followers",
-    ],
+    keywords: ["private", "activity", "status", "blocked", "followers"],
   },
   {
     id: "security",
     label: "Security",
-    description:
-      "Protect your account, sessions, and authentication.",
+    description: "Protect your account, sessions, and authentication.",
     icon: ShieldAlert,
     component: SecuritySettings,
-    keywords: [
-      "password",
-      "2fa",
-      "two factor",
-      "login",
-      "sessions",
-      "authentication",
-    ],
+    keywords: ["password", "2fa", "two factor", "login", "sessions", "authentication"],
   },
   {
     id: "notifications",
     label: "Notifications",
-    description:
-      "Manage push notifications, alerts, and notification preferences.",
+    description: "Manage push notifications, alerts, and notification preferences.",
     icon: Bell,
     component: NotificationSettings,
-    keywords: [
-      "push",
-      "email",
-      "pause",
-      "quiet",
-      "alert",
-      "notifications",
-    ],
+    keywords: ["push", "email", "pause", "quiet", "alert", "notifications"],
   },
   {
     id: "appearance",
     label: "Appearance",
-    description:
-      "Customize the visual appearance of SnapGram.",
+    description: "Customize the visual appearance of SnapGram.",
     icon: Moon,
     component: AppearanceSettings,
-    keywords: [
-      "dark",
-      "light",
-      "theme",
-      "appearance",
-      "mode",
-      "display",
-    ],
+    keywords: ["dark", "light", "theme", "appearance", "mode", "display"],
   },
   {
     id: "accessibility",
     label: "Accessibility",
-    description:
-      "Adjust accessibility and readability preferences.",
+    description: "Adjust accessibility and readability preferences.",
     icon: Eye,
     component: AccessibilitySettings,
-    keywords: [
-      "contrast",
-      "screen reader",
-      "accessibility",
-      "font",
-      "visibility",
-      "text",
-    ],
+    keywords: ["contrast", "screen reader", "accessibility", "font", "visibility", "text"],
   },
   {
     id: "language",
     label: "Language",
-    description:
-      "Choose your preferred app language.",
+    description: "Choose your preferred app language.",
     icon: Languages,
     component: LanguageSettings,
-    keywords: [
-      "translate",
-      "translation",
-      "english",
-      "spanish",
-      "language",
-    ],
+    keywords: ["translate", "translation", "english", "spanish", "language"],
   },
   {
     id: "help",
     label: "Help",
-    description:
-      "Get support, report problems, and find answers.",
+    description: "Get support, report problems, and find answers.",
     icon: HelpCircle,
     component: HelpSettings,
-    keywords: [
-      "support",
-      "faq",
-      "report",
-      "problem",
-      "help",
-    ],
+    keywords: ["support", "faq", "report", "problem", "help"],
   },
   {
     id: "about",
     label: "About",
-    description:
-      "View app information, legal details, and policies.",
+    description: "View app information, legal details, and policies.",
     icon: Info,
     component: AboutSettings,
-    keywords: [
-      "version",
-      "terms",
-      "privacy policy",
-      "legal",
-      "about",
-    ],
+    keywords: ["version", "terms", "privacy policy", "legal", "about"],
   },
   {
     id: "time",
     label: "Time Management",
-    description:
-      "Manage daily limits, reminders, and screen-time controls.",
+    description: "Manage daily limits, reminders, and screen-time controls.",
     icon: Clock,
     component: TimeManagementSettings,
-    keywords: [
-      "daily",
-      "limit",
-      "reminder",
-      "break",
-      "screen time",
-      "time",
-    ],
+    keywords: ["daily", "limit", "reminder", "break", "screen time", "time"],
   },
   {
     id: "chat",
     label: "Chat & Messages",
-    description:
-      "Configure direct messages, replies, and chat behavior.",
+    description: "Configure direct messages, replies, and chat behavior.",
     icon: MessageSquare,
     component: ChatSettings,
-    keywords: [
-      "dm",
-      "message",
-      "reply",
-      "story",
-      "request",
-      "chat",
-    ],
+    keywords: ["dm", "message", "reply", "story", "request", "chat"],
   },
   {
     id: "media",
     label: "Media & Vault",
-    description:
-      "Manage media quality, downloads, uploads, and Vault settings.",
+    description: "Manage media quality, downloads, uploads, and Vault settings.",
     icon: Database,
     component: MediaVaultSettings,
-    keywords: [
-      "download",
-      "save",
-      "quality",
-      "upload",
-      "data",
-      "cellular",
-      "vault",
-      "media",
-    ],
+    keywords: ["download", "save", "quality", "upload", "data", "cellular", "vault", "media"],
   },
   {
     id: "ai",
     label: "AI Features",
-    description:
-      "Configure AI-powered features, suggestions, captions, and bots.",
+    description: "Configure AI-powered features, suggestions, captions, and bots.",
     icon: Bot,
     component: AiSettings,
-    keywords: [
-      "ai",
-      "suggestions",
-      "captions",
-      "filters",
-      "smart",
-      "bot",
-      "assistant",
-    ],
+    keywords: ["ai", "suggestions", "captions", "filters", "smart", "bot", "assistant"],
   },
 ];
 
 const SettingsPage = () => {
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === "dark";
 
   const settingsLoading = useSelector(
-    (state: RootState) =>
-      state.auth.settingsLoading,
+    (state: RootState) => state.auth.settingsLoading,
   );
 
-  const [activeTab, setActiveTab] =
-    useState<SettingsCategoryId>("account");
+  const [activeTab, setActiveTab] = useState<SettingsCategoryId>("account");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showList, setShowList] = useState(true);
 
-  const [searchQuery, setSearchQuery] =
-    useState("");
-
-  const [showList, setShowList] =
-    useState(true);
+  // ── Dynamic tokens ──────────────────────────────────────────────────────────
+  const bgBase      = isDark ? "#0a0510" : "#f8fafc";
+  const bgCard      = isDark ? "#18122b" : "#ffffff";
+  const bgCardBorder= isDark ? "#2d1f4a" : "#e2e8f0";
+  const bgHeader    = isDark ? "rgba(10,5,16,0.98)" : "rgba(248,250,252,0.98)";
+  const textPrimary = isDark ? "#f8fafc" : "#0f172a";
+  const textSecond  = isDark ? "#94a3b8" : "#64748b";
+  const textMuted   = isDark ? "#64748b" : "#94a3b8";
+  const iconBg      = isDark ? "#1e1235" : "#f1f5f9";
+  const searchBg    = isDark ? "#1e1235" : "#ffffff";
+  const searchBorder= isDark ? "#2d1f4a" : "#e2e8f0";
+  const divider     = isDark ? "#2d1f4a" : "#e2e8f0";
+  const activeRowBg = isDark ? "rgba(168,85,247,0.15)" : "rgba(168,85,247,0.08)";
+  const activeRowBorder = isDark ? "rgba(168,85,247,0.35)" : "rgba(168,85,247,0.22)";
+  const detailHeaderBg = isDark ? "#18122b" : "#ffffff";
 
   const filteredCategories = useMemo(() => {
-    const normalized =
-      searchQuery
-        .trim()
-        .toLowerCase();
-
-    if (!normalized) {
-      return SETTINGS_CATEGORIES;
-    }
-
-    return SETTINGS_CATEGORIES.filter(
-      (category) => {
-        const labelMatch =
-          category.label
-            .toLowerCase()
-            .includes(normalized);
-
-        const descriptionMatch =
-          category.description
-            .toLowerCase()
-            .includes(normalized);
-
-        const keywordMatch =
-          category.keywords.some(
-            (keyword) =>
-              keyword
-                .toLowerCase()
-                .includes(normalized),
-          );
-
-        return (
-          labelMatch ||
-          descriptionMatch ||
-          keywordMatch
-        );
-      },
-    );
+    const normalized = searchQuery.trim().toLowerCase();
+    if (!normalized) return SETTINGS_CATEGORIES;
+    return SETTINGS_CATEGORIES.filter((category) => {
+      const labelMatch = category.label.toLowerCase().includes(normalized);
+      const descriptionMatch = category.description.toLowerCase().includes(normalized);
+      const keywordMatch = category.keywords.some((keyword) =>
+        keyword.toLowerCase().includes(normalized),
+      );
+      return labelMatch || descriptionMatch || keywordMatch;
+    });
   }, [searchQuery]);
 
   const activeCategory =
-    SETTINGS_CATEGORIES.find(
-      (category) =>
-        category.id === activeTab,
-    ) || SETTINGS_CATEGORIES[0];
+    SETTINGS_CATEGORIES.find((category) => category.id === activeTab) ||
+    SETTINGS_CATEGORIES[0];
 
-  const ActiveComponent =
-    activeCategory.component;
+  const ActiveComponent = activeCategory.component;
 
-  const handleSelectCategory = (
-    categoryId: SettingsCategoryId,
-  ) => {
+  const handleSelectCategory = (categoryId: SettingsCategoryId) => {
     setActiveTab(categoryId);
     setShowList(false);
     setSearchQuery("");
@@ -370,276 +239,184 @@ const SettingsPage = () => {
       dispatch(logout());
       router.replace("/auth/login");
     } catch (error) {
-      console.error(
-        "Failed to logout:",
-        error,
-      );
+      console.error("Failed to logout:", error);
     }
   };
 
   const handleBackToApp = () => {
-    router.replace("/app");
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/app");
+    }
   };
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { backgroundColor: bgBase }]}>
       {/* ─────────────────────────────
           MOBILE CATEGORY LIST
          ───────────────────────────── */}
       {showList ? (
-        <View style={styles.listContainer}>
-          {/* Header */}
-          <View style={styles.header}>
+        <View style={[styles.listContainer, { backgroundColor: bgBase }]}>
+          {/* Header — respects top safe area */}
+          <View
+            style={[
+              styles.header,
+              {
+                paddingTop: (insets.top || 20) + 12,
+                backgroundColor: bgHeader,
+                borderBottomColor: divider,
+              },
+            ]}
+          >
             <View style={styles.headerTop}>
               <Pressable
-                onPress={
-                  handleBackToApp
-                }
+                onPress={handleBackToApp}
                 style={({ pressed }) => [
                   styles.headerButton,
-                  pressed &&
-                    styles.pressed,
+                  { backgroundColor: bgCard, borderColor: bgCardBorder },
+                  pressed && styles.pressed,
                 ]}
                 accessibilityRole="button"
                 accessibilityLabel="Back to app"
               >
-                <ChevronLeft
-                  size={24}
-                  color="#0f172a"
-                />
+                <ChevronLeft size={24} color={textPrimary} />
               </Pressable>
 
-              <Text
-                style={
-                  styles.headerTitle
-                }
-              >
+              <Text style={[styles.headerTitle, { color: textPrimary }]}>
                 Settings
               </Text>
 
-              <View
-                style={
-                  styles.headerSpacer
-                }
-              />
+              <View style={styles.headerSpacer} />
             </View>
 
-            <View
-              style={
-                styles.searchWrapper
-              }
-            >
-              <Search
-                size={19}
-                color="#64748b"
-                style={
-                  styles.searchIcon
-                }
-              />
-
+            <View style={styles.searchWrapper}>
+              <Search size={19} color={textSecond} style={styles.searchIcon} />
               <Input
                 placeholder="Search settings..."
-                value={
-                  searchQuery
-                }
-                onChangeText={
-                  setSearchQuery
-                }
+                value={searchQuery}
+                onChangeText={setSearchQuery}
                 autoCapitalize="none"
                 autoCorrect={false}
-                style={
-                  styles.searchInput
-                }
+                style={[
+                  styles.searchInput,
+                  {
+                    backgroundColor: searchBg,
+                    borderColor: searchBorder,
+                  },
+                ]}
+                inputStyle={{ color: textPrimary }}
               />
             </View>
           </View>
 
           {/* Category List */}
           <ScrollView
-            contentContainerStyle={
-              styles.categoryScrollContent
-            }
-            showsVerticalScrollIndicator={
-              false
-            }
+            contentContainerStyle={[
+              styles.categoryScrollContent,
+              { paddingBottom: Math.max(insets.bottom, 16) + 80 },
+            ]}
+            showsVerticalScrollIndicator={false}
           >
-            {filteredCategories.length ===
-            0 ? (
-              <View
-                style={
-                  styles.emptySearch
-                }
-              >
-                <Search
-                  size={34}
-                  color="#94a3b8"
-                />
-
-                <Text
-                  style={
-                    styles.emptyTitle
-                  }
-                >
+            {filteredCategories.length === 0 ? (
+              <View style={styles.emptySearch}>
+                <Search size={34} color={textMuted} />
+                <Text style={[styles.emptyTitle, { color: textPrimary }]}>
                   No settings found
                 </Text>
-
-                <Text
-                  style={
-                    styles.emptyDescription
-                  }
-                >
+                <Text style={[styles.emptyDescription, { color: textSecond }]}>
                   Try another search term.
                 </Text>
               </View>
             ) : (
               <>
-                <Text
-                  style={
-                    styles.sectionLabel
-                  }
-                >
+                <Text style={[styles.sectionLabel, { color: textMuted }]}>
                   SETTINGS
                 </Text>
 
-                <View
-                  style={
-                    styles.categoryList
-                  }
-                >
-                  {filteredCategories.map(
-                    (category) => {
-                      const Icon =
-                        category.icon;
+                <View style={styles.categoryList}>
+                  {filteredCategories.map((category) => {
+                    const Icon = category.icon;
+                    const isActive = activeTab === category.id;
 
-                      const isActive =
-                        activeTab ===
-                        category.id;
-
-                      return (
-                        <Pressable
-                          key={
-                            category.id
-                          }
-                          onPress={() =>
-                            handleSelectCategory(
-                              category.id,
-                            )
-                          }
-                          style={({
-                            pressed,
-                          }) => [
-                            styles.categoryRow,
-                            isActive &&
-                              styles.categoryRowActive,
-                            pressed &&
-                              styles.pressed,
+                    return (
+                      <Pressable
+                        key={category.id}
+                        onPress={() => handleSelectCategory(category.id)}
+                        style={({ pressed }) => [
+                          styles.categoryRow,
+                          {
+                            backgroundColor: isActive ? activeRowBg : bgCard,
+                            borderColor: isActive ? activeRowBorder : bgCardBorder,
+                          },
+                          pressed && styles.pressed,
+                        ]}
+                        accessibilityRole="button"
+                        accessibilityLabel={`${category.label} settings`}
+                      >
+                        <View
+                          style={[
+                            styles.categoryIconWrapper,
+                            {
+                              backgroundColor: isActive ? "#a855f7" : iconBg,
+                              shadowColor: isActive ? "#a855f7" : "transparent",
+                            },
                           ]}
-                          accessibilityRole="button"
-                          accessibilityLabel={`${category.label} settings`}
                         >
-                          <View
+                          <Icon
+                            size={21}
+                            color={isActive ? "#ffffff" : textSecond}
+                            strokeWidth={2}
+                          />
+                        </View>
+
+                        <View style={styles.categoryTextWrapper}>
+                          <Text
                             style={[
-                              styles.categoryIconWrapper,
-                              isActive &&
-                                styles.categoryIconWrapperActive,
+                              styles.categoryLabel,
+                              { color: isActive ? "#a855f7" : textPrimary },
                             ]}
                           >
-                            <Icon
-                              size={21}
-                              color={
-                                isActive
-                                  ? "#ffffff"
-                                  : "#64748b"
-                              }
-                              strokeWidth={
-                                2
-                              }
-                            />
-                          </View>
-
-                          <View
-                            style={
-                              styles.categoryTextWrapper
-                            }
+                            {category.label}
+                          </Text>
+                          <Text
+                            style={[styles.categoryDescription, { color: textSecond }]}
+                            numberOfLines={2}
                           >
-                            <Text
-                              style={[
-                                styles.categoryLabel,
-                                isActive &&
-                                  styles.categoryLabelActive,
-                              ]}
-                            >
-                              {
-                                category.label
-                              }
-                            </Text>
+                            {category.description}
+                          </Text>
+                        </View>
 
-                            <Text
-                              style={
-                                styles.categoryDescription
-                              }
-                              numberOfLines={
-                                2
-                              }
-                            >
-                              {
-                                category.description
-                              }
-                            </Text>
-                          </View>
-
-                          <ChevronRight
-                            size={20}
-                            color={
-                              isActive
-                                ? "#a855f7"
-                                : "#94a3b8"
-                            }
-                          />
-                        </Pressable>
-                      );
-                    },
-                  )}
+                        <ChevronRight
+                          size={20}
+                          color={isActive ? "#a855f7" : textMuted}
+                        />
+                      </Pressable>
+                    );
+                  })}
                 </View>
 
                 {/* Account actions */}
-                <View
-                  style={
-                    styles.bottomSection
-                  }
-                >
+                <View style={[styles.bottomSection, { borderTopColor: divider }]}>
                   <Pressable
-                    onPress={
-                      handleLogout
-                    }
-                    style={({
-                      pressed,
-                    }) => [
+                    onPress={handleLogout}
+                    style={({ pressed }) => [
                       styles.logoutRow,
-                      pressed &&
-                        styles.pressed,
+                      {
+                        backgroundColor: isDark
+                          ? "rgba(239,68,68,0.08)"
+                          : "#ffffff",
+                        borderColor: "rgba(239,68,68,0.20)",
+                      },
+                      pressed && styles.pressed,
                     ]}
                     accessibilityRole="button"
                     accessibilityLabel="Log out"
                   >
-                    <View
-                      style={
-                        styles.logoutIconWrapper
-                      }
-                    >
-                      <LogOut
-                        size={20}
-                        color="#ef4444"
-                      />
+                    <View style={styles.logoutIconWrapper}>
+                      <LogOut size={20} color="#ef4444" />
                     </View>
-
-                    <Text
-                      style={
-                        styles.logoutText
-                      }
-                    >
-                      Log Out
-                    </Text>
+                    <Text style={styles.logoutText}>Log Out</Text>
                   </Pressable>
                 </View>
               </>
@@ -650,89 +427,66 @@ const SettingsPage = () => {
         /* ─────────────────────────────
            MOBILE SETTINGS DETAIL
            ───────────────────────────── */
-        <View style={styles.detailContainer}>
-          {/* Detail Header */}
+        <View style={[styles.detailContainer, { backgroundColor: bgBase }]}>
+          {/* Detail Header — respects top safe area */}
           <View
-            style={
-              styles.detailHeader
-            }
+            style={[
+              styles.detailHeader,
+              {
+                paddingTop: (insets.top || 20) + 10,
+                backgroundColor: detailHeaderBg,
+                borderBottomColor: divider,
+              },
+            ]}
           >
             <Pressable
-              onPress={() =>
-                setShowList(true)
-              }
+              onPress={() => setShowList(true)}
               style={({ pressed }) => [
                 styles.headerButton,
-                pressed &&
-                  styles.pressed,
+                { backgroundColor: bgCard, borderColor: bgCardBorder },
+                pressed && styles.pressed,
               ]}
               accessibilityRole="button"
               accessibilityLabel="Back to settings"
             >
-              <ChevronLeft
-                size={24}
-                color="#0f172a"
-              />
+              <ChevronLeft size={24} color={textPrimary} />
             </Pressable>
 
-            <View
-              style={
-                styles.detailHeaderText
-              }
-            >
+            <View style={styles.detailHeaderText}>
               <Text
-                style={
-                  styles.detailTitle
-                }
+                style={[styles.detailTitle, { color: textPrimary }]}
                 numberOfLines={1}
               >
-                {
-                  activeCategory.label
-                }
+                {activeCategory.label}
               </Text>
-
               <Text
-                style={
-                  styles.detailSubtitle
-                }
+                style={[styles.detailSubtitle, { color: textSecond }]}
                 numberOfLines={1}
               >
-                {
-                  activeCategory.description
-                }
+                {activeCategory.description}
               </Text>
             </View>
           </View>
 
           {/* Detail Content */}
           <ScrollView
-            style={
-              styles.detailScroll
-            }
-            contentContainerStyle={
-              styles.detailContent
-            }
-            showsVerticalScrollIndicator={
-              false
-            }
+            style={styles.detailScroll}
+            contentContainerStyle={[
+              styles.detailContent,
+              { paddingBottom: Math.max(insets.bottom, 16) + 80 },
+            ]}
+            showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
             {settingsLoading ? (
-              <View
-                style={
-                  styles.loadingContainer
-                }
-              >
+              <View style={styles.loadingContainer}>
                 <View
-                  style={
-                    styles.loadingCircle
-                  }
+                  style={[
+                    styles.loadingCircle,
+                    { backgroundColor: bgCard, borderColor: bgCardBorder },
+                  ]}
                 >
-                  <Text
-                    style={
-                      styles.loadingText
-                    }
-                  >
+                  <Text style={[styles.loadingText, { color: textSecond }]}>
                     Loading...
                   </Text>
                 </View>
@@ -749,369 +503,246 @@ const SettingsPage = () => {
 
 export default SettingsPage;
 
-const styles =
-  StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor:
-        "#f8fafc",
-    },
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
 
-    listContainer: {
-      flex: 1,
-      backgroundColor:
-        "#f8fafc",
-    },
+  listContainer: {
+    flex: 1,
+  },
 
-    header: {
-      paddingHorizontal: 16,
-      paddingTop: 16,
-      paddingBottom: 14,
-      backgroundColor:
-        "rgba(248,250,252,0.98)",
-      borderBottomWidth: 1,
-      borderBottomColor:
-        "#e2e8f0",
-    },
+  header: {
+    paddingHorizontal: 16,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
+  },
 
-    headerTop: {
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      justifyContent:
-        "space-between",
-      marginBottom: 14,
-    },
+  headerTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 14,
+  },
 
-    headerButton: {
-      width: 42,
-      height: 42,
-      borderRadius: 21,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      backgroundColor:
-        "#ffffff",
-      borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
-    },
+  headerButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+  },
 
-    headerSpacer: {
-      width: 42,
-      height: 42,
-    },
+  headerSpacer: {
+    width: 42,
+    height: 42,
+  },
 
-    headerTitle: {
-      flex: 1,
-      marginHorizontal: 12,
-      textAlign:
-        "center",
-      fontSize: 24,
-      lineHeight: 30,
-      fontWeight:
-        "800",
-      color:
-        "#0f172a",
-    },
+  headerTitle: {
+    flex: 1,
+    marginHorizontal: 12,
+    textAlign: "center",
+    fontSize: 24,
+    lineHeight: 30,
+    fontWeight: "800",
+  },
 
-    searchWrapper: {
-      position:
-        "relative",
-      justifyContent:
-        "center",
-    },
+  searchWrapper: {
+    position: "relative",
+    justifyContent: "center",
+  },
 
-    searchIcon: {
-      position:
-        "absolute",
-      left: 13,
-      zIndex: 3,
-    },
+  searchIcon: {
+    position: "absolute",
+    left: 13,
+    zIndex: 3,
+  },
 
-    searchInput: {
-      paddingLeft: 40,
-      backgroundColor:
-        "#ffffff",
-      borderColor:
-        "#e2e8f0",
-      borderRadius: 14,
-    },
+  searchInput: {
+    paddingLeft: 40,
+    borderRadius: 14,
+  },
 
-    categoryScrollContent: {
-      paddingHorizontal: 16,
-      paddingTop: 18,
-      paddingBottom: 36,
-    },
+  categoryScrollContent: {
+    paddingHorizontal: 16,
+    paddingTop: 18,
+  },
 
-    sectionLabel: {
-      fontSize: 11,
-      lineHeight: 16,
-      fontWeight:
-        "800",
-      letterSpacing: 1.2,
-      color:
-        "#94a3b8",
-      marginBottom: 10,
-      paddingHorizontal: 4,
-    },
+  sectionLabel: {
+    fontSize: 11,
+    lineHeight: 16,
+    fontWeight: "800",
+    letterSpacing: 1.2,
+    marginBottom: 10,
+    paddingHorizontal: 4,
+  },
 
-    categoryList: {
-      gap: 8,
-    },
+  categoryList: {
+    gap: 8,
+  },
 
-    categoryRow: {
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      minHeight: 78,
-      paddingHorizontal: 12,
-      paddingVertical: 11,
-      borderRadius: 18,
-      backgroundColor:
-        "#ffffff",
-      borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
-      shadowColor:
-        "#000000",
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.03,
-      shadowRadius: 8,
-      elevation: 1,
-    },
+  categoryRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    minHeight: 78,
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+    borderRadius: 18,
+    borderWidth: 1,
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 1,
+  },
 
-    categoryRowActive: {
-      backgroundColor:
-        "rgba(168,85,247,0.08)",
-      borderColor:
-        "rgba(168,85,247,0.22)",
-    },
+  categoryIconWrapper: {
+    width: 46,
+    height: 46,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.22,
+    shadowRadius: 10,
+    elevation: 4,
+  },
 
-    categoryIconWrapper: {
-      width: 46,
-      height: 46,
-      borderRadius: 14,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      backgroundColor:
-        "#f1f5f9",
-      marginRight: 12,
-    },
+  categoryTextWrapper: {
+    flex: 1,
+    minWidth: 0,
+    marginRight: 8,
+  },
 
-    categoryIconWrapperActive: {
-      backgroundColor:
-        "#a855f7",
-      shadowColor:
-        "#a855f7",
-      shadowOffset: {
-        width: 0,
-        height: 4,
-      },
-      shadowOpacity: 0.22,
-      shadowRadius: 10,
-      elevation: 4,
-    },
+  categoryLabel: {
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: "700",
+    marginBottom: 3,
+  },
 
-    categoryTextWrapper: {
-      flex: 1,
-      minWidth: 0,
-      marginRight: 8,
-    },
+  categoryDescription: {
+    fontSize: 12,
+    lineHeight: 17,
+  },
 
-    categoryLabel: {
-      fontSize: 15,
-      lineHeight: 20,
-      fontWeight:
-        "700",
-      color:
-        "#0f172a",
-      marginBottom: 3,
-    },
+  bottomSection: {
+    marginTop: 22,
+    paddingTop: 18,
+    borderTopWidth: 1,
+  },
 
-    categoryLabelActive: {
-      color:
-        "#7c3aed",
-    },
+  logoutRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    minHeight: 58,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
 
-    categoryDescription: {
-      fontSize: 12,
-      lineHeight: 17,
-      color:
-        "#64748b",
-    },
+  logoutIconWrapper: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(239,68,68,0.08)",
+    marginRight: 12,
+  },
 
-    bottomSection: {
-      marginTop: 22,
-      paddingTop: 18,
-      borderTopWidth: 1,
-      borderTopColor:
-        "#e2e8f0",
-    },
+  logoutText: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#ef4444",
+  },
 
-    logoutRow: {
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      minHeight: 58,
-      paddingHorizontal: 12,
-      borderRadius: 16,
-      backgroundColor:
-        "#ffffff",
-      borderWidth: 1,
-      borderColor:
-        "rgba(239,68,68,0.15)",
-    },
+  emptySearch: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 80,
+    paddingHorizontal: 20,
+  },
 
-    logoutIconWrapper: {
-      width: 40,
-      height: 40,
-      borderRadius: 12,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      backgroundColor:
-        "rgba(239,68,68,0.08)",
-      marginRight: 12,
-    },
+  emptyTitle: {
+    marginTop: 14,
+    fontSize: 17,
+    fontWeight: "700",
+    textAlign: "center",
+  },
 
-    logoutText: {
-      fontSize: 15,
-      fontWeight:
-        "700",
-      color:
-        "#ef4444",
-    },
+  emptyDescription: {
+    marginTop: 6,
+    fontSize: 13,
+    lineHeight: 19,
+    textAlign: "center",
+  },
 
-    emptySearch: {
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      paddingVertical: 80,
-      paddingHorizontal: 20,
-    },
+  detailContainer: {
+    flex: 1,
+  },
 
-    emptyTitle: {
-      marginTop: 14,
-      fontSize: 17,
-      fontWeight:
-        "700",
-      color:
-        "#0f172a",
-      textAlign:
-        "center",
-    },
+  detailHeader: {
+    paddingHorizontal: 16,
+    paddingBottom: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+  },
 
-    emptyDescription: {
-      marginTop: 6,
-      fontSize: 13,
-      lineHeight: 19,
-      color:
-        "#64748b",
-      textAlign:
-        "center",
-    },
+  detailHeaderText: {
+    flex: 1,
+    marginLeft: 12,
+    minWidth: 0,
+  },
 
-    detailContainer: {
-      flex: 1,
-      backgroundColor:
-        "#f8fafc",
-    },
+  detailTitle: {
+    fontSize: 19,
+    lineHeight: 24,
+    fontWeight: "800",
+  },
 
-    detailHeader: {
-      minHeight: 76,
-      paddingHorizontal: 16,
-      paddingVertical: 14,
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      backgroundColor:
-        "#ffffff",
-      borderBottomWidth: 1,
-      borderBottomColor:
-        "#e2e8f0",
-    },
+  detailSubtitle: {
+    marginTop: 2,
+    fontSize: 12,
+    lineHeight: 17,
+  },
 
-    detailHeaderText: {
-      flex: 1,
-      marginLeft: 12,
-      minWidth: 0,
-    },
+  detailScroll: {
+    flex: 1,
+  },
 
-    detailTitle: {
-      fontSize: 19,
-      lineHeight: 24,
-      fontWeight:
-        "800",
-      color:
-        "#0f172a",
-    },
+  detailContent: {
+    paddingHorizontal: 16,
+    paddingTop: 18,
+  },
 
-    detailSubtitle: {
-      marginTop: 2,
-      fontSize: 12,
-      lineHeight: 17,
-      color:
-        "#64748b",
-    },
+  loadingContainer: {
+    flex: 1,
+    minHeight: 300,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
-    detailScroll: {
-      flex: 1,
-    },
+  loadingCircle: {
+    minWidth: 120,
+    minHeight: 52,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+  },
 
-    detailContent: {
-      paddingHorizontal: 16,
-      paddingTop: 18,
-      paddingBottom: 48,
-    },
+  loadingText: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
 
-    loadingContainer: {
-      flex: 1,
-      minHeight: 300,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-    },
-
-    loadingCircle: {
-      minWidth: 120,
-      minHeight: 52,
-      paddingHorizontal: 18,
-      paddingVertical: 14,
-      borderRadius: 18,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      backgroundColor:
-        "#ffffff",
-      borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
-    },
-
-    loadingText: {
-      fontSize: 14,
-      fontWeight:
-        "600",
-      color:
-        "#64748b",
-    },
-
-    pressed: {
-      opacity: 0.75,
-    },
-  });
+  pressed: {
+    opacity: 0.75,
+  },
+});

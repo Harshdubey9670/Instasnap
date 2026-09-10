@@ -52,6 +52,7 @@ import {
   generateShareLink,
 } from "../../src/services/vaultService";
 import { useToast } from "../../src/components/ui/Toast";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Memory = {
   _id: string;
@@ -71,6 +72,7 @@ type Album = {
 
 export default function VaultScreen() {
   const { showToast } = useToast();
+  const insets = useSafeAreaInsets();
 
   const [isUnlocked, setIsUnlocked] =
     useState(false);
@@ -1159,9 +1161,10 @@ export default function VaultScreen() {
         ListHeaderComponent={
           <View>
             <View
-              style={
-                styles.header
-              }
+              style={[
+                styles.header,
+                { paddingTop: (insets.top || 20) + 8 },
+              ]}
             >
               <View
                 style={
@@ -1169,16 +1172,18 @@ export default function VaultScreen() {
                 }
               >
                 <Pressable
-                  onPress={() =>
-                    router.back()
-                  }
-                  style={
-                    styles.backButton
-                  }
+                  onPress={() => {
+                    if (router.canGoBack()) {
+                      router.back();
+                    } else {
+                      router.replace("/app");
+                    }
+                  }}
+                  style={styles.backButton}
                 >
                   <ArrowLeft
                     size={22}
-                    color="#0f172a"
+                    color="#a855f7"
                   />
                 </Pressable>
 

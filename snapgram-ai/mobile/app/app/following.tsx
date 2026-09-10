@@ -13,12 +13,14 @@ import {
 import { router, useLocalSearchParams } from "expo-router";
 import { ArrowLeft, Search, Users, X } from "lucide-react-native";
 import { useSelector } from "react-redux";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import api from "../../src/services/api";
 import { useToast } from "../../src/components/ui/Toast";
 import { Avatar } from "../../src/components/ui/Avatar";
 import { FollowButton } from "../../src/components/profile/FollowButton";
 import type { RootState } from "../../src/store/store";
+import { useTheme } from "../../src/contexts/ThemeContext";
 
 type UserItem = {
   _id: string;
@@ -32,6 +34,18 @@ export default function FollowingScreen() {
   const { id, userId } = useLocalSearchParams<{ id?: string; userId?: string }>();
   const { user: authUser } = useSelector((state: RootState) => state.auth);
   const { toast } = useToast();
+  const insets = useSafeAreaInsets();
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === "dark";
+
+  // Dynamic tokens
+  const bgBase       = isDark ? "#0a0510" : "#f8fafc";
+  const bgCard       = isDark ? "#18122b" : "#ffffff";
+  const bgCardBorder = isDark ? "#2d1f4a" : "#e2e8f0";
+  const textPrimary  = isDark ? "#f8fafc" : "#0f172a";
+  const textSecond   = isDark ? "#94a3b8" : "#64748b";
+  const searchBg     = isDark ? "#1e1235" : "#ffffff";
+  const divider      = isDark ? "#2d1f4a" : "#e2e8f0";
 
   const targetUserId = typeof id === "string" ? id : typeof userId === "string" ? userId : authUser?._id;
 
@@ -159,7 +173,7 @@ export default function FollowingScreen() {
     item: UserItem;
   }) => {
     return (
-      <View style={styles.userRow}>
+      <View style={[styles.userRow, { backgroundColor: bgCard, borderColor: bgCardBorder }]}>
         <Pressable
           style={styles.userMain}
           onPress={() =>
@@ -185,7 +199,7 @@ export default function FollowingScreen() {
 
           <View style={styles.userText}>
             <Text
-              style={styles.username}
+              style={[styles.username, { color: textPrimary }]}
               numberOfLines={1}
             >
               {item.username}
@@ -193,7 +207,7 @@ export default function FollowingScreen() {
 
             {!!item.fullName && (
               <Text
-                style={styles.fullName}
+                style={[styles.fullName, { color: textSecond }]}
                 numberOfLines={1}
               >
                 {item.fullName}
@@ -215,30 +229,44 @@ export default function FollowingScreen() {
     );
   };
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/app/profile");
+    }
+  };
+
   return (
-    <View style={styles.screen}>
-      <View style={styles.header}>
+    <View style={[styles.screen, { backgroundColor: bgBase }]}>
+      <View
+        style={[
+          styles.header,
+          {
+            paddingTop: (insets.top || 20) + 12,
+            backgroundColor: bgBase,
+            borderBottomColor: divider,
+          },
+        ]}
+      >
         <Pressable
-          onPress={() => router.back()}
-          style={styles.iconButton}
+          onPress={handleBack}
+          style={[styles.iconButton, { backgroundColor: bgCard, borderColor: bgCardBorder }]}
         >
-          <ArrowLeft
-            size={24}
-            color="#0f172a"
-          />
+          <ArrowLeft size={24} color={textPrimary} />
         </Pressable>
 
-        <Text style={styles.headerTitle}>
+        <Text style={[styles.headerTitle, { color: textPrimary }]}>
           Following
         </Text>
 
         <View style={styles.headerSpacer} />
       </View>
 
-      <View style={styles.searchWrap}>
+      <View style={[styles.searchWrap, { backgroundColor: searchBg, borderColor: divider }]}>
         <Search
           size={20}
-          color="#64748b"
+          color={textSecond}
           style={styles.searchIcon}
         />
 
@@ -298,9 +326,10 @@ export default function FollowingScreen() {
             String(item._id)
           }
           renderItem={renderItem}
-          contentContainerStyle={
-            styles.listContent
-          }
+          contentContainerStyle={[
+            styles.listContent,
+            { paddingBottom: Math.max(insets.bottom, 16) + 80 },
+          ]}
           onEndReached={loadMore}
           onEndReachedThreshold={0.4}
           showsVerticalScrollIndicator={false}
@@ -323,17 +352,15 @@ export default function FollowingScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#f8fafc",
   },
 
   header: {
-    minHeight: 58,
     paddingHorizontal: 16,
+    paddingBottom: 12,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     borderBottomWidth: 1,
-    borderBottomColor: "#e2e8f0",
   },
 
   iconButton: {
@@ -342,12 +369,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 1,
   },
 
   headerTitle: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#0f172a",
   },
 
   headerSpacer: {
@@ -359,9 +386,7 @@ const styles = StyleSheet.create({
     marginVertical: 16,
     height: 48,
     borderRadius: 16,
-    backgroundColor: "#ffffff",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
     justifyContent: "center",
   },
 
@@ -375,7 +400,6 @@ const styles = StyleSheet.create({
     paddingLeft: 46,
     paddingRight: 46,
     fontSize: 14,
-    color: "#0f172a",
   },
 
   clearButton: {
@@ -399,9 +423,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 16,
-    backgroundColor: "#ffffff",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -439,13 +461,11 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 15,
     fontWeight: "600",
-    color: "#0f172a",
   },
 
   fullName: {
     marginTop: 3,
     fontSize: 13,
-    color: "#64748b",
   },
 
   followWrap: {
@@ -484,7 +504,6 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 19,
     fontWeight: "700",
-    color: "#0f172a",
     marginBottom: 8,
     textAlign: "center",
   },
@@ -492,7 +511,6 @@ const styles = StyleSheet.create({
   emptyDescription: {
     fontSize: 14,
     lineHeight: 21,
-    color: "#64748b",
     textAlign: "center",
   },
 });
