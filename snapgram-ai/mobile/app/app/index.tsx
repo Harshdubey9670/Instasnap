@@ -2,16 +2,20 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import {
   ActivityIndicator,
+  GestureResponderEvent,
+  PanResponder,
   RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
+import { useRouter } from "expo-router";
 import {
   useSelector,
 } from "react-redux";
@@ -54,6 +58,109 @@ export default function FeedScreen() {
   const insets = useSafeAreaInsets();
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === "dark";
+  const router = useRouter();
+
+  const panResponder = useMemo(() => {
+    let triggered = false;
+
+    const handleSwipeAction = (dx: number) => {
+      if (triggered) return;
+      if (dx < -55) {
+        triggered = true;
+        router.push("/app/chat" as any);
+      } else if (dx > 55) {
+        triggered = true;
+        router.push("/app/camera" as any);
+      }
+    };
+
+    return PanResponder.create({
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponderCapture: (_, gestureState) => {
+        const isHorizontal =
+          Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 1.5;
+        const hasSignificantDistance = Math.abs(gestureState.dx) > 20;
+        return isHorizontal && hasSignificantDistance;
+      },
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        const isHorizontal =
+          Math.abs(gestureState.dx) > Math.abs(gestureState.dy) * 1.5;
+        const hasSignificantDistance = Math.abs(gestureState.dx) > 20;
+        return isHorizontal && hasSignificantDistance;
+      },
+      onPanResponderGrant: () => {
+        triggered = false;
+      },
+      onPanResponderMove: (_, gestureState) => {
+        if (!triggered) {
+          if (gestureState.dx < -65) {
+            triggered = true;
+            router.push("/app/chat" as any);
+          } else if (gestureState.dx > 65) {
+            triggered = true;
+            router.push("/app/camera" as any);
+          }
+        }
+      },
+      onPanResponderTerminationRequest: () => false,
+      onPanResponderRelease: (_, gestureState) => {
+        handleSwipeAction(gestureState.dx);
+      },
+      onPanResponderTerminate: (_, gestureState) => {
+        handleSwipeAction(gestureState.dx);
+      },
+    });
+  }, [router]);
+
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const swipeHandledRef = useRef<boolean>(false);
+
+  const handleTouchStart = useCallback((e: GestureResponderEvent) => {
+    touchStartRef.current = {
+      x: e.nativeEvent.pageX,
+      y: e.nativeEvent.pageY,
+    };
+    swipeHandledRef.current = false;
+  }, []);
+
+  const handleTouchMove = useCallback(
+    (e: GestureResponderEvent) => {
+      if (!touchStartRef.current || swipeHandledRef.current) return;
+      const dx = e.nativeEvent.pageX - touchStartRef.current.x;
+      const dy = e.nativeEvent.pageY - touchStartRef.current.y;
+
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+        swipeHandledRef.current = true;
+        touchStartRef.current = null;
+        if (dx < 0) {
+          router.push("/app/chat" as any);
+        } else {
+          router.push("/app/camera" as any);
+        }
+      }
+    },
+    [router],
+  );
+
+  const handleTouchEnd = useCallback(
+    (e: GestureResponderEvent) => {
+      if (!touchStartRef.current || swipeHandledRef.current) return;
+      const dx = e.nativeEvent.pageX - touchStartRef.current.x;
+      const dy = e.nativeEvent.pageY - touchStartRef.current.y;
+
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+        swipeHandledRef.current = true;
+        touchStartRef.current = null;
+        if (dx < 0) {
+          router.push("/app/chat" as any);
+        } else {
+          router.push("/app/camera" as any);
+        }
+      }
+      touchStartRef.current = null;
+    },
+    [router],
+  );
 
   const {
     user: authUser,
@@ -398,8 +505,17 @@ export default function FeedScreen() {
             isDark ? "#0a0510" : "#f8fafc",
         },
       ]}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+      {...panResponder.panHandlers}
     >
       <ScrollView
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
         style={
           styles.scrollView
         }

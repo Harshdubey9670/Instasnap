@@ -124,10 +124,10 @@ export default function AppLayout() {
       </View>
 
       {/* Floating AI Assistant Copilot Button & Drawer */}
-      {Boolean(authUser) && !isChatDetail && <AiAssistantDrawer />}
+      {Boolean(authUser) && <AiAssistantDrawer />}
 
       {/* Bottom Navigation Bar */}
-      {!isChatDetail && <MobileNav />}
+      <MobileNav />
     </View>
   );
 }

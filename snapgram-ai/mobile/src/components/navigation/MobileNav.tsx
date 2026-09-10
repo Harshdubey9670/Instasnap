@@ -62,8 +62,6 @@ export const MobileNav = () => {
     pathname?.includes(page),
   );
 
-  if (shouldHide) return null;
-
   // ── Active tab detection ───────────────────────────────────────────────────
   const activeIndex = NAV_ITEMS.findIndex((item) =>
     item.exact
@@ -90,6 +88,8 @@ export const MobileNav = () => {
       }).start();
     }
   }, [activeIndex, bubbleIndexAnim]);
+
+  if (shouldHide) return null;
 
   const bubbleTranslateX = bubbleIndexAnim.interpolate({
     inputRange: NAV_ITEMS.map((_, i) => i),

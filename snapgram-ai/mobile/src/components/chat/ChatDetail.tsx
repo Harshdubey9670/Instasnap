@@ -1819,9 +1819,12 @@ const ChatDetail = () => {
 
     return (
       <KeyboardAvoidingView
-        style={
-          styles.container
-        }
+        style={[
+          styles.container,
+          {
+            paddingBottom: 58 + Math.max(insets.bottom, 4),
+          },
+        ]}
         behavior={
           Platform.OS ===
           "ios"
@@ -1855,7 +1858,7 @@ const ChatDetail = () => {
             >
               <ArrowLeft
                 size={22}
-                color="#ffffff"
+                color="#111827"
               />
             </Pressable>
 
@@ -1947,56 +1950,22 @@ const ChatDetail = () => {
             }
           >
             <Pressable
-              style={styles.headerAction}
-              accessibilityRole="button"
-              accessibilityLabel="Voice call"
-              onPress={() => showToast("info", "Audio Call", "Voice calling is coming soon...")}
-            >
-              <Phone
-                size={20}
-                color="#ffffff"
-              />
-            </Pressable>
-
-            <Pressable
-              style={styles.headerAction}
-              accessibilityRole="button"
-              accessibilityLabel="Video call"
-              onPress={() => showToast("info", "Video Call", "Video calling is coming soon...")}
-            >
-              <VideoIcon
-                size={22}
-                color="#ffffff"
-              />
-            </Pressable>
-
-            <Pressable
               onPress={() =>
                 setShowDisappearingSettings(
-                  (
-                    value,
-                  ) =>
-                    !value,
+                  (value) => !value,
                 )
               }
-              style={[
-                styles.headerAction,
-                disappearingMode !==
-                  "off" &&
-                  styles.headerActionActive,
-              ]}
+              style={styles.disappearingPill}
               accessibilityRole="button"
-              accessibilityLabel="Disappearing messages settings"
+              accessibilityLabel="Disappearing messages"
             >
               <Clock
-                size={20}
-                color={
-                  disappearingMode !==
-                  "off"
-                    ? "#a855f7"
-                    : "#ffffff"
-                }
+                size={14}
+                color="#9333ea"
               />
+              <Text style={styles.disappearingPillText}>
+                {disappearingMode === "off" ? "24h" : disappearingMode}
+              </Text>
             </Pressable>
 
             <Pressable
@@ -2012,8 +1981,8 @@ const ChatDetail = () => {
               accessibilityLabel="Shared media gallery"
             >
               <Grid
-                size={20}
-                color="#ffffff"
+                size={22}
+                color="#4b5563"
               />
             </Pressable>
           </View>
@@ -2430,24 +2399,8 @@ const ChatDetail = () => {
             accessibilityLabel="Attach image or video"
           >
             <Paperclip
-              size={20}
-              color="#a1a1aa"
-            />
-          </Pressable>
-
-          <Pressable
-            onPress={
-              handlePickDocument
-            }
-            style={
-              styles.composerButton
-            }
-            accessibilityRole="button"
-            accessibilityLabel="Attach file"
-          >
-            <Grid
-              size={19}
-              color="#a1a1aa"
+              size={22}
+              color="#6b7280"
             />
           </Pressable>
 
@@ -2467,8 +2420,8 @@ const ChatDetail = () => {
             accessibilityLabel="Emoji picker"
           >
             <Smile
-              size={20}
-              color="#a1a1aa"
+              size={22}
+              color="#6b7280"
             />
           </Pressable>
 
@@ -2493,11 +2446,11 @@ const ChatDetail = () => {
             }
           >
             <Mic
-              size={20}
+              size={22}
               color={
                 isRecordingVoice
                   ? "#ef4444"
-                  : "#a1a1aa"
+                  : "#6b7280"
               }
             />
           </Pressable>
@@ -2509,8 +2462,8 @@ const ChatDetail = () => {
             onChangeText={
               handleInputChange
             }
-            placeholder="Message..."
-            placeholderTextColor="#71717a"
+            placeholder="Send a chat or snap..."
+            placeholderTextColor="#9ca3af"
             multiline
             maxLength={5000}
             style={
@@ -2537,6 +2490,7 @@ const ChatDetail = () => {
             }
             style={[
               styles.sendButton,
+              Boolean(newMessage.trim()) && styles.sendButtonActive,
               (
                 (
                   !newMessage.trim() &&
@@ -2557,7 +2511,7 @@ const ChatDetail = () => {
               />
             ) : (
               <Send
-                size={17}
+                size={18}
                 color="#ffffff"
               />
             )}
@@ -2736,14 +2690,14 @@ const styles =
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: "#000000",
+      backgroundColor: "#ffffff",
     },
 
     loadingScreen: {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "#000000",
+      backgroundColor: "#ffffff",
     },
 
     header: {
@@ -2753,8 +2707,8 @@ const styles =
       justifyContent: "space-between",
       paddingHorizontal: 10,
       borderBottomWidth: 1,
-      borderBottomColor: "#18181b",
-      backgroundColor: "#000000",
+      borderBottomColor: "#f3f4f6",
+      backgroundColor: "#ffffff",
     },
 
     headerLeft: {
@@ -2781,15 +2735,15 @@ const styles =
       height: 40,
       borderRadius: 20,
       borderWidth: 1,
-      borderColor: "rgba(168,85,247,0.30)",
+      borderColor: "#e5e7eb",
     },
     avatarFallback: {
-      backgroundColor: "#2e1065",
+      backgroundColor: "#f3e8ff",
       alignItems: "center",
       justifyContent: "center",
     },
     avatarFallbackText: {
-      color: "#c084fc",
+      color: "#9333ea",
       fontSize: 16,
       fontWeight: "700",
     },
@@ -2803,7 +2757,7 @@ const styles =
       borderRadius: 6,
       backgroundColor: "#10b981",
       borderWidth: 2,
-      borderColor: "#000000",
+      borderColor: "#ffffff",
     },
 
     headerCopy: {
@@ -2813,15 +2767,15 @@ const styles =
     },
 
     headerName: {
-      color: "#ffffff",
-      fontSize: 15,
+      color: "#111827",
+      fontSize: 16,
       fontWeight: "700",
     },
 
     headerStatus: {
       marginTop: 2,
-      color: "#8e8e93",
-      fontSize: 11,
+      color: "#6b7280",
+      fontSize: 12,
     },
 
     headerActions: {
@@ -2831,12 +2785,31 @@ const styles =
       marginLeft: 8,
     },
 
+    disappearingPill: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      borderRadius: 16,
+      backgroundColor: "rgba(168,85,247,0.08)",
+      borderWidth: 1,
+      borderColor: "rgba(168,85,247,0.22)",
+      marginRight: 4,
+      gap: 4,
+    },
+
+    disappearingPillText: {
+      color: "#9333ea",
+      fontSize: 13,
+      fontWeight: "700",
+    },
+
     headerAction: {
-      width: 40,
-      height: 40,
+      width: 38,
+      height: 38,
       alignItems: "center",
       justifyContent: "center",
-      borderRadius: 20,
+      borderRadius: 19,
     },
 
     headerActionActive: {
@@ -2895,6 +2868,7 @@ const styles =
     messagesContainer: {
       flex: 1,
       position: "relative",
+      backgroundColor: "#ffffff",
     },
 
     messagesContent: {
@@ -2915,12 +2889,14 @@ const styles =
     },
 
     dateText: {
-      paddingHorizontal: 12,
+      paddingHorizontal: 14,
       paddingVertical: 4,
       borderRadius: 12,
-      color: "#9ca3af",
-      backgroundColor: "rgba(255,255,255,0.08)",
-      fontSize: 10,
+      color: "#4b5563",
+      backgroundColor: "#ffffff",
+      borderWidth: 1,
+      borderColor: "#e5e7eb",
+      fontSize: 12,
       fontWeight: "600",
     },
 
@@ -2956,9 +2932,9 @@ const styles =
       gap: 4,
       paddingHorizontal: 12,
       borderRadius: 19,
-      backgroundColor: "#262626",
+      backgroundColor: "#ffffff",
       borderWidth: 1,
-      borderColor: "rgba(255,255,255,0.06)",
+      borderColor: "#e5e7eb",
     },
 
     typingDot: {
@@ -3130,24 +3106,23 @@ const styles =
     },
 
     composer: {
-      minHeight: 62,
+      minHeight: 56,
       flexDirection: "row",
-      alignItems: "flex-end",
-      gap: 1,
-      paddingHorizontal: 7,
-      paddingTop: 7,
-      paddingBottom: Platform.OS === "ios" ? 22 : 8,
-      backgroundColor: "#000000",
+      alignItems: "center",
+      gap: 6,
+      paddingLeft: 10,
+      paddingRight: 68,
+      paddingVertical: 6,
+      backgroundColor: "#ffffff",
       borderTopWidth: 1,
-      borderTopColor: "#18181b",
+      borderTopColor: "#f3f4f6",
     },
 
     composerButton: {
-      width: 39,
-      height: 44,
+      width: 36,
+      height: 42,
       alignItems: "center",
       justifyContent: "center",
-      borderRadius: 20,
     },
 
     recordingButton: {
@@ -3156,29 +3131,33 @@ const styles =
 
     input: {
       flex: 1,
-      maxHeight: 115,
-      minHeight: 44,
+      maxHeight: 100,
+      minHeight: 42,
       paddingHorizontal: 14,
-      paddingVertical: 10,
-      borderRadius: 20,
-      backgroundColor: "#262626",
-      borderWidth: 1,
-      borderColor: "#38383a",
-      color: "#ffffff",
+      paddingVertical: 8,
+      borderRadius: 14,
+      backgroundColor: "#ffffff",
+      borderWidth: 1.5,
+      borderColor: "#a855f7",
+      color: "#111827",
       fontSize: 14,
     },
 
     sendButton: {
-      width: 44,
-      height: 44,
+      width: 42,
+      height: 42,
       alignItems: "center",
       justifyContent: "center",
-      borderRadius: 22,
-      backgroundColor: "#a855f7",
+      borderRadius: 21,
+      backgroundColor: "rgba(236,72,153,0.35)",
+    },
+
+    sendButtonActive: {
+      backgroundColor: "#ec4899",
     },
 
     sendButtonDisabled: {
-      opacity: 0.4,
+      opacity: 0.6,
     },
 
     hiddenImage: {

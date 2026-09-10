@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import { router, usePathname } from "expo-router";
-import { Bell, Plus, MessageCircle } from "lucide-react-native";
+import { Bell, Plus } from "lucide-react-native";
 import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -197,18 +197,6 @@ export const Navbar = ({
                   />
                 </View>
               )}
-            </Pressable>
-
-            <Pressable
-              onPress={() => router.push("/app/chat" as any)}
-              style={({ pressed }) => [
-                styles.notificationButton,
-                pressed && styles.pressed,
-              ]}
-              accessibilityRole="button"
-              accessibilityLabel="View messages"
-            >
-              <MessageCircle size={24} color={textColor} strokeWidth={2} />
             </Pressable>
           </View>
         </View>

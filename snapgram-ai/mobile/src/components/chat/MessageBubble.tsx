@@ -24,6 +24,7 @@ import {
 import {
   Image,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface MessageBubbleProps {
   msg: any;
@@ -213,6 +214,14 @@ const MessageBubble = ({
               styles.sending,
           ]}
         >
+          {isMine ? (
+            <LinearGradient
+              colors={["#9333ea", "#ec4899"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFillObject}
+            />
+          ) : null}
           {msg.messageType ===
           "story_share" ? (
             isStoryUnavailable ? (
@@ -454,7 +463,7 @@ const MessageBubble = ({
               style={[
                 styles.messageText,
                 {
-                  color: isMine ? "#ffffff" : "#f4f4f5",
+                  color: isMine ? "#ffffff" : "#111827",
                 },
               ]}
             >
@@ -551,9 +560,12 @@ const MessageBubble = ({
       ) : null}
 
       <View
-        style={
-          styles.timestampRow
-        }
+        style={[
+          styles.timestampRow,
+          {
+            justifyContent: isMine ? "flex-end" : "flex-start",
+          },
+        ]}
       >
         <Text
           style={
@@ -576,21 +588,15 @@ const MessageBubble = ({
               ...
             </Text>
           ) : msg.status ===
-            "seen" ? (
+            "seen" || msg.status === "delivered" ? (
             <CheckCheck
               size={14}
               color="#3b82f6"
             />
-          ) : msg.status ===
-            "delivered" ? (
-            <CheckCheck
-              size={14}
-              color="#64748b"
-            />
           ) : (
             <Check
               size={14}
-              color="#64748b"
+              color="#9ca3af"
             />
           )
         ) : null}
@@ -752,61 +758,47 @@ const styles =
     messageBubble: {
       maxWidth:
         "82%",
-
-      padding: 13.5,
-
+      paddingHorizontal: 16,
+      paddingVertical: 10,
       position:
         "relative",
+      overflow: "hidden",
+      borderRadius: 18,
     },
 
     mine: {
-      backgroundColor: "#8b5cf6",
+      backgroundColor: "#9333ea",
     },
 
     other: {
-      backgroundColor: "#262626",
+      backgroundColor: "#ffffff",
       borderWidth: 1,
-      borderColor: "rgba(255,255,255,0.08)",
+      borderColor: "#e5e7eb",
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+      elevation: 1,
     },
 
     mineFirst: {
-      borderTopLeftRadius:
-        18,
-      borderBottomLeftRadius:
-        18,
-      borderTopRightRadius:
-        4,
-      borderBottomRightRadius:
-        18,
+      borderRadius: 18,
+      borderBottomRightRadius: 6,
     },
 
     mineContinuation: {
-      borderRadius:
-        18,
-      borderTopRightRadius:
-        4,
-      borderBottomRightRadius:
-        4,
+      borderRadius: 18,
+      borderBottomRightRadius: 6,
     },
 
     otherFirst: {
-      borderTopLeftRadius:
-        4,
-      borderTopRightRadius:
-        18,
-      borderBottomLeftRadius:
-        18,
-      borderBottomRightRadius:
-        18,
+      borderRadius: 18,
+      borderBottomLeftRadius: 6,
     },
 
     otherContinuation: {
-      borderRadius:
-        18,
-      borderTopLeftRadius:
-        4,
-      borderBottomLeftRadius:
-        4,
+      borderRadius: 18,
+      borderBottomLeftRadius: 6,
     },
 
     sending: {
