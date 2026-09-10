@@ -41,7 +41,7 @@ import { useToast } from "../../src/components/ui/Toast";
 import { useTheme } from "../../src/contexts/ThemeContext";
 import { loginSuccess } from "../../src/store/authSlice";
 import api from "../../src/services/api";
-import { setAuthToken } from "../../src/utils/authStorage";
+import { setAuthToken, saveAccount } from "../../src/utils/authStorage";
 import { primary, secondary } from "../../src/theme/colors";
 
 WebBrowser.maybeCompleteAuthSession();
@@ -181,6 +181,13 @@ export default function LoginScreen() {
 
         const { token, user } = response.data;
         await setAuthToken(token);
+        await saveAccount({
+          _id: user._id,
+          username: user.username,
+          fullName: user.fullName || user.name,
+          avatar: user.profilePicture || user.avatar,
+          token,
+        });
         dispatch(loginSuccess(user));
 
         toast({
@@ -240,6 +247,13 @@ export default function LoginScreen() {
 
       const { token, user } = response.data;
       await setAuthToken(token);
+      await saveAccount({
+        _id: user._id,
+        username: user.username,
+        fullName: user.fullName || user.name,
+        avatar: user.profilePicture || user.avatar,
+        token,
+      });
       dispatch(loginSuccess(user));
 
       toast({

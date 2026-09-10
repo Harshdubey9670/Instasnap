@@ -11,10 +11,13 @@ import {
   FlatList,
   Image,
   Linking,
+  Platform,
   Pressable,
   SafeAreaView,
+  StatusBar,
   StyleSheet,
   Text,
+  TouchableOpacity,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -22,6 +25,7 @@ import {
   Archive,
   BadgeCheck,
   Bookmark,
+  ChevronDown,
   Grid,
   Heart,
   Link as LinkIcon,
@@ -56,6 +60,7 @@ import { EditProfileModal } from "../../components/profile/EditProfileModal";
 import { FollowButton } from "../../components/profile/FollowButton";
 import { UserOptionsModal } from "../../components/profile/UserOptionsModal";
 import { StoryHighlightsRow } from "../../components/profile/StoryHighlightsRow";
+import { AccountSwitcherDrawer } from "../../components/profile/AccountSwitcherDrawer";
 import { trackEvent } from "../../utils/analytics";
 
 type ProfileTab = "posts" | "reels" | "tagged" | "saved" | "archive";
@@ -90,6 +95,8 @@ interface PostMedia {
 interface ProfilePost {
   _id: string;
   media?: PostMedia[];
+  mediaUrl?: string;
+  mediaType?: string;
   isPinned?: boolean;
   likes?: unknown[];
   comments?: unknown[];
@@ -202,6 +209,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<ProfileTab>("posts");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
+  const [isAccountDrawerOpen, setIsAccountDrawerOpen] = useState(false);
   const [isNavigatingToChat, setIsNavigatingToChat] = useState(false);
   const [avatarFailedProxy, setAvatarFailedProxy] = useState(false);
 
@@ -414,6 +422,64 @@ export default function ProfilePage() {
     }
   }, []);
 
+  const updateFollowerCount = useCallback(
+    ({
+      isFollowing: nextIsFollowing,
+    }: {
+      isFollowing: boolean;
+      isRequested: boolean;
+    }) => {
+      if (!authUserId) {
+        return;
+      }
+
+      setProfile((current) => {
+        if (!current) {
+          return current;
+        }
+
+        const currentFollowers = current.followers || [];
+        const exists = includesId(currentFollowers, authUserId);
+        let nextFollowers = [...currentFollowers];
+
+        if (nextIsFollowing && !exists) {
+          nextFollowers.push(authUserId);
+        } else if (!nextIsFollowing) {
+          nextFollowers = nextFollowers.filter(
+            (value) => entityId(value) !== authUserId,
+          );
+        }
+
+        return { ...current, followers: nextFollowers };
+      });
+    },
+    [authUserId],
+  );
+
+  useEffect(() => {
+    const sub = DeviceEventEmitter.addListener(
+      "user_follow_updated",
+      (event: { userId: string; isFollowing: boolean; isRequested: boolean }) => {
+        if (targetUserId && targetUserId.toString() === event.userId) {
+          updateFollowerCount({
+            isFollowing: event.isFollowing,
+            isRequested: event.isRequested,
+          });
+        }
+      },
+    );
+    return () => {
+      sub.remove();
+    };
+  }, [targetUserId, updateFollowerCount]);
+
+  useEffect(() => {
+    if (!routeUserId && authUser?._id) {
+      void fetchProfile();
+      void fetchPosts();
+    }
+  }, [authUser?._id, routeUserId, fetchProfile, fetchPosts]);
+
   if (loading) {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
@@ -471,230 +537,274 @@ export default function ProfilePage() {
       : true,
   );
 
-  const updateFollowerCount = ({
-    isFollowing: nextIsFollowing,
-  }: {
-    isFollowing: boolean;
-    isRequested: boolean;
-  }) => {
-    if (!authUserId) {
-      return;
-    }
-
-    setProfile((current) => {
-      if (!current) {
-        return current;
-      }
-
-      const currentFollowers = current.followers || [];
-      const exists = includesId(currentFollowers, authUserId);
-      let nextFollowers = [...currentFollowers];
-
-      if (nextIsFollowing && !exists) {
-        nextFollowers.push(authUserId);
-      } else if (!nextIsFollowing) {
-        nextFollowers = nextFollowers.filter(
-          (value) => entityId(value) !== authUserId,
-        );
-      }
-
-      return { ...current, followers: nextFollowers };
-    });
-  };
-
   const profileHeader = (
     <View style={styles.profileHeaderContainer}>
-      <View
-        style={[
-          styles.profileHeader,
-          compact && styles.profileHeaderCompact,
-        ]}
-      >
-        <View style={styles.avatarColumn}>
-          {profile.music ? (
-            <View style={styles.musicBadge}>
-              <Music2 size={14} color="#38bdf8" />
-              <Text numberOfLines={1} style={styles.musicText}>
-                {profile.music.title || "Let Me Love You"}
-              </Text>
-            </View>
+      {/* Top Bar: Username on Left with Account Switcher Chevron, Actions on Right */}
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          style={styles.topUsernameButton}
+          onPress={() => {
+            if (isOwner) {
+              setIsAccountDrawerOpen(true);
+            }
+          }}
+          disabled={!isOwner}
+          activeOpacity={0.7}
+        >
+          <Text
+            numberOfLines={1}
+            style={[styles.topUsernameText, { color: colors.textPrimary }]}
+          >
+            {profile.username || "User"}
+          </Text>
+          {profile.isPrivate ? (
+            <Lock size={15} color={colors.textSecondary} style={styles.topLockIcon} />
           ) : null}
+          {isOwner ? (
+            <ChevronDown size={18} color={colors.textPrimary} style={styles.topChevronIcon} />
+          ) : null}
+        </TouchableOpacity>
 
-          <View style={styles.profileAvatar}>
-            {profile.avatar || profile.profilePicture ? (
-              <Image
-                source={
-                  resolveImageSource(
-                    profile.avatar || profile.profilePicture,
-                    avatarFailedProxy,
-                  ) || undefined
-                }
-                style={styles.profileAvatarImage}
-                resizeMode="cover"
-                onError={() => {
-                  if (!avatarFailedProxy) {
-                    setAvatarFailedProxy(true);
-                  }
-                }}
-              />
-            ) : (
-              <View style={[styles.profileAvatarFallback, { backgroundColor: colors.surfaceHover }]}>
-                <Text style={[styles.profileAvatarLetter, { color: colors.textPrimary }]}>
-                  {profile.username?.charAt(0).toUpperCase() || "U"}
-                </Text>
-              </View>
-            )}
+        <View style={styles.topBarRight}>
+          {isOwner ? (
+            <TouchableOpacity
+              onPress={() => router.push("/app/settings")}
+              style={styles.topBarIconButton}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Settings size={22} color={colors.textPrimary} />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => setIsOptionsModalOpen(true)}
+              style={styles.topBarIconButton}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <MoreHorizontal size={22} color={colors.textPrimary} />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+
+      {/* Music badge if any */}
+      {profile.music ? (
+        <View style={styles.musicContainer}>
+          <View style={styles.musicBadge}>
+            <Music2 size={13} color="#38bdf8" />
+            <Text numberOfLines={1} style={styles.musicText}>
+              {profile.music.title || "Let Me Love You"}
+            </Text>
           </View>
         </View>
+      ) : null}
 
+      {/* Centered Avatar */}
+      <View style={styles.avatarSection}>
         <View
           style={[
-            styles.profileDetails,
-            compact && styles.profileDetailsCompact,
+            styles.profileAvatar,
+            {
+              borderColor: colors.border,
+              backgroundColor: colors.surface,
+            },
           ]}
         >
-          <View
-            style={[
-              styles.usernameActions,
-              compact && styles.usernameActionsCompact,
-            ]}
-          >
-            <View style={styles.usernameRow}>
+          {profile.avatar || profile.profilePicture ? (
+            <Image
+              source={
+                resolveImageSource(
+                  profile.avatar || profile.profilePicture,
+                  avatarFailedProxy,
+                ) || undefined
+              }
+              style={styles.profileAvatarImage}
+              resizeMode="cover"
+              onError={() => {
+                if (!avatarFailedProxy) {
+                  setAvatarFailedProxy(true);
+                }
+              }}
+            />
+          ) : (
+            <View
+              style={[
+                styles.profileAvatarFallback,
+                { backgroundColor: colors.surfaceHover },
+              ]}
+            >
               <Text
-                numberOfLines={1}
-                style={[styles.profileUsername, { color: colors.textPrimary }]}
+                style={[
+                  styles.profileAvatarLetter,
+                  { color: colors.textPrimary },
+                ]}
               >
-                {profile.username || "User"}
+                {profile.username?.charAt(0).toUpperCase() || "U"}
               </Text>
-              {profile.isVerified ? (
-                <BadgeCheck size={20} color="#3b82f6" fill="#3b82f6" />
-              ) : null}
-              {profile.isPrivate ? (
-                <Lock size={16} color={colors.textSecondary} />
-              ) : null}
             </View>
-
-            <View style={styles.actionsRow}>
-              {isOwner ? (
-                <>
-                  <SmallAction
-                    label="Edit profile"
-                    onPress={() => setIsEditModalOpen(true)}
-                    backgroundColor={colors.surface}
-                    borderColor={colors.border}
-                    textColor={colors.textPrimary}
-                  />
-                  <SmallAction
-                    label="View archive"
-                    onPress={() => router.push("/app/archive")}
-                    backgroundColor={colors.surface}
-                    borderColor={colors.border}
-                    textColor={colors.textPrimary}
-                  />
-                  <Pressable
-                    onPress={() => router.push("/app/settings")}
-                    style={[styles.iconButton, { borderColor: colors.border, borderWidth: 1, borderRadius: 9, backgroundColor: colors.surface }]}
-                    accessibilityRole="button"
-                    accessibilityLabel="Open settings"
-                  >
-                    <Settings size={18} color={colors.textPrimary} />
-                  </Pressable>
-                </>
-              ) : (
-                <>
-                  <FollowButton
-                    userId={profile._id}
-                    targetUser={profile}
-                    onToggle={updateFollowerCount}
-                  />
-                  <SmallAction
-                    label="Message"
-                    onPress={() => void handleChat()}
-                    backgroundColor={colors.surface}
-                    borderColor={colors.border}
-                    textColor={colors.textPrimary}
-                    disabled={isNavigatingToChat}
-                  />
-                  <Pressable
-                    onPress={() => setIsOptionsModalOpen(true)}
-                    style={[styles.iconButton, { borderColor: colors.border, borderWidth: 1, borderRadius: 9, backgroundColor: colors.surface }]}
-                    accessibilityRole="button"
-                    accessibilityLabel="Open profile options"
-                  >
-                    <MoreHorizontal size={20} color={colors.textPrimary} />
-                  </Pressable>
-                </>
-              )}
-            </View>
-          </View>
-
-          <View
-            style={[
-              styles.statsRow,
-              { borderColor: colors.border },
-            ]}
-          >
-            <View style={styles.statItem}>
-              <Text style={[styles.statNumber, { color: colors.textPrimary }]}>{posts.length} </Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>posts</Text>
-            </View>
-            <Pressable
-              onPress={() =>
-                router.push(`/app/followers?userId=${profile._id}` as any)
-              }
-              style={styles.statItem}
-            >
-              <Text style={[styles.statNumber, { color: colors.textPrimary }]}>
-                {profile.followers?.length || 0}{" "}
-              </Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>followers</Text>
-            </Pressable>
-            <Pressable
-              onPress={() =>
-                router.push(`/app/following?userId=${profile._id}` as any)
-              }
-              style={styles.statItem}
-            >
-              <Text style={[styles.statNumber, { color: colors.textPrimary }]}>
-                {profile.following?.length || 0}{" "}
-              </Text>
-              <Text style={[styles.statLabel, { color: colors.textSecondary }]}>following</Text>
-            </Pressable>
-          </View>
-
-          <View
-            style={[
-              styles.bioSection,
-              compact && styles.bioSectionCompact,
-            ]}
-          >
-            <Text style={[styles.fullName, { color: colors.textPrimary }]}>
-              {profile.fullName || profile.username}
-              {profile.pronouns ? (
-                <Text style={[styles.pronouns, { color: colors.textSecondary }]}>
-                  {`  ${profile.pronouns}`}
-                </Text>
-              ) : null}
-            </Text>
-            {profile.category ? (
-              <Text style={[styles.category, { color: colors.textSecondary }]}>{profile.category}</Text>
-            ) : null}
-            {profile.bio ? (
-              <Text style={[styles.bio, { color: colors.textPrimary }]}>{profile.bio}</Text>
-            ) : null}
-            {profile.website ? (
-              <Pressable
-                onPress={() => void openWebsite(profile.website || "")}
-                style={styles.websiteRow}
-              >
-                <LinkIcon size={14} color="#38bdf8" />
-                <Text numberOfLines={1} style={styles.websiteText}>
-                  @{profile.website.replace(/^https?:\/\//, "")}
-                </Text>
-              </Pressable>
-            ) : null}
-          </View>
+          )}
         </View>
+      </View>
+
+      {/* Centered Full Name & Pronouns */}
+      <View style={styles.nameSection}>
+        <View style={styles.nameWithBadge}>
+          <Text style={[styles.fullName, { color: colors.textPrimary }]}>
+            {profile.fullName || profile.username}
+          </Text>
+          {profile.isVerified ? (
+            <BadgeCheck
+              size={18}
+              color="#3b82f6"
+              fill="#3b82f6"
+              style={styles.verifiedBadge}
+            />
+          ) : null}
+        </View>
+        {profile.pronouns ? (
+          <Text style={[styles.pronouns, { color: colors.textSecondary }]}>
+            {profile.pronouns}
+          </Text>
+        ) : null}
+      </View>
+
+      {/* Centered Bio Details & Website */}
+      <View style={styles.bioSection}>
+        {profile.category ? (
+          <Text style={[styles.category, { color: colors.textSecondary }]}>
+            {profile.category}
+          </Text>
+        ) : null}
+        {profile.bio ? (
+          <Text style={[styles.bio, { color: colors.textPrimary }]}>
+            {profile.bio}
+          </Text>
+        ) : null}
+        {profile.website ? (
+          <Pressable
+            onPress={() => void openWebsite(profile.website || "")}
+            style={styles.websiteRow}
+          >
+            <LinkIcon size={14} color="#38bdf8" />
+            <Text numberOfLines={1} style={styles.websiteText}>
+              @{profile.website.replace(/^https?:\/\//, "")}
+            </Text>
+          </Pressable>
+        ) : null}
+      </View>
+
+      {/* Centered Stats Row (Posts, Followers, Following) */}
+      <View
+        style={[
+          styles.statsRow,
+          { borderColor: colors.border },
+        ]}
+      >
+        <View style={styles.statItem}>
+          <Text style={[styles.statNumber, { color: colors.textPrimary }]}>
+            {posts.length}{" "}
+          </Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+            posts
+          </Text>
+        </View>
+        <Pressable
+          onPress={() =>
+            router.push(`/app/followers?userId=${profile._id}` as any)
+          }
+          style={styles.statItem}
+        >
+          <Text style={[styles.statNumber, { color: colors.textPrimary }]}>
+            {profile.followers?.length || 0}{" "}
+          </Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+            followers
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() =>
+            router.push(`/app/following?userId=${profile._id}` as any)
+          }
+          style={styles.statItem}
+        >
+          <Text style={[styles.statNumber, { color: colors.textPrimary }]}>
+            {profile.following?.length || 0}{" "}
+          </Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+            following
+          </Text>
+        </Pressable>
+      </View>
+
+      {/* Action Buttons Row */}
+      <View style={styles.actionsRow}>
+        {isOwner ? (
+          <>
+            <SmallAction
+              label="Edit profile"
+              onPress={() => setIsEditModalOpen(true)}
+              backgroundColor={colors.surface}
+              borderColor={colors.border}
+              textColor={colors.textPrimary}
+            />
+            <SmallAction
+              label="View archive"
+              onPress={() => router.push("/app/archive")}
+              backgroundColor={colors.surface}
+              borderColor={colors.border}
+              textColor={colors.textPrimary}
+            />
+            <Pressable
+              onPress={() => router.push("/app/settings")}
+              style={[
+                styles.iconButton,
+                {
+                  borderColor: colors.border,
+                  borderWidth: 1,
+                  borderRadius: 9,
+                  backgroundColor: colors.surface,
+                },
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel="Open settings"
+            >
+              <Settings size={18} color={colors.textPrimary} />
+            </Pressable>
+          </>
+        ) : (
+          <>
+            <View style={styles.followButtonWrapper}>
+              <FollowButton
+                userId={profile._id}
+                targetUser={profile}
+                onToggle={updateFollowerCount}
+              />
+            </View>
+            <SmallAction
+              label="Message"
+              onPress={() => void handleChat()}
+              backgroundColor={colors.surface}
+              borderColor={colors.border}
+              textColor={colors.textPrimary}
+              disabled={isNavigatingToChat}
+            />
+            <Pressable
+              onPress={() => setIsOptionsModalOpen(true)}
+              style={[
+                styles.iconButton,
+                {
+                  borderColor: colors.border,
+                  borderWidth: 1,
+                  borderRadius: 9,
+                  backgroundColor: colors.surface,
+                },
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel="Open profile options"
+            >
+              <MoreHorizontal size={20} color={colors.textPrimary} />
+            </Pressable>
+          </>
+        )}
       </View>
 
       <StoryHighlightsRow
@@ -707,8 +817,12 @@ export default function ProfilePage() {
           <View style={[styles.lockedIcon, { backgroundColor: colors.surfaceHover }]}>
             <Lock size={30} color={colors.textSecondary} />
           </View>
-          <Text style={[styles.lockedTitle, { color: colors.textPrimary }]}>This account is private</Text>
-          <Text style={[styles.lockedDescription, { color: colors.textSecondary }]}>Follow this account to see their photos and videos.</Text>
+          <Text style={[styles.lockedTitle, { color: colors.textPrimary }]}>
+            This account is private
+          </Text>
+          <Text style={[styles.lockedDescription, { color: colors.textSecondary }]}>
+            Follow this account to see their photos and videos.
+          </Text>
         </View>
       ) : (
         <View style={[styles.tabs, { borderColor: colors.border }]}>
@@ -882,6 +996,12 @@ export default function ProfilePage() {
           user={profile}
           onActionComplete={() => undefined}
         />
+
+        <AccountSwitcherDrawer
+          visible={isAccountDrawerOpen}
+          onClose={() => setIsAccountDrawerOpen(false)}
+          currentUserId={authUserId}
+        />
       </View>
     </SafeAreaView>
   );
@@ -890,39 +1010,211 @@ export default function ProfilePage() {
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
   page: { flex: 1, width: "100%", maxWidth: 896, alignSelf: "center" },
-  listContent: { paddingTop: 22 },
+  listContent: { paddingTop: 6 },
   profileHeaderContainer: { width: "100%" },
-  profileHeader: { flexDirection: "row", alignItems: "flex-start", gap: 48, paddingHorizontal: 12, paddingBottom: 26 },
-  profileHeaderCompact: { flexDirection: "column", alignItems: "center", gap: 14, paddingHorizontal: 12, paddingBottom: 16 },
-  avatarColumn: { alignItems: "center", flexShrink: 0 },
-  musicBadge: { maxWidth: 150, minHeight: 27, marginBottom: 8, paddingHorizontal: 11, borderRadius: 99, backgroundColor: "rgba(38,38,38,0.94)", borderWidth: 1, borderColor: "#404040", flexDirection: "row", alignItems: "center", gap: 6 },
-  musicText: { flexShrink: 1, color: "#e5e5e5", fontSize: 11, fontWeight: "700" },
-  profileAvatar: { width: 128, height: 128, borderRadius: 64, borderWidth: 2, borderColor: "#262626", backgroundColor: "#171717", overflow: "hidden", alignItems: "center", justifyContent: "center", shadowColor: "#000000", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.25, shadowRadius: 14, elevation: 10 },
-  profileAvatarImage: { width: "100%", height: "100%" },
-  profileAvatarFallback: { flex: 1, alignItems: "center", justifyContent: "center" },
-  profileAvatarLetter: { fontSize: 42, fontWeight: "800" },
-  profileDetails: { flex: 1, minWidth: 0, alignItems: "flex-start" },
-  profileDetailsCompact: { width: "100%", alignItems: "center" },
-  usernameActions: { width: "100%", marginBottom: 16, flexDirection: "row", alignItems: "center", flexWrap: "wrap", gap: 12 },
-  usernameActionsCompact: { flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 },
-  usernameRow: { minWidth: 0, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 7 },
-  profileUsername: { maxWidth: 250, fontSize: 22, fontWeight: "800" },
-  actionsRow: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: 8 },
-  smallAction: { minHeight: 35, paddingHorizontal: 14, borderWidth: 1, borderRadius: 9, alignItems: "center", justifyContent: "center" },
-  smallActionText: { fontSize: 13, fontWeight: "700" },
-  iconButton: { width: 38, height: 38, alignItems: "center", justifyContent: "center" },
-  statsRow: { width: "100%", marginVertical: 14, paddingVertical: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-around", borderTopWidth: StyleSheet.hairlineWidth, borderBottomWidth: StyleSheet.hairlineWidth },
-  statItem: { flexDirection: "row", alignItems: "baseline", gap: 4 },
-  statNumber: { fontSize: 15, fontWeight: "800" },
-  statLabel: { fontSize: 14, fontWeight: "500" },
-  bioSection: { width: "100%", alignItems: "flex-start", gap: 4 },
-  bioSectionCompact: { alignItems: "center", paddingHorizontal: 16, marginBottom: 16 },
-  fullName: { fontSize: 16, fontWeight: "800", textAlign: "center" },
-  pronouns: { fontWeight: "400" },
-  category: { fontSize: 13, fontWeight: "600" },
-  bio: { fontSize: 14, lineHeight: 20, textAlign: "center" },
-  websiteRow: { marginTop: 3, maxWidth: "100%", flexDirection: "row", alignItems: "center", gap: 5 },
-  websiteText: { maxWidth: 280, color: "#38bdf8", fontSize: 13, fontWeight: "700" },
+  topBar: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingTop: Platform.OS === "android" ? (StatusBar.currentHeight || 24) + 6 : 8,
+    paddingBottom: 8,
+  },
+  topUsernameButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    maxWidth: "80%",
+  },
+  topUsernameText: {
+    fontSize: 21,
+    fontWeight: "800",
+    letterSpacing: -0.4,
+  },
+  topLockIcon: {
+    marginLeft: 2,
+  },
+  topChevronIcon: {
+    marginTop: 2,
+  },
+  topBarRight: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  topBarIconButton: {
+    padding: 6,
+  },
+  musicContainer: {
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  musicBadge: {
+    maxWidth: 160,
+    minHeight: 26,
+    paddingHorizontal: 10,
+    borderRadius: 99,
+    backgroundColor: "rgba(38,38,38,0.94)",
+    borderWidth: 1,
+    borderColor: "#404040",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  musicText: {
+    flexShrink: 1,
+    color: "#e5e5e5",
+    fontSize: 11,
+    fontWeight: "700",
+  },
+  avatarSection: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 8,
+    marginBottom: 10,
+  },
+  profileAvatar: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    borderWidth: 2,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  profileAvatarImage: {
+    width: "100%",
+    height: "100%",
+  },
+  profileAvatarFallback: {
+    flex: 1,
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profileAvatarLetter: {
+    fontSize: 38,
+    fontWeight: "800",
+  },
+  nameSection: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    marginBottom: 4,
+  },
+  nameWithBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+  },
+  verifiedBadge: {
+    marginTop: 1,
+  },
+  fullName: {
+    fontSize: 16,
+    fontWeight: "800",
+    textAlign: "center",
+  },
+  pronouns: {
+    fontSize: 13,
+    fontWeight: "400",
+    marginTop: 2,
+    textAlign: "center",
+  },
+  bioSection: {
+    width: "100%",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    marginBottom: 10,
+    gap: 3,
+  },
+  category: {
+    fontSize: 12,
+    fontWeight: "600",
+    textAlign: "center",
+  },
+  bio: {
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: "center",
+  },
+  websiteRow: {
+    marginTop: 3,
+    maxWidth: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  websiteText: {
+    maxWidth: 280,
+    color: "#38bdf8",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  statsRow: {
+    width: "100%",
+    marginVertical: 6,
+    paddingVertical: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  statItem: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: 4,
+  },
+  statNumber: {
+    fontSize: 16,
+    fontWeight: "800",
+  },
+  statLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  actionsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    paddingHorizontal: 16,
+    marginBottom: 12,
+    width: "100%",
+  },
+  followButtonWrapper: {
+    flex: 1,
+  },
+  smallAction: {
+    flex: 1,
+    minHeight: 36,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  smallActionText: {
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  iconButton: {
+    width: 38,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   tabs: { minHeight: 55, borderTopWidth: StyleSheet.hairlineWidth, flexDirection: "row", alignItems: "stretch", justifyContent: "center", gap: 18 },
   tab: { minWidth: 48, paddingHorizontal: 8, borderTopWidth: 2, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 7 },
   tabText: { fontSize: 11, fontWeight: "800", letterSpacing: 0.7 },

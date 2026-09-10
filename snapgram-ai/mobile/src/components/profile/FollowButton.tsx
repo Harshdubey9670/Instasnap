@@ -4,6 +4,7 @@ import React, {
 } from "react";
 import {
   ActivityIndicator,
+  DeviceEventEmitter,
   StyleSheet,
 } from "react-native";
 import {
@@ -122,6 +123,20 @@ export const FollowButton = ({
     userId,
   ]);
 
+  useEffect(() => {
+    const sub = DeviceEventEmitter.addListener(
+      "user_follow_updated",
+      (event: { userId: string; isFollowing: boolean; isRequested: boolean }) => {
+        if (String(event.userId) === String(userId)) {
+          setIsFollowing(event.isFollowing);
+          setIsRequested(event.isRequested);
+          onToggle?.({ isFollowing: event.isFollowing, isRequested: event.isRequested });
+        }
+      },
+    );
+    return () => sub.remove();
+  }, [userId, onToggle]);
+
   const handleToggleFollow =
     async () => {
       if (isLoading) {
@@ -208,6 +223,12 @@ export const FollowButton = ({
                 updatedSentRequests,
               ),
             );
+
+            DeviceEventEmitter.emit("user_follow_updated", {
+              userId,
+              isFollowing: false,
+              isRequested: true,
+            });
           } else if (
             nextStatus ===
             "following"
@@ -230,6 +251,12 @@ export const FollowButton = ({
                 ),
               );
             }
+
+            DeviceEventEmitter.emit("user_follow_updated", {
+              userId,
+              isFollowing: true,
+              isRequested: false,
+            });
           } else {
             setIsFollowing(
               false,
@@ -259,9 +286,11 @@ export const FollowButton = ({
                     ?.sentFollowRequests ||
                   []
                 ).filter(
-                  (id: any) =>
+                  (
+                    reqId: any,
+                  ) =>
                     String(
-                      id,
+                      reqId,
                     ) !==
                     String(
                       userId,
@@ -274,6 +303,12 @@ export const FollowButton = ({
                 ),
               );
             }
+
+            DeviceEventEmitter.emit("user_follow_updated", {
+              userId,
+              isFollowing: false,
+              isRequested: false,
+            });
           }
 
           onToggle?.({

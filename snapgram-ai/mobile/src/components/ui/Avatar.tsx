@@ -134,13 +134,7 @@ const Avatar = forwardRef<
               style={[
                 styles.image,
                 {
-                  width:
-                    dimensions.size,
-                  height:
-                    dimensions.size,
-                  borderRadius:
-                    dimensions.size /
-                    2,
+                  borderRadius: dimensions.size / 2,
                 },
               ]}
               resizeMode="cover"
@@ -329,8 +323,8 @@ const styles =
     wrapper: {
       position:
         "relative",
-      alignSelf:
-        "flex-start",
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     avatar: {

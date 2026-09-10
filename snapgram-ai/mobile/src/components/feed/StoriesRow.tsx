@@ -313,8 +313,8 @@ const StoryCard = ({
                   <Avatar
                     src={data.image}
                     alt="Your story"
-                    size="lg"
                     fallback={fallbackLetter}
+                    style={styles.storyAvatar}
                   />
                 </View>
 
@@ -346,8 +346,8 @@ const StoryCard = ({
                   <Avatar
                     src={data.image}
                     alt="Your story"
-                    size="lg"
                     fallback={fallbackLetter}
+                    style={styles.storyAvatar}
                   />
                 </View>
 
@@ -379,12 +379,14 @@ const StoryCard = ({
                 },
               ]}
             >
-              <Avatar
-                src={data.image}
-                alt="Your story"
-                size="lg"
-                fallback={fallbackLetter}
-              />
+              <View style={styles.ownAvatarInner}>
+                <Avatar
+                  src={data.image}
+                  alt="Your story"
+                  fallback={fallbackLetter}
+                  style={styles.ownStoryAvatar}
+                />
+              </View>
 
               {/* Purple circular + badge */}
               <Pressable
@@ -439,8 +441,8 @@ const StoryCard = ({
               <Avatar
                 src={data.image}
                 alt={data.username || "Story"}
-                size="lg"
                 fallback={data.username?.charAt(0)?.toUpperCase() || "U"}
+                style={styles.storyAvatar}
               />
             </View>
           </View>
@@ -456,8 +458,8 @@ const StoryCard = ({
               <Avatar
                 src={data.image}
                 alt={data.username || "Story"}
-                size="lg"
                 fallback={data.username?.charAt(0)?.toUpperCase() || "U"}
+                style={styles.storyAvatar}
               />
             </View>
           </LinearGradient>
@@ -627,6 +629,27 @@ const styles = StyleSheet.create({
     borderRadius: 34,
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
+  },
+  ownAvatarInner: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  ownStoryAvatar: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    borderWidth: 0,
+  },
+  storyAvatar: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    borderWidth: 0,
   },
   avatarInner: {
     width: 68,

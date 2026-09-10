@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  DeviceEventEmitter,
   FlatList,
   Pressable,
   StyleSheet,
@@ -22,6 +23,7 @@ interface SuggestedUser {
   category?: string;
   profilePicture?: string;
   avatar?: string;
+  isPrivate?: boolean;
 }
 
 export const SuggestedUsersCarousel = () => {
@@ -109,20 +111,38 @@ const SuggestedUserCard = ({
   const { user: authUser } = useSelector((state: RootState) => state.auth);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [localFollowing, setLocalFollowing] = useState<boolean | null>(null);
+  const [localRequested, setLocalRequested] = useState<boolean | null>(null);
 
-  const isFollowing = Boolean(
+  const reduxIsFollowing = Boolean(
     authUser?.following?.some((id: any) => {
       const target = typeof id === "string" ? id : id?._id || id;
       return String(target) === String(user._id);
     }),
   );
 
-  const isRequested = Boolean(
+  const reduxIsRequested = Boolean(
     authUser?.sentFollowRequests?.some((id: any) => {
       const target = typeof id === "string" ? id : id?._id || id;
       return String(target) === String(user._id);
     }),
   );
+
+  const isFollowing = localFollowing !== null ? localFollowing : reduxIsFollowing;
+  const isRequested = localRequested !== null ? localRequested : reduxIsRequested;
+
+  useEffect(() => {
+    const sub = DeviceEventEmitter.addListener(
+      "user_follow_updated",
+      (event: { userId: string; isFollowing: boolean; isRequested: boolean }) => {
+        if (String(event.userId) === String(user._id)) {
+          setLocalFollowing(event.isFollowing);
+          setLocalRequested(event.isRequested);
+        }
+      },
+    );
+    return () => sub.remove();
+  }, [user._id]);
 
   const handleToggleFollow = async () => {
     if (isLoading) return;
@@ -146,13 +166,29 @@ const SuggestedUserCard = ({
       if (response?.data?.success) {
         const nextStatus = response.data.status;
         if (nextStatus === "requested") {
+          setLocalFollowing(false);
+          setLocalRequested(true);
           const updated = [...(authUser?.sentFollowRequests || []), user._id];
           dispatch(updateSentFollowRequests(updated));
+          DeviceEventEmitter.emit("user_follow_updated", {
+            userId: user._id,
+            isFollowing: false,
+            isRequested: true,
+          });
         } else if (nextStatus === "following") {
+          setLocalFollowing(true);
+          setLocalRequested(false);
           if (response.data.data) {
             dispatch(updateFollowing(response.data.data));
           }
+          DeviceEventEmitter.emit("user_follow_updated", {
+            userId: user._id,
+            isFollowing: true,
+            isRequested: false,
+          });
         } else {
+          setLocalFollowing(false);
+          setLocalRequested(false);
           if (response.data.data) {
             dispatch(updateFollowing(response.data.data));
           }
@@ -162,6 +198,11 @@ const SuggestedUserCard = ({
             );
             dispatch(updateSentFollowRequests(updated));
           }
+          DeviceEventEmitter.emit("user_follow_updated", {
+            userId: user._id,
+            isFollowing: false,
+            isRequested: false,
+          });
         }
       }
     } catch (error) {
@@ -177,7 +218,7 @@ const SuggestedUserCard = ({
   const categoryColor = isDark ? "#94a3b8" : "#64748b";
 
   const userAvatar = user.profilePicture || user.avatar;
-  const initial = user.username?.charAt(0)?.toLowerCase() || "u";
+  const initial = user.username?.charAt(0)?.toUpperCase() || "U";
 
   return (
     <View
@@ -195,29 +236,36 @@ const SuggestedUserCard = ({
         accessibilityRole="button"
         accessibilityLabel={`View ${user.username || "user"} profile`}
       >
-        {userAvatar ? (
-          <Avatar src={userAvatar} alt={user.username} size="xl" />
-        ) : (
-          <View
-            style={[
-              styles.letterAvatar,
-              {
-                backgroundColor: isDark ? "#381a52" : "#ede9fe",
-              },
-            ]}
-          >
-            <Text
+        <View style={styles.avatarWrapper}>
+          {userAvatar ? (
+            <Avatar
+              src={userAvatar}
+              alt={user.username}
+              size="lg"
+              style={styles.cardAvatar}
+            />
+          ) : (
+            <View
               style={[
-                styles.letterText,
+                styles.letterAvatar,
                 {
-                  color: isDark ? "#ffffff" : "#7c3aed",
+                  backgroundColor: isDark ? "#381a52" : "#ede9fe",
                 },
               ]}
             >
-              {initial}
-            </Text>
-          </View>
-        )}
+              <Text
+                style={[
+                  styles.letterText,
+                  {
+                    color: isDark ? "#ffffff" : "#7c3aed",
+                  },
+                ]}
+              >
+                {initial}
+              </Text>
+            </View>
+          )}
+        </View>
 
         <Text
           style={[styles.username, { color: usernameColor }]}
@@ -230,7 +278,7 @@ const SuggestedUserCard = ({
           style={[styles.category, { color: categoryColor }]}
           numberOfLines={1}
         >
-          {user.category || "Suggested"}
+          {user.category || "Suggested for you"}
         </Text>
       </Pressable>
 
@@ -326,15 +374,30 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
+  avatarWrapper: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    overflow: "hidden",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+  },
+  cardAvatar: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    borderWidth: 0,
+  },
   letterAvatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 68,
+    height: 68,
+    borderRadius: 34,
     alignItems: "center",
     justifyContent: "center",
   },
   letterText: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "700",
   },
   username: {

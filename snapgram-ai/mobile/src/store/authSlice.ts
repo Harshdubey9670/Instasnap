@@ -8,6 +8,7 @@ import api from "../services/api";
 import {
   getAuthToken,
   removeAuthToken,
+  saveAccount,
 } from "../utils/authStorage";
 
 type AnyObject = Record<string, any>;
@@ -62,7 +63,18 @@ export const loadUser = createAsyncThunk<
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/api/auth/me");
-      return response.data.data;
+      const user = response.data.data;
+      const token = await getAuthToken();
+      if (token && user) {
+        void saveAccount({
+          _id: user._id,
+          username: user.username,
+          fullName: user.fullName || user.name,
+          avatar: user.profilePicture || user.avatar,
+          token,
+        });
+      }
+      return user;
     } catch (error: any) {
       await removeAuthToken();
 

@@ -256,7 +256,7 @@ export const Button = forwardRef<
         {/* Gradient overlay for gradient/ai variants */}
         {(variant === "gradient" || variant === "ai") && (
           <LinearGradient
-            colors={variant === "ai" ? aiGradient : heroGradient}
+            colors={(variant === "ai" ? [...aiGradient] : [...heroGradient]) as any}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={StyleSheet.absoluteFill}

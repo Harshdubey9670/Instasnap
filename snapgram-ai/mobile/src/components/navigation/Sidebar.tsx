@@ -139,7 +139,7 @@ export const Sidebar = ({
             approach: a Row of coloured characters or a gradient badge.
           */}
           <LinearGradient
-            colors={logoGradient}
+            colors={[...logoGradient] as any}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.logoGradient}
