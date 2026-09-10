@@ -40,6 +40,7 @@ import {
   useSocketContext,
 } from "../../../src/contexts/SocketContext";
 import MusicPicker from "../../../src/components/ui/MusicPicker";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Participant {
   _id: string;
@@ -81,6 +82,7 @@ interface SelectedMusic {
 }
 
 export default function ChatPage() {
+  const insets = useSafeAreaInsets();
   const {
     user: authUser,
   } = useSelector(
@@ -503,9 +505,12 @@ export default function ChatPage() {
     >
       {/* Header */}
       <View
-        style={
-          styles.header
-        }
+        style={[
+          styles.header,
+          {
+            paddingTop: Math.max(insets.top, 16) + 4,
+          },
+        ]}
       >
         <View
           style={
@@ -567,6 +572,17 @@ export default function ChatPage() {
           }
           autoCapitalize="none"
         />
+
+        {searchQuery.length > 0 ? (
+          <Pressable
+            onPress={() => setSearchQuery("")}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel="Clear search"
+          >
+            <X size={16} color="#8e8e93" />
+          </Pressable>
+        ) : null}
       </View>
 
       {/* Notes */}
@@ -574,6 +590,9 @@ export default function ChatPage() {
         horizontal
         showsHorizontalScrollIndicator={
           false
+        }
+        style={
+          styles.notesScrollView
         }
         contentContainerStyle={
           styles.notesContent
@@ -594,17 +613,36 @@ export default function ChatPage() {
               styles.noteAvatarWrap
             }
           >
-            <Image
-              source={{
-                uri:
-                  authUser?.profilePicture ||
-                  authUser?.avatar ||
-                  "https://i.pravatar.cc/150",
-              }}
-              style={
-                styles.noteAvatar
-              }
-            />
+            <View
+              style={[
+                styles.noteAvatar,
+                styles.noteFallback,
+              ]}
+            >
+              <Text
+                style={
+                  styles.noteFallbackText
+                }
+              >
+                {getInitials(authUser)}
+              </Text>
+              {Boolean(
+                authUser?.profilePicture ||
+                  authUser?.avatar,
+              ) && (
+                <Image
+                  source={{
+                    uri:
+                      authUser?.profilePicture ||
+                      authUser?.avatar,
+                  }}
+                  style={[
+                    StyleSheet.absoluteFillObject,
+                    { borderRadius: 31 },
+                  ]}
+                />
+              )}
+            </View>
 
             <View
               style={
@@ -683,19 +721,36 @@ export default function ChatPage() {
                   </View>
                 ) : null}
 
-                <Image
-                  source={{
-                    uri:
-                      note.author
-                        ?.profilePicture ||
-                      note.author
-                        ?.avatar ||
-                      "https://i.pravatar.cc/150",
-                  }}
-                  style={
-                    styles.noteAvatar
-                  }
-                />
+                <View
+                  style={[
+                    styles.noteAvatar,
+                    styles.noteFallback,
+                  ]}
+                >
+                  <Text
+                    style={
+                      styles.noteFallbackText
+                    }
+                  >
+                    {getInitials(note.author)}
+                  </Text>
+                  {Boolean(
+                    note.author?.profilePicture ||
+                      note.author?.avatar,
+                  ) && (
+                    <Image
+                      source={{
+                        uri:
+                          note.author?.profilePicture ||
+                          note.author?.avatar,
+                      }}
+                      style={[
+                        StyleSheet.absoluteFillObject,
+                        { borderRadius: 31 },
+                      ]}
+                    />
+                  )}
+                </View>
               </View>
 
               <Text
@@ -873,17 +928,36 @@ export default function ChatPage() {
                       styles.avatarWrap
                     }
                   >
-                    <Image
-                      source={{
-                        uri:
-                          otherParticipant.profilePicture ||
-                          otherParticipant.avatar ||
-                          "https://i.pravatar.cc/150",
-                      }}
-                      style={
-                        styles.conversationAvatar
-                      }
-                    />
+                    <View
+                      style={[
+                        styles.conversationAvatar,
+                        styles.avatarFallback,
+                      ]}
+                    >
+                      <Text
+                        style={
+                          styles.avatarFallbackText
+                        }
+                      >
+                        {getInitials(otherParticipant)}
+                      </Text>
+                      {Boolean(
+                        otherParticipant.profilePicture ||
+                          otherParticipant.avatar,
+                      ) && (
+                        <Image
+                          source={{
+                            uri:
+                              otherParticipant.profilePicture ||
+                              otherParticipant.avatar,
+                          }}
+                          style={[
+                            StyleSheet.absoluteFillObject,
+                            { borderRadius: 29 },
+                          ]}
+                        />
+                      )}
+                    </View>
 
                     {isOnline ? (
                       <View
@@ -961,8 +1035,8 @@ export default function ChatPage() {
                   {isUnread ? (
                     <Circle
                       size={9}
-                      color="#38bdf8"
-                      fill="#38bdf8"
+                      color="#0095f6"
+                      fill="#0095f6"
                     />
                   ) : null}
                 </Pressable>
@@ -1229,60 +1303,79 @@ const styles =
       fontSize: 14,
     },
 
+    notesScrollView: {
+      flexGrow: 0,
+      height: 104,
+    },
+
     notesContent: {
       paddingHorizontal: 14,
-      paddingVertical: 12,
+      paddingVertical: 8,
       gap: 15,
-      borderBottomWidth: 1,
-      borderBottomColor:
-        "#171717",
+    },
+
+    avatarFallback: {
+      backgroundColor: "#2e1065",
+      borderWidth: 1,
+      borderColor: "#4c1d95",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
+    avatarFallbackText: {
+      color: "#e9d5ff",
+      fontSize: 20,
+      fontWeight: "700",
+    },
+
+    noteFallback: {
+      backgroundColor: "#2e1065",
+      borderWidth: 1,
+      borderColor: "#4c1d95",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+
+    noteFallbackText: {
+      color: "#e9d5ff",
+      fontSize: 18,
+      fontWeight: "700",
     },
 
     noteItem: {
-      width: 64,
-      alignItems:
-        "center",
+      width: 68,
+      alignItems: "center",
     },
 
     noteAvatarWrap: {
-      width: 56,
-      height: 56,
-      position:
-        "relative",
-      marginBottom: 5,
+      width: 62,
+      height: 62,
+      position: "relative",
+      marginBottom: 6,
     },
 
     noteAvatar: {
-      width: 56,
-      height: 56,
-      borderRadius: 28,
+      width: 62,
+      height: 62,
+      borderRadius: 31,
       borderWidth: 1,
-      borderColor:
-        "#3a3a3a",
+      borderColor: "#2c2c2e",
     },
 
     notePlus: {
-      position:
-        "absolute",
-      right: -2,
-      bottom: -2,
-      width: 23,
-      height: 23,
-      borderRadius: 12,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      backgroundColor:
-        "#0095f6",
-      borderWidth: 2,
-      borderColor:
-        "#000000",
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      borderRadius: 31,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "rgba(0,0,0,0.38)",
     },
 
     noteBubble: {
-      position:
-        "absolute",
+      position: "absolute",
       top: -13,
       left: "50%",
       maxWidth: 60,
@@ -1296,18 +1389,13 @@ const styles =
       paddingHorizontal: 5,
       paddingVertical: 3,
       borderRadius: 9,
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
       gap: 2,
-      backgroundColor:
-        "#262626",
+      backgroundColor: "#262626",
       borderWidth: 1,
-      borderColor:
-        "#3a3a3a",
+      borderColor: "#3a3a3a",
     },
 
     noteBubblePlaying: {
@@ -1316,61 +1404,46 @@ const styles =
 
     noteBubbleText: {
       maxWidth: 44,
-      color:
-        "#f5f5f5",
+      color: "#f5f5f5",
       fontSize: 8,
-      fontWeight:
-        "600",
+      fontWeight: "600",
     },
 
     noteLabel: {
       width: "100%",
-      color:
-        "#a3a3a3",
-      fontSize: 10,
-      textAlign:
-        "center",
-      fontWeight:
-        "600",
+      color: "#8e8e93",
+      fontSize: 11,
+      textAlign: "center",
+      fontWeight: "500",
     },
 
     tabs: {
-      minHeight: 46,
+      minHeight: 44,
       paddingHorizontal: 18,
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      justifyContent:
-        "space-between",
-      borderBottomWidth: 1,
-      borderBottomColor:
-        "#171717",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginTop: 4,
     },
 
     tabButton: {
-      paddingVertical: 10,
+      paddingVertical: 8,
     },
 
     messagesTabText: {
-      color:
-        "#777777",
-      fontSize: 13,
-      fontWeight:
-        "800",
+      color: "#8e8e93",
+      fontSize: 16,
+      fontWeight: "700",
     },
 
     requestsTabText: {
-      color:
-        "#666666",
-      fontSize: 12,
-      fontWeight:
-        "700",
+      color: "#666666",
+      fontSize: 14,
+      fontWeight: "600",
     },
 
     activeTabText: {
-      color:
-        "#ffffff",
+      color: "#ffffff",
     },
 
     conversations: {
@@ -1378,52 +1451,43 @@ const styles =
     },
 
     conversationContent: {
-      paddingBottom: 30,
+      paddingBottom: 40,
     },
 
     centerLoader: {
       paddingVertical: 35,
-      alignItems:
-        "center",
+      alignItems: "center",
     },
 
     empty: {
       paddingVertical: 60,
-      alignItems:
-        "center",
+      alignItems: "center",
     },
 
     emptyText: {
-      color:
-        "#737373",
+      color: "#737373",
       fontSize: 13,
     },
 
     conversationRow: {
-      minHeight: 78,
-      paddingHorizontal: 18,
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      gap: 12,
-      borderBottomWidth: 1,
-      borderBottomColor:
-        "rgba(38,38,38,0.4)",
+      minHeight: 74,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 14,
     },
 
     avatarWrap: {
-      position:
-        "relative",
+      position: "relative",
     },
 
     conversationAvatar: {
-      width: 56,
-      height: 56,
-      borderRadius: 28,
+      width: 58,
+      height: 58,
+      borderRadius: 29,
       borderWidth: 1,
-      borderColor:
-        "#282828",
+      borderColor: "#222222",
     },
 
     onlineIndicator: {
@@ -1447,48 +1511,38 @@ const styles =
     },
 
     conversationName: {
-      color:
-        "#d4d4d4",
-      fontSize: 14,
-      fontWeight:
-        "600",
+      color: "#ffffff",
+      fontSize: 15,
+      fontWeight: "600",
     },
 
     unreadName: {
-      color:
-        "#ffffff",
-      fontWeight:
-        "800",
+      color: "#ffffff",
+      fontWeight: "700",
     },
 
     previewRow: {
       marginTop: 4,
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
+      flexDirection: "row",
+      alignItems: "center",
       minWidth: 0,
     },
 
     previewText: {
       flexShrink: 1,
-      color:
-        "#8e8e93",
-      fontSize: 12,
+      color: "#8e8e93",
+      fontSize: 13,
     },
 
     unreadPreview: {
-      color:
-        "#ffffff",
-      fontWeight:
-        "700",
+      color: "#ffffff",
+      fontWeight: "600",
     },
 
     time: {
       marginLeft: 4,
-      color:
-        "#666666",
-      fontSize: 11,
+      color: "#8e8e93",
+      fontSize: 13,
     },
 
     modalBackdrop: {

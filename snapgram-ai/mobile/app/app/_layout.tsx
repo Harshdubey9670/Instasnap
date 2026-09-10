@@ -79,6 +79,7 @@ export default function AppLayout() {
 
   // Pages that hide the top Navbar (Navbar already self-manages visibility for /app)
   const isFeedPage = pathname === "/app" || pathname === "/app/";
+  const isChatDetail = Boolean(pathname?.startsWith("/app/chat/"));
 
   return (
     <View style={[styles.root, { backgroundColor: bgBase }]}>
@@ -123,10 +124,10 @@ export default function AppLayout() {
       </View>
 
       {/* Floating AI Assistant Copilot Button & Drawer */}
-      {Boolean(authUser) && <AiAssistantDrawer />}
+      {Boolean(authUser) && !isChatDetail && <AiAssistantDrawer />}
 
       {/* Bottom Navigation Bar */}
-      <MobileNav />
+      {!isChatDetail && <MobileNav />}
     </View>
   );
 }

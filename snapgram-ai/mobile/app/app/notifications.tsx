@@ -1069,6 +1069,7 @@ export default function NotificationsScreen() {
 
       return (
         <Pressable
+          key={item._id || `${item.type}-${index}`}
           onPress={() =>
             void handleNotificationPress(
               item,

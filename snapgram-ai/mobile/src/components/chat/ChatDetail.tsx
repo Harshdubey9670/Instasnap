@@ -43,6 +43,7 @@ import {
   Smile,
   Video as VideoIcon,
   X,
+  Phone,
 } from "lucide-react-native";
 import {
   isSameDay,
@@ -51,9 +52,8 @@ import {
   format,
   formatDistanceToNow,
 } from "date-fns";
-import {
-  useSelector,
-} from "react-redux";
+import { useSelector } from "react-redux";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import api from "../../services/api";
 import type {
@@ -116,12 +116,12 @@ interface OtherUser {
   lastSeen?: string;
 }
 
-const ChatDetail =
-  () => {
-    const params =
-      useLocalSearchParams<{
-        id?: string;
-      }>();
+const ChatDetail = () => {
+  const insets = useSafeAreaInsets();
+  const params =
+    useLocalSearchParams<{
+      id?: string;
+    }>();
 
     const conversationId =
       Array.isArray(params.id)
@@ -144,6 +144,16 @@ const ChatDetail =
     const {
       showToast,
     } = useToast();
+
+    const getInitials = (userObj?: any) => {
+      if (!userObj) return "U";
+      if (typeof userObj === "string") return userObj.charAt(0).toUpperCase() || "U";
+      return (
+        userObj.fullName?.charAt(0)?.toUpperCase() ||
+        userObj.username?.charAt(0)?.toUpperCase() ||
+        "U"
+      );
+    };
 
     const [
       messages,
@@ -1821,9 +1831,12 @@ const ChatDetail =
       >
         {/* Header */}
         <View
-          style={
-            styles.header
-          }
+          style={[
+            styles.header,
+            {
+              paddingTop: Math.max(insets.top, 16) + 4,
+            },
+          ]}
         >
           <View
             style={
@@ -1841,8 +1854,8 @@ const ChatDetail =
               accessibilityLabel="Go back"
             >
               <ArrowLeft
-                size={20}
-                color="#0f172a"
+                size={22}
+                color="#ffffff"
               />
             </Pressable>
 
@@ -1860,19 +1873,24 @@ const ChatDetail =
                 styles.avatarButton
               }
             >
-              <Image
-                source={{
-                  uri:
-                    otherUser
-                      ?.profilePicture ||
-                    otherUser
-                      ?.avatar ||
-                    "https://i.pravatar.cc/150",
-                }}
-                style={
-                  styles.headerAvatar
-                }
-              />
+              {otherUser?.profilePicture || otherUser?.avatar ? (
+                <Image
+                  source={{
+                    uri:
+                      otherUser.profilePicture ||
+                      otherUser.avatar,
+                  }}
+                  style={
+                    styles.headerAvatar
+                  }
+                />
+              ) : (
+                <View style={[styles.headerAvatar, styles.avatarFallback]}>
+                  <Text style={styles.avatarFallbackText}>
+                    {getInitials(otherUser)}
+                  </Text>
+                </View>
+              )}
 
               {isOnline ? (
                 <View
@@ -1929,6 +1947,30 @@ const ChatDetail =
             }
           >
             <Pressable
+              style={styles.headerAction}
+              accessibilityRole="button"
+              accessibilityLabel="Voice call"
+              onPress={() => showToast("info", "Audio Call", "Voice calling is coming soon...")}
+            >
+              <Phone
+                size={20}
+                color="#ffffff"
+              />
+            </Pressable>
+
+            <Pressable
+              style={styles.headerAction}
+              accessibilityRole="button"
+              accessibilityLabel="Video call"
+              onPress={() => showToast("info", "Video Call", "Video calling is coming soon...")}
+            >
+              <VideoIcon
+                size={22}
+                color="#ffffff"
+              />
+            </Pressable>
+
+            <Pressable
               onPress={() =>
                 setShowDisappearingSettings(
                   (
@@ -1947,12 +1989,12 @@ const ChatDetail =
               accessibilityLabel="Disappearing messages settings"
             >
               <Clock
-                size={16}
+                size={20}
                 color={
                   disappearingMode !==
                   "off"
                     ? "#a855f7"
-                    : "#64748b"
+                    : "#ffffff"
                 }
               />
             </Pressable>
@@ -1970,8 +2012,8 @@ const ChatDetail =
               accessibilityLabel="Shared media gallery"
             >
               <Grid
-                size={18}
-                color="#64748b"
+                size={20}
+                color="#ffffff"
               />
             </Pressable>
           </View>
@@ -2387,17 +2429,9 @@ const ChatDetail =
             accessibilityRole="button"
             accessibilityLabel="Attach image or video"
           >
-            <Image
-              source={{
-                uri: undefined,
-              }}
-              style={
-                styles.hiddenImage
-              }
-            />
             <Paperclip
               size={20}
-              color="#64748b"
+              color="#a1a1aa"
             />
           </Pressable>
 
@@ -2413,7 +2447,7 @@ const ChatDetail =
           >
             <Grid
               size={19}
-              color="#64748b"
+              color="#a1a1aa"
             />
           </Pressable>
 
@@ -2434,7 +2468,7 @@ const ChatDetail =
           >
             <Smile
               size={20}
-              color="#64748b"
+              color="#a1a1aa"
             />
           </Pressable>
 
@@ -2463,7 +2497,7 @@ const ChatDetail =
               color={
                 isRecordingVoice
                   ? "#ef4444"
-                  : "#64748b"
+                  : "#a1a1aa"
               }
             />
           </Pressable>
@@ -2475,8 +2509,8 @@ const ChatDetail =
             onChangeText={
               handleInputChange
             }
-            placeholder="Send a chat or snap..."
-            placeholderTextColor="#94a3b8"
+            placeholder="Message..."
+            placeholderTextColor="#71717a"
             multiline
             maxLength={5000}
             style={
@@ -2702,61 +2736,43 @@ const styles =
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor:
-        "#ffffff",
+      backgroundColor: "#000000",
     },
 
     loadingScreen: {
       flex: 1,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      backgroundColor:
-        "#ffffff",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#000000",
     },
 
     header: {
-      minHeight: 64,
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      justifyContent:
-        "space-between",
-
-      paddingHorizontal:
-        10,
-
+      minHeight: 60,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 10,
       borderBottomWidth: 1,
-      borderBottomColor:
-        "#e2e8f0",
-
-      backgroundColor:
-        "#ffffff",
+      borderBottomColor: "#18181b",
+      backgroundColor: "#000000",
     },
 
     headerLeft: {
       flex: 1,
       minWidth: 0,
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
+      flexDirection: "row",
+      alignItems: "center",
     },
 
     backButton: {
       width: 40,
       height: 40,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     avatarButton: {
-      position:
-        "relative",
+      position: "relative",
       marginLeft: 2,
     },
 
@@ -2765,27 +2781,29 @@ const styles =
       height: 40,
       borderRadius: 20,
       borderWidth: 1,
-      borderColor:
-        "rgba(168,85,247,0.30)",
+      borderColor: "rgba(168,85,247,0.30)",
+    },
+    avatarFallback: {
+      backgroundColor: "#2e1065",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    avatarFallbackText: {
+      color: "#c084fc",
+      fontSize: 16,
+      fontWeight: "700",
     },
 
     onlineDot: {
-      position:
-        "absolute",
+      position: "absolute",
       right: -1,
       bottom: -1,
-
       width: 11,
       height: 11,
-
       borderRadius: 6,
-
-      backgroundColor:
-        "#10b981",
-
+      backgroundColor: "#10b981",
       borderWidth: 2,
-      borderColor:
-        "#ffffff",
+      borderColor: "#000000",
     },
 
     headerCopy: {
@@ -2795,77 +2813,56 @@ const styles =
     },
 
     headerName: {
-      color:
-        "#0f172a",
-      fontSize: 14,
-      fontWeight:
-        "800",
+      color: "#ffffff",
+      fontSize: 15,
+      fontWeight: "700",
     },
 
     headerStatus: {
       marginTop: 2,
-      color:
-        "#64748b",
-      fontSize: 10,
+      color: "#8e8e93",
+      fontSize: 11,
     },
 
     headerActions: {
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
+      flexDirection: "row",
+      alignItems: "center",
       gap: 3,
       marginLeft: 8,
     },
 
     headerAction: {
-      width: 42,
-      height: 42,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      borderRadius: 21,
+      width: 40,
+      height: 40,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 20,
     },
 
     headerActionActive: {
-      backgroundColor:
-        "rgba(168,85,247,0.08)",
+      backgroundColor: "rgba(168,85,247,0.18)",
     },
 
     disappearingBar: {
       minHeight: 52,
-
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      justifyContent:
-        "space-between",
-
-      paddingHorizontal:
-        14,
-
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 14,
       borderBottomWidth: 1,
-      borderBottomColor:
-        "#e2e8f0",
-
-      backgroundColor:
-        "#f8fafc",
+      borderBottomColor: "#27272a",
+      backgroundColor: "#18181b",
     },
 
     disappearingLabel: {
       flex: 1,
-      color:
-        "#64748b",
-      fontSize: 10,
-      fontWeight:
-        "600",
+      color: "#a1a1aa",
+      fontSize: 11,
+      fontWeight: "600",
     },
 
     modeRow: {
-      flexDirection:
-        "row",
+      flexDirection: "row",
       gap: 5,
     },
 
@@ -2873,40 +2870,31 @@ const styles =
       minWidth: 38,
       paddingHorizontal: 9,
       paddingVertical: 6,
-      alignItems:
-        "center",
+      alignItems: "center",
       borderRadius: 14,
-      backgroundColor:
-        "#ffffff",
+      backgroundColor: "#27272a",
       borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
+      borderColor: "#3f3f46",
     },
 
     modeButtonActive: {
-      backgroundColor:
-        "#a855f7",
-      borderColor:
-        "#a855f7",
+      backgroundColor: "#a855f7",
+      borderColor: "#a855f7",
     },
 
     modeText: {
-      color:
-        "#64748b",
-      fontSize: 9,
-      fontWeight:
-        "800",
+      color: "#d4d4d8",
+      fontSize: 10,
+      fontWeight: "700",
     },
 
     modeTextActive: {
-      color:
-        "#ffffff",
+      color: "#ffffff",
     },
 
     messagesContainer: {
       flex: 1,
-      position:
-        "relative",
+      position: "relative",
     },
 
     messagesContent: {
@@ -2917,37 +2905,23 @@ const styles =
 
     loadingMore: {
       height: 32,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     dateSeparator: {
-      alignItems:
-        "center",
+      alignItems: "center",
       marginVertical: 14,
     },
 
     dateText: {
-      paddingHorizontal: 11,
-      paddingVertical: 5,
-
-      borderRadius: 14,
-
-      color:
-        "#64748b",
-
-      backgroundColor:
-        "#f8fafc",
-
-      borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
-
-      fontSize: 9,
-      fontWeight:
-        "800",
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      borderRadius: 12,
+      color: "#9ca3af",
+      backgroundColor: "rgba(255,255,255,0.08)",
+      fontSize: 10,
+      fontWeight: "600",
     },
 
     messageWrapper: {
@@ -2959,10 +2933,8 @@ const styles =
     },
 
     typingRow: {
-      flexDirection:
-        "row",
-      alignItems:
-        "flex-end",
+      flexDirection: "row",
+      alignItems: "flex-end",
       marginTop: 12,
       marginBottom: 3,
     },
@@ -2978,34 +2950,22 @@ const styles =
     typingBubble: {
       minWidth: 56,
       height: 38,
-
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
       gap: 4,
-
       paddingHorizontal: 12,
-
       borderRadius: 19,
-
-      backgroundColor:
-        "#f8fafc",
-
+      backgroundColor: "#262626",
       borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
+      borderColor: "rgba(255,255,255,0.06)",
     },
 
     typingDot: {
       width: 5,
       height: 5,
       borderRadius: 3,
-      backgroundColor:
-        "#64748b",
+      backgroundColor: "#8e8e93",
     },
 
     newMessage: {
@@ -3119,74 +3079,50 @@ const styles =
       width: "100%",
       height: "100%",
       borderRadius: 10,
-      backgroundColor:
-        "#f1f5f9",
+      backgroundColor: "#27272a",
     },
 
     fileIcon: {
       width: "100%",
       height: "100%",
       borderRadius: 10,
-
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-
-      backgroundColor:
-        "#f8fafc",
-
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "#1c1c1e",
       borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
+      borderColor: "#2c2c2e",
     },
 
     removeFile: {
-      position:
-        "absolute",
+      position: "absolute",
       right: -5,
       top: -5,
-
       width: 20,
       height: 20,
-
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-
+      alignItems: "center",
+      justifyContent: "center",
       borderRadius: 10,
-
-      backgroundColor:
-        "#ef4444",
+      backgroundColor: "#ef4444",
     },
 
     emojiPanel: {
       minHeight: 54,
-
       borderTopWidth: 1,
       borderBottomWidth: 1,
-
-      borderColor:
-        "#e2e8f0",
-
-      backgroundColor:
-        "#ffffff",
+      borderColor: "#27272a",
+      backgroundColor: "#18181b",
     },
 
     emojiContent: {
       paddingHorizontal: 8,
-      alignItems:
-        "center",
+      alignItems: "center",
     },
 
     emojiButton: {
       width: 40,
       height: 48,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     emoji: {
@@ -3195,83 +3131,50 @@ const styles =
 
     composer: {
       minHeight: 62,
-
-      flexDirection:
-        "row",
-      alignItems:
-        "flex-end",
-
+      flexDirection: "row",
+      alignItems: "flex-end",
       gap: 1,
-
       paddingHorizontal: 7,
       paddingTop: 7,
-
-      paddingBottom:
-        Platform.OS ===
-        "ios"
-          ? 22
-          : 8,
-
-      backgroundColor:
-        "#ffffff",
-
+      paddingBottom: Platform.OS === "ios" ? 22 : 8,
+      backgroundColor: "#000000",
       borderTopWidth: 1,
-      borderTopColor:
-        "#e2e8f0",
+      borderTopColor: "#18181b",
     },
 
     composerButton: {
       width: 39,
       height: 44,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
+      alignItems: "center",
+      justifyContent: "center",
       borderRadius: 20,
     },
 
     recordingButton: {
-      backgroundColor:
-        "rgba(239,68,68,0.10)",
+      backgroundColor: "rgba(239,68,68,0.15)",
     },
 
     input: {
       flex: 1,
-
       maxHeight: 115,
       minHeight: 44,
-
-      paddingHorizontal: 13,
+      paddingHorizontal: 14,
       paddingVertical: 10,
-
-      borderRadius: 17,
-
-      backgroundColor:
-        "#f8fafc",
-
+      borderRadius: 20,
+      backgroundColor: "#262626",
       borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
-
-      color:
-        "#0f172a",
-
-      fontSize: 13,
+      borderColor: "#38383a",
+      color: "#ffffff",
+      fontSize: 14,
     },
 
     sendButton: {
       width: 44,
       height: 44,
-
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-
+      alignItems: "center",
+      justifyContent: "center",
       borderRadius: 22,
-
-      backgroundColor:
-        "#a855f7",
+      backgroundColor: "#a855f7",
     },
 
     sendButtonDisabled: {
@@ -3285,51 +3188,32 @@ const styles =
 
     galleryOverlay: {
       flex: 1,
-
-      justifyContent:
-        "flex-end",
-
-      backgroundColor:
-        "rgba(0,0,0,0.55)",
+      justifyContent: "flex-end",
+      backgroundColor: "rgba(0,0,0,0.75)",
     },
 
     galleryPanel: {
-      height:
-        "82%",
-
+      height: "82%",
       borderTopLeftRadius: 24,
       borderTopRightRadius: 24,
-
-      backgroundColor:
-        "#ffffff",
-
-      overflow:
-        "hidden",
+      backgroundColor: "#121212",
+      overflow: "hidden",
     },
 
     galleryHeader: {
       minHeight: 60,
-
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      justifyContent:
-        "space-between",
-
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
       paddingHorizontal: 16,
-
       borderBottomWidth: 1,
-      borderBottomColor:
-        "#e2e8f0",
+      borderBottomColor: "#27272a",
     },
 
     galleryTitle: {
-      color:
-        "#0f172a",
-      fontSize: 15,
-      fontWeight:
-        "800",
+      color: "#ffffff",
+      fontSize: 16,
+      fontWeight: "700",
     },
 
     galleryGrid: {
@@ -3341,10 +3225,8 @@ const styles =
       aspectRatio: 1,
       margin: 3,
       borderRadius: 10,
-      overflow:
-        "hidden",
-      backgroundColor:
-        "#f1f5f9",
+      overflow: "hidden",
+      backgroundColor: "#1c1c1e",
     },
 
     galleryMedia: {

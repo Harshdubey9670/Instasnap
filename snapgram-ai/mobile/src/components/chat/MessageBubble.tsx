@@ -454,10 +454,7 @@ const MessageBubble = ({
               style={[
                 styles.messageText,
                 {
-                  color:
-                    isMine
-                      ? "#ffffff"
-                      : "#0f172a",
+                  color: isMine ? "#ffffff" : "#f4f4f5",
                 },
               ]}
             >
@@ -763,16 +760,13 @@ const styles =
     },
 
     mine: {
-      backgroundColor:
-        "#a855f7",
+      backgroundColor: "#8b5cf6",
     },
 
     other: {
-      backgroundColor:
-        "#f8fafc",
+      backgroundColor: "#262626",
       borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
+      borderColor: "rgba(255,255,255,0.08)",
     },
 
     mineFirst: {
@@ -1014,51 +1008,35 @@ const styles =
         "center",
       paddingHorizontal: 10,
       borderRadius: 9,
-      backgroundColor:
-        "rgba(0,0,0,0.08)",
+      backgroundColor: "rgba(255,255,255,0.08)",
       marginBottom: 4,
     },
 
     fileText: {
-      color:
-        "#0f172a",
+      color: "#38bdf8",
       fontSize: 12,
-      fontWeight:
-        "700",
-      textDecorationLine:
-        "underline",
+      fontWeight: "700",
+      textDecorationLine: "underline",
     },
 
     reactions: {
-      position:
-        "absolute",
-
+      position: "absolute",
       right: 7,
       bottom: -13,
-
-      flexDirection:
-        "row",
-
+      flexDirection: "row",
       paddingHorizontal: 8,
       paddingVertical: 2,
-
       borderRadius: 999,
-
-      backgroundColor:
-        "#ffffff",
-
+      backgroundColor: "#1c1c1e",
       borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
-
+      borderColor: "#2c2c2e",
       elevation: 3,
-      shadowColor:
-        "#000000",
+      shadowColor: "#000000",
       shadowOffset: {
         width: 0,
         height: 2,
       },
-      shadowOpacity: 0.12,
+      shadowOpacity: 0.3,
       shadowRadius: 5,
     },
 
@@ -1067,36 +1045,24 @@ const styles =
     },
 
     reactionMenu: {
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
+      flexDirection: "row",
+      alignItems: "center",
       gap: 2,
-
       marginVertical: 5,
       paddingHorizontal: 8,
       paddingVertical: 5,
-
       borderRadius: 999,
-
-      backgroundColor:
-        "#ffffff",
-
+      backgroundColor: "#1c1c1e",
       borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
-
+      borderColor: "#2c2c2e",
       elevation: 7,
     },
 
     reactionButton: {
       width: 35,
       height: 35,
-
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
+      alignItems: "center",
+      justifyContent: "center",
     },
 
     reactionEmoji: {
@@ -1108,87 +1074,67 @@ const styles =
     },
 
     reactionCloseText: {
-      color:
-        "#64748b",
+      color: "#9ca3af",
       fontSize: 11,
     },
 
     timestampRow: {
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
+      flexDirection: "row",
+      alignItems: "center",
       gap: 4,
-
       paddingHorizontal: 4,
       marginTop: 3,
     },
 
     timestamp: {
-      color:
-        "#64748b",
+      color: "#9ca3af",
       fontSize: 9,
     },
 
     receipt: {
-      color:
-        "#64748b",
+      color: "#9ca3af",
       fontSize: 11,
     },
 
     voiceRow: {
       minWidth: 170,
-
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-
+      flexDirection: "row",
+      alignItems: "center",
       gap: 8,
     },
 
     voicePlay: {
       width: 34,
       height: 34,
-
       borderRadius: 17,
-
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-
-      backgroundColor:
-        "rgba(168,85,247,0.15)",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "rgba(168,85,247,0.25)",
     },
 
     voicePlayText: {
       fontSize: 12,
-      color:
-        "#a855f7",
+      color: "#c084fc",
     },
 
     voiceBar: {
       flex: 1,
       height: 4,
       borderRadius: 2,
-      backgroundColor:
-        "#cbd5e1",
-      overflow:
-        "hidden",
+      backgroundColor: "rgba(255,255,255,0.15)",
+      overflow: "hidden",
     },
 
     voiceProgress: {
       width: "30%",
       height: "100%",
-      backgroundColor:
-        "#a855f7",
+      backgroundColor: "#a855f7",
     },
 
     voiceDuration: {
       fontSize: 9,
-      fontWeight:
-        "700",
+      fontWeight: "700",
+      color: "#9ca3af",
     },
   });
 

@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import { router, usePathname } from "expo-router";
-import { Bell, Plus } from "lucide-react-native";
+import { Bell, Plus, MessageCircle } from "lucide-react-native";
 import { useSelector } from "react-redux";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -139,7 +139,7 @@ export const Navbar = ({
             accessibilityLabel="Create New"
           >
             <LinearGradient
-              colors={heroGradient}
+              colors={[...heroGradient]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.createGradient}
@@ -156,47 +156,61 @@ export const Navbar = ({
             </Text>
           </View>
 
-          {/* ── Right: Notification Bell ──────────────────────────────────── */}
-          <Pressable
-            onPress={() => router.push("/app/notifications")}
-            style={({ pressed }) => [
-              styles.notificationButton,
-              pressed && styles.pressed,
-            ]}
-            accessibilityRole="button"
-            accessibilityLabel={`View notifications${
-              unreadNotificationsCount > 0
-                ? ` (${unreadNotificationsCount} unread)`
-                : ""
-            }`}
-          >
-            <Bell size={24} color={textColor} strokeWidth={2} />
+          {/* ── Right: Notification Bell & Messages ─────────────────────────── */}
+          <View style={styles.rightActions}>
+            <Pressable
+              onPress={() => router.push("/app/notifications")}
+              style={({ pressed }) => [
+                styles.notificationButton,
+                pressed && styles.pressed,
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel={`View notifications${
+                unreadNotificationsCount > 0
+                  ? ` (${unreadNotificationsCount} unread)`
+                  : ""
+              }`}
+            >
+              <Bell size={24} color={textColor} strokeWidth={2} />
 
-            {/* Ping dot — animated ring + static inner dot */}
-            {unreadNotificationsCount > 0 && (
-              <View style={styles.dotWrapper}>
-                {/* Outer expanding ring (animate-ping equivalent) */}
-                <Animated.View
-                  style={[
-                    styles.notificationDot,
-                    styles.notificationPing,
-                    {
-                      borderColor: dotBorder,
-                      transform: [{ scale: pingScale }],
-                      opacity: pingOpacity,
-                    },
-                  ]}
-                />
-                {/* Static inner solid dot */}
-                <View
-                  style={[
-                    styles.notificationDot,
-                    { borderColor: dotBorder },
-                  ]}
-                />
-              </View>
-            )}
-          </Pressable>
+              {/* Ping dot — animated ring + static inner dot */}
+              {unreadNotificationsCount > 0 && (
+                <View style={styles.dotWrapper}>
+                  {/* Outer expanding ring (animate-ping equivalent) */}
+                  <Animated.View
+                    style={[
+                      styles.notificationDot,
+                      styles.notificationPing,
+                      {
+                        borderColor: dotBorder,
+                        transform: [{ scale: pingScale }],
+                        opacity: pingOpacity,
+                      },
+                    ]}
+                  />
+                  {/* Static inner solid dot */}
+                  <View
+                    style={[
+                      styles.notificationDot,
+                      { borderColor: dotBorder },
+                    ]}
+                  />
+                </View>
+              )}
+            </Pressable>
+
+            <Pressable
+              onPress={() => router.push("/app/chat" as any)}
+              style={({ pressed }) => [
+                styles.notificationButton,
+                pressed && styles.pressed,
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel="View messages"
+            >
+              <MessageCircle size={24} color={textColor} strokeWidth={2} />
+            </Pressable>
+          </View>
         </View>
       </Animated.View>
 
@@ -269,9 +283,14 @@ const styles = StyleSheet.create({
     letterSpacing: -0.4,
     // color set dynamically above
   },
+  rightActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
   notificationButton: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 22,

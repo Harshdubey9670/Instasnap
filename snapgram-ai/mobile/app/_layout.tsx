@@ -150,9 +150,9 @@ function AppProviders() {
 export default function RootLayout() {
     const [fontsLoaded, fontError] = useFonts(fontAssets);
 
-    const onLayoutRootView = useCallback(async () => {
+    useEffect(() => {
         if (fontsLoaded || fontError) {
-            await SplashScreen.hideAsync();
+            SplashScreen.hideAsync().catch(() => {});
         }
     }, [fontsLoaded, fontError]);
 
