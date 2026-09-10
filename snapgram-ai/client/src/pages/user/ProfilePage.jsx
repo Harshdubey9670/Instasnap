@@ -17,16 +17,16 @@ import {
   Tag,
   Music2,
   Send,
-  Plus
+  ChevronDown,
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../components/ui/Toast';
-import { Button } from '../../components/ui/Button';
 import { Avatar } from '../../components/ui/Avatar';
 import { EditProfileModal } from '../../components/profile/EditProfileModal';
 import { FollowButton } from '../../components/profile/FollowButton';
 import { UserOptionsModal } from '../../components/profile/UserOptionsModal';
 import { StoryHighlightsRow } from '../../components/profile/StoryHighlightsRow';
+import { AccountSwitcherModal } from '../../components/profile/AccountSwitcherModal';
 import { trackEvent } from '../../utils/analytics';
 import { cn } from '../../utils/cn';
 
@@ -43,6 +43,7 @@ const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('posts'); 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
+  const [isAccountSwitcherOpen, setIsAccountSwitcherOpen] = useState(false);
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [isNavigatingToChat, setIsNavigatingToChat] = useState(false);
@@ -122,6 +123,35 @@ const ProfilePage = () => {
     return () => window.removeEventListener('postCreated', handlePostCreated);
   }, [targetUserId, authUser, activeTab, showToast]);
 
+  // Live-sync follower count when any FollowButton changes state
+  useEffect(() => {
+    const handleFollowUpdated = (e) => {
+      if (!profile) return;
+      const { userId, status } = e.detail;
+      if (String(userId) !== String(profile._id)) return;
+
+      setProfile(prev => {
+        if (!prev) return prev;
+        const authIdStr = authUser?._id?.toString();
+        const currentFollowers = prev.followers || [];
+        const exists = currentFollowers.some(
+          id => (typeof id === 'string' ? id : id?._id || id)?.toString() === authIdStr
+        );
+        let newFollowers = [...currentFollowers];
+        if (status === 'following' && !exists) {
+          newFollowers.push(authUser._id);
+        } else if (status !== 'following') {
+          newFollowers = newFollowers.filter(
+            id => (typeof id === 'string' ? id : id?._id || id)?.toString() !== authIdStr
+          );
+        }
+        return { ...prev, followers: newFollowers };
+      });
+    };
+    window.addEventListener('user_follow_updated', handleFollowUpdated);
+    return () => window.removeEventListener('user_follow_updated', handleFollowUpdated);
+  }, [profile, authUser]);
+
   const handleProfileUpdated = (updatedData) => {
     setProfile(prev => ({ ...prev, ...updatedData }));
   };
@@ -171,13 +201,210 @@ const ProfilePage = () => {
     return true; 
   });
 
+  // ── Shared sub-sections ────────────────────────────────────────────────────
+
+  const AvatarSection = ({ size = 'default' }) => (
+    <div
+      className={cn(
+        "relative group cursor-pointer",
+        size === 'default' ? "mb-4" : "mb-3"
+      )}
+      onClick={() => isOwner && setIsEditModalOpen(true)}
+    >
+      <div className={cn(
+        "rounded-full border-2 border-neutral-300 dark:border-neutral-700 overflow-hidden bg-neutral-900 shadow-xl flex items-center justify-center",
+        size === 'default' ? "w-32 h-32 md:w-36 md:h-36" : "w-28 h-28"
+      )}>
+        {profile.avatar || profile.profilePicture ? (
+          <img
+            src={profile.avatar || profile.profilePicture}
+            alt={profile.username}
+            className="w-full h-full object-cover rounded-full"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300 font-bold text-3xl">
+            {profile.username?.charAt(0).toUpperCase() || 'U'}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const UsernameBadges = () => (
+    <div className="flex items-center gap-2 mb-2">
+      <h1 className="text-xl md:text-2xl font-bold text-text-primary text-center">
+        {profile.username}
+      </h1>
+      {profile.isVerified && (
+        <img src="/verified-badge.png" className="w-5 h-5 inline-block" alt="Verified" />
+      )}
+      {profile.isPrivate && (
+        <Lock className="w-4 h-4 text-text-secondary inline-block" />
+      )}
+    </div>
+  );
+
+  const BioDetails = () => (
+    <div className="text-center w-full space-y-1 mb-4">
+      <h2 className="font-bold text-text-primary text-base md:text-lg">
+        {profile.fullName || profile.username}
+        {profile.pronouns && (
+          <span className="text-text-secondary font-normal text-sm ml-2">{profile.pronouns}</span>
+        )}
+      </h2>
+      {profile.category && (
+        <p className="text-text-secondary text-xs font-semibold uppercase tracking-wider">
+          {profile.category}
+        </p>
+      )}
+      {profile.bio && (
+        <p className="text-text-primary text-sm whitespace-pre-wrap leading-relaxed max-w-md mx-auto">
+          {profile.bio}
+        </p>
+      )}
+      {profile.website && (
+        <a
+          href={profile.website}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-sky-400 font-semibold hover:underline text-sm mt-1"
+        >
+          <LinkIcon className="w-3.5 h-3.5" />
+          <span>@{profile.website.replace(/^https?:\/\//, '')}</span>
+        </a>
+      )}
+    </div>
+  );
+
+  const StatsBar = () => (
+    <div className="flex items-center justify-around w-full py-3.5 border-y border-border-soft mb-4">
+      <div className="text-center text-sm">
+        <span className="font-bold text-text-primary mr-1.5">{posts.length}</span>
+        <span className="text-text-secondary">posts</span>
+      </div>
+      <Link
+        to={`/app/profile/${profile._id}/followers`}
+        className="text-center text-sm hover:opacity-80 transition-opacity"
+      >
+        <span className="font-bold text-text-primary mr-1.5">{profile.followers?.length || 0}</span>
+        <span className="text-text-secondary">followers</span>
+      </Link>
+      <Link
+        to={`/app/profile/${profile._id}/following`}
+        className="text-center text-sm hover:opacity-80 transition-opacity"
+      >
+        <span className="font-bold text-text-primary mr-1.5">{profile.following?.length || 0}</span>
+        <span className="text-text-secondary">following</span>
+      </Link>
+    </div>
+  );
+
+  const ActionButtons = () => (
+    <div className="flex items-center gap-2.5 mb-5 flex-wrap justify-center w-full">
+      {isOwner ? (
+        <>
+          <button
+            onClick={() => setIsEditModalOpen(true)}
+            className="px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors shadow-sm"
+          >
+            Edit profile
+          </button>
+          <button
+            onClick={() => navigate('/app/archive')}
+            className="px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors shadow-sm"
+          >
+            View archive
+          </button>
+          <button
+            onClick={() => navigate('/app/settings')}
+            className="p-2 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary rounded-lg transition-colors shadow-sm"
+            aria-label="Settings"
+          >
+            <Settings className="w-4 h-4" />
+          </button>
+        </>
+      ) : (
+        <>
+          <FollowButton
+            userId={profile._id}
+            targetUser={profile}
+            onToggle={({ isFollowing: nowFollowing }) => {
+              setProfile(prev => {
+                if (!prev) return prev;
+                const authIdStr = authUser?._id?.toString();
+                const currentFollowers = prev.followers || [];
+                const exists = currentFollowers.some(
+                  id => (typeof id === 'string' ? id : id?._id || id)?.toString() === authIdStr
+                );
+                let newFollowers = [...currentFollowers];
+                if (nowFollowing && !exists) {
+                  newFollowers.push(authUser._id);
+                } else if (!nowFollowing) {
+                  newFollowers = newFollowers.filter(
+                    id => (typeof id === 'string' ? id : id?._id || id)?.toString() !== authIdStr
+                  );
+                }
+                return { ...prev, followers: newFollowers };
+              });
+            }}
+          />
+          <button
+            onClick={handleChat}
+            disabled={isNavigatingToChat}
+            className="px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 shadow-sm"
+          >
+            Message
+          </button>
+          <button
+            onClick={() => setIsOptionsModalOpen(true)}
+            className="p-2 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary rounded-lg transition-colors shadow-sm"
+            aria-label="More options"
+          >
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
+        </>
+      )}
+    </div>
+  );
+
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-4xl mx-auto pt-6 md:pt-10 pb-24 px-4 text-text-primary">
-      
-      {/* Instagram Header Layout (Matching Screenshot) */}
-      <div className="flex flex-col items-center mb-6 w-full max-w-lg mx-auto">
-        
-        {/* Profile Music Note Badge (if present) */}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="w-full max-w-4xl mx-auto pt-6 md:pt-10 pb-24 px-4 text-text-primary"
+    >
+
+      {/* ──────────────────────────────────────────────────────────────────────
+          MOBILE LAYOUT (< md):
+          Account Header → Avatar → Username → Bio → Stats → Buttons → Highlights → Tabs
+          ────────────────────────────────────────────────────────────────────── */}
+      <div className="flex flex-col items-center w-full max-w-lg mx-auto md:hidden">
+
+        {/* Mobile Top Header (own profile only) — username + account switcher */}
+        {isOwner && (
+          <div className="flex items-center justify-between w-full mb-4 px-1">
+            {/* Username + chevron (account switcher trigger) */}
+            <button
+              onClick={() => setIsAccountSwitcherOpen(true)}
+              className="flex items-center gap-1.5 text-text-primary font-bold text-lg hover:opacity-75 transition-opacity"
+              aria-label="Switch account"
+            >
+              <span>{profile.username}</span>
+              <ChevronDown className="w-5 h-5" />
+            </button>
+
+            {/* Settings icon on top-right */}
+            <button
+              onClick={() => navigate('/app/settings')}
+              className="p-2 hover:bg-bg-surface-hover rounded-lg transition-colors"
+              aria-label="Settings"
+            >
+              <Settings className="w-5 h-5 text-text-primary" />
+            </button>
+          </div>
+        )}
+
+        {/* Music badge */}
         {profile.music && (
           <div className="mb-3 px-3 py-1 bg-neutral-800/90 backdrop-blur-md rounded-full border border-neutral-700 text-[11px] font-semibold text-neutral-200 flex items-center gap-1.5 shadow-md">
             <Music2 className="w-3.5 h-3.5 text-sky-400" />
@@ -185,144 +412,53 @@ const ProfilePage = () => {
           </div>
         )}
 
-        {/* Centered Circular Avatar with Perfect Cover Fit (No Black Crescent) */}
-        <div className="relative group cursor-pointer mb-4" onClick={() => isOwner && setIsEditModalOpen(true)}>
-          <div className="w-32 h-32 md:w-36 md:h-36 rounded-full border-2 border-neutral-300 dark:border-neutral-700 overflow-hidden bg-neutral-900 shadow-xl flex items-center justify-center">
-            {profile.avatar || profile.profilePicture ? (
-              <img
-                src={profile.avatar || profile.profilePicture}
-                alt={profile.username}
-                className="w-full h-full object-cover rounded-full"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300 font-bold text-3xl">
-                {profile.username?.charAt(0).toUpperCase() || 'U'}
-              </div>
-            )}
-          </div>
-        </div>
+        {/* 1. Avatar */}
+        <AvatarSection />
 
-        {/* Username & Verification Badge */}
-        <div className="flex items-center gap-2 mb-3">
-          <h1 className="text-xl md:text-2xl font-bold text-text-primary text-center">
-            {profile.username}
-          </h1>
-          {profile.isVerified && <img src="/verified-badge.png" className="w-5 h-5 inline-block" alt="Verified" />}
-          {profile.isPrivate && <Lock className="w-4 h-4 text-text-secondary inline-block" />}
-        </div>
+        {/* 2. Username + badges (non-owner mobile — owner has it in top header) */}
+        {!isOwner && <UsernameBadges />}
 
-        {/* Action Buttons Row */}
-        <div className="flex items-center gap-2.5 mb-5 flex-wrap justify-center w-full">
-          {isOwner ? (
-            <>
-              <button 
-                onClick={() => setIsEditModalOpen(true)}
-                className="px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors shadow-sm"
-              >
-                Edit profile
-              </button>
+        {/* 3. Full Name + Bio Details */}
+        <BioDetails />
 
-              <button 
-                onClick={() => navigate('/app/archive')}
-                className="px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors shadow-sm"
-              >
-                View archive
-              </button>
+        {/* 4. Stats Bar */}
+        <StatsBar />
 
-              <button 
-                onClick={() => navigate('/app/settings')}
-                className="p-2 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary rounded-lg transition-colors shadow-sm"
-                aria-label="Settings"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
-            </>
-          ) : (
-            <>
-              <FollowButton 
-                userId={profile._id} 
-                targetUser={profile}
-                onToggle={({ isFollowing }) => {
-                  setProfile(prev => {
-                    if (!prev) return prev;
-                    const authIdStr = authUser?._id?.toString();
-                    const currentFollowers = prev.followers || [];
-                    const exists = currentFollowers.some(
-                      id => (typeof id === 'string' ? id : id?._id || id)?.toString() === authIdStr
-                    );
-                    let newFollowers = [...currentFollowers];
-                    if (isFollowing && !exists) {
-                      newFollowers.push(authUser._id);
-                    } else if (!isFollowing) {
-                      newFollowers = newFollowers.filter(
-                        id => (typeof id === 'string' ? id : id?._id || id)?.toString() !== authIdStr
-                      );
-                    }
-                    return { ...prev, followers: newFollowers };
-                  });
-                }} 
-              />
-
-              <button 
-                onClick={handleChat}
-                disabled={isNavigatingToChat}
-                className="px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 shadow-sm"
-              >
-                Message
-              </button>
-
-              <button 
-                onClick={() => setIsOptionsModalOpen(true)} 
-                className="p-2 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary rounded-lg transition-colors shadow-sm"
-                aria-label="More options"
-              >
-                <MoreHorizontal className="w-4 h-4" />
-              </button>
-            </>
-          )}
-        </div>
-
-        {/* Stats Row with Horizontal Dividers Top & Bottom */}
-        <div className="flex items-center justify-around w-full py-3.5 border-y border-border-soft mb-4">
-          <div className="text-center text-sm">
-            <span className="font-bold text-text-primary mr-1.5">{posts.length}</span>
-            <span className="text-text-secondary">posts</span>
-          </div>
-          <Link to={`/app/profile/${profile._id}/followers`} className="text-center text-sm hover:opacity-80 transition-opacity">
-            <span className="font-bold text-text-primary mr-1.5">{profile.followers?.length || 0}</span>
-            <span className="text-text-secondary">followers</span>
-          </Link>
-          <Link to={`/app/profile/${profile._id}/following`} className="text-center text-sm hover:opacity-80 transition-opacity">
-            <span className="font-bold text-text-primary mr-1.5">{profile.following?.length || 0}</span>
-            <span className="text-text-secondary">following</span>
-          </Link>
-        </div>
-
-        {/* Centered Full Name & Bio Details */}
-        <div className="text-center w-full space-y-1 mb-2">
-          <h2 className="font-bold text-text-primary text-base md:text-lg">
-            {profile.fullName || profile.username}
-            {profile.pronouns && <span className="text-text-secondary font-normal text-sm ml-2">{profile.pronouns}</span>}
-          </h2>
-
-          {profile.category && <p className="text-text-secondary text-xs font-semibold uppercase tracking-wider">{profile.category}</p>}
-          {profile.bio && <p className="text-text-primary text-sm whitespace-pre-wrap leading-relaxed max-w-md mx-auto">{profile.bio}</p>}
-          
-          {profile.website && (
-            <a 
-              href={profile.website} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="inline-flex items-center gap-1.5 text-sky-400 font-semibold hover:underline text-sm mt-1"
-            >
-              <LinkIcon className="w-3.5 h-3.5" />
-              <span>@{profile.website.replace(/^https?:\/\//, '')}</span>
-            </a>
-          )}
-        </div>
+        {/* 5. Action Buttons */}
+        <ActionButtons />
       </div>
 
-      {/* Story Highlights Horizontal Row */}
+      {/* ──────────────────────────────────────────────────────────────────────
+          DESKTOP LAYOUT (≥ md): keep original Instagram desktop layout
+          Avatar left + Info right on same row
+          ────────────────────────────────────────────────────────────────────── */}
+      <div className="hidden md:flex flex-col items-center mb-6 w-full max-w-lg mx-auto">
+
+        {/* Music badge */}
+        {profile.music && (
+          <div className="mb-3 px-3 py-1 bg-neutral-800/90 backdrop-blur-md rounded-full border border-neutral-700 text-[11px] font-semibold text-neutral-200 flex items-center gap-1.5 shadow-md">
+            <Music2 className="w-3.5 h-3.5 text-sky-400" />
+            <span className="truncate max-w-[120px]">{profile.music.title || 'Let Me Love You'}</span>
+          </div>
+        )}
+
+        {/* Avatar */}
+        <AvatarSection />
+
+        {/* Username + badges */}
+        <UsernameBadges />
+
+        {/* Action buttons (desktop: before stats, as original) */}
+        <ActionButtons />
+
+        {/* Stats Bar */}
+        <StatsBar />
+
+        {/* Bio Details */}
+        <BioDetails />
+      </div>
+
+      {/* Story Highlights — shared between both layouts */}
       <div className="mb-8 px-2">
         <StoryHighlightsRow userId={profile._id} isOwnProfile={isOwner} />
       </div>
@@ -363,9 +499,9 @@ const ProfilePage = () => {
             ) : displayedPosts.length > 0 ? (
               <div className="grid grid-cols-3 gap-1 md:gap-4">
                 {displayedPosts.map(post => (
-                  <Link 
-                    key={post._id} 
-                    to={`/app/post/${post._id}`} 
+                  <Link
+                    key={post._id}
+                    to={`/app/post/${post._id}`}
                     state={{ source: 'profile', userId: targetUserId }}
                     onClick={() => sessionStorage.setItem('profile_scroll_pos', window.scrollY.toString())}
                     className="aspect-square bg-neutral-900 relative overflow-hidden group cursor-pointer block"
@@ -413,7 +549,7 @@ const ProfilePage = () => {
         </div>
       )}
 
-      {/* Floating Messages Pill Button (Screenshot 3 - Bottom Right) */}
+      {/* Floating Messages Pill Button */}
       <button
         onClick={() => navigate('/app/chat')}
         className="fixed bottom-6 right-6 z-40 bg-bg-surface hover:bg-bg-surface-hover border border-border-soft text-text-primary px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-3 transition-transform hover:scale-105"
@@ -430,24 +566,29 @@ const ProfilePage = () => {
         </div>
       </button>
 
-      <EditProfileModal 
-        isOpen={isEditModalOpen} 
-        onClose={() => setIsEditModalOpen(false)} 
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
         user={profile}
         onProfileUpdated={handleProfileUpdated}
       />
       
       {profile && (
-        <UserOptionsModal 
+        <UserOptionsModal
           isOpen={isOptionsModalOpen}
           onClose={() => setIsOptionsModalOpen(false)}
           user={profile}
           onActionComplete={() => {}}
         />
       )}
+
+      {/* Account Switcher Modal (own profile on mobile) */}
+      <AccountSwitcherModal
+        isOpen={isAccountSwitcherOpen}
+        onClose={() => setIsAccountSwitcherOpen(false)}
+      />
     </motion.div>
   );
 };
 
 export default ProfilePage;
-

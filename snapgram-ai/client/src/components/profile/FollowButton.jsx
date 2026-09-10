@@ -1,10 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Loader2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import api from '../../services/api';
 import { useToast } from '../ui/Toast';
 import { updateFollowing, updateSentFollowRequests } from '../../store/authSlice';
+
+// ── Global follow-sync helpers ─────────────────────────────────────────────
+// Any component can listen to 'user_follow_updated' to stay in sync.
+export const dispatchFollowEvent = (userId, status) => {
+  window.dispatchEvent(
+    new CustomEvent('user_follow_updated', {
+      detail: { userId: String(userId), status }, // 'following' | 'requested' | 'none'
+    })
+  );
+};
 
 export const FollowButton = ({ userId, targetUser, onToggle, className }) => {
   const { user: authUser } = useSelector((state) => state.auth);
@@ -15,7 +25,8 @@ export const FollowButton = ({ userId, targetUser, onToggle, className }) => {
   const [isRequested, setIsRequested] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
+  // Derive initial state from Redux auth user
+  const syncFromRedux = useCallback(() => {
     if (authUser?.following && userId) {
       const targetIdStr = userId.toString();
       setIsFollowing(
@@ -35,6 +46,22 @@ export const FollowButton = ({ userId, targetUser, onToggle, className }) => {
     }
   }, [authUser?.following, authUser?.sentFollowRequests, userId]);
 
+  useEffect(() => {
+    syncFromRedux();
+  }, [syncFromRedux]);
+
+  // Listen for follow changes from other components on the page
+  useEffect(() => {
+    const handleFollowUpdated = (e) => {
+      if (String(e.detail.userId) !== String(userId)) return;
+      const { status } = e.detail;
+      setIsFollowing(status === 'following');
+      setIsRequested(status === 'requested');
+    };
+    window.addEventListener('user_follow_updated', handleFollowUpdated);
+    return () => window.removeEventListener('user_follow_updated', handleFollowUpdated);
+  }, [userId]);
+
   const handleToggleFollow = async () => {
     if (isLoading) return;
     
@@ -42,15 +69,12 @@ export const FollowButton = ({ userId, targetUser, onToggle, className }) => {
     const wasFollowing = isFollowing;
     const wasRequested = isRequested;
     
-    // Optimistic Update
+    // Optimistic update
     if (isFollowing) {
       setIsFollowing(false);
     } else if (isRequested) {
       setIsRequested(false);
     } else {
-      // We don't know if target is private instantly without targetUser,
-      // but usually we assume follow if public. We'll rely on backend response.
-      // We'll tentatively set following to true for fast UI.
       setIsFollowing(true);
     }
 
@@ -66,6 +90,7 @@ export const FollowButton = ({ userId, targetUser, onToggle, className }) => {
       
       if (res?.data?.success) {
         const nextStatus = res.data.status;
+
         if (nextStatus === 'requested') {
           setIsRequested(true);
           setIsFollowing(false);
@@ -80,17 +105,21 @@ export const FollowButton = ({ userId, targetUser, onToggle, className }) => {
           setIsFollowing(false);
           setIsRequested(false);
           if (res.data.data) dispatch(updateFollowing(res.data.data));
-          
           if (wasRequested) {
-             const updatedSentRequests = (authUser.sentFollowRequests || []).filter(id => id.toString() !== userId.toString());
-             dispatch(updateSentFollowRequests(updatedSentRequests));
+            const updatedSentRequests = (authUser.sentFollowRequests || []).filter(
+              id => id.toString() !== userId.toString()
+            );
+            dispatch(updateSentFollowRequests(updatedSentRequests));
           }
         }
-        
+
+        // 🔔 Broadcast to all other FollowButton instances and pages
+        dispatchFollowEvent(userId, nextStatus || 'none');
+
         if (onToggle) {
           onToggle({
             isFollowing: nextStatus === 'following',
-            isRequested: nextStatus === 'requested'
+            isRequested: nextStatus === 'requested',
           });
         }
       }
@@ -98,7 +127,11 @@ export const FollowButton = ({ userId, targetUser, onToggle, className }) => {
       // Revert on error
       setIsFollowing(wasFollowing);
       setIsRequested(wasRequested);
-      toast({ variant: 'error', title: 'Action Failed', description: error.response?.data?.message || 'Could not update follow status.' });
+      toast({
+        variant: 'error',
+        title: 'Action Failed',
+        description: error.response?.data?.message || 'Could not update follow status.',
+      });
     } finally {
       setIsLoading(false);
     }
