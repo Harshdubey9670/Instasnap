@@ -15,14 +15,15 @@ import {
   View,
 } from "react-native";
 import {
+  ArrowLeft,
   Bell,
   CheckCheck,
 } from "lucide-react-native";
 import {
   router,
-
 } from "expo-router";
 import { useDispatch } from "react-redux";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
   NotificationItem,
@@ -256,6 +257,7 @@ const stopPropagation = (event: unknown) => {
 
 export default function NotificationsPage() {
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
   const { effectiveTheme } = useTheme();
 
   const darkMode =
@@ -1016,6 +1018,7 @@ export default function NotificationsPage() {
               backgroundColor:
                 colors.background,
               borderColor: colors.border,
+              paddingTop: (insets.top || 20) + 8,
             },
           ]}
         >
@@ -1024,6 +1027,19 @@ export default function NotificationsPage() {
               styles.headerTitleRow
             }
           >
+            {router.canGoBack() && (
+              <Pressable
+                onPress={() => {
+                  if (router.canGoBack()) router.back();
+                  else router.replace("/app");
+                }}
+                style={{ marginRight: 8, padding: 4 }}
+                accessibilityRole="button"
+                accessibilityLabel="Go back"
+              >
+                <ArrowLeft size={22} color={colors.textPrimary} />
+              </Pressable>
+            )}
             <Text
               style={[
                 styles.title,
@@ -1119,6 +1135,7 @@ export default function NotificationsPage() {
           }
           contentContainerStyle={[
             styles.listContent,
+            { paddingBottom: Math.max(insets.bottom, 16) + 80 },
             listItems.length === 0 &&
               styles.emptyListContent,
           ]}

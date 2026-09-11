@@ -1152,9 +1152,10 @@ export default function VaultScreen() {
             ? renderTrash
             : renderMemory
         }
-        contentContainerStyle={
-          styles.content
-        }
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: Math.max(insets.bottom, 16) + 80 },
+        ]}
         showsVerticalScrollIndicator={
           false
         }

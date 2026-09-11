@@ -23,6 +23,7 @@ import {
   Clock,
   Play,
 } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import api from "../../services/api";
 
 const { width } = Dimensions.get("window");
@@ -37,6 +38,7 @@ const FILTERS = [
 ];
 
 export default function CreateReelPage() {
+  const insets = useSafeAreaInsets();
   const [step, setStep] = useState<0 | 1 | 2>(0);
   const [videoUrl, setVideoUrl] = useState("");
   const [speed, setSpeed] = useState(1.0);
@@ -103,9 +105,17 @@ export default function CreateReelPage() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: (insets.top || 20) + 8 }]}>
         <Pressable
-          onPress={() => (step > 0 ? setStep((prev) => (prev - 1) as any) : router.back())}
+          onPress={() => {
+            if (step > 0) {
+              setStep((prev) => (prev - 1) as any);
+            } else if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.replace("/app/reels");
+            }
+          }}
           style={styles.backBtn}
         >
           <ArrowLeft size={20} color="#f8fafc" />
@@ -166,9 +176,12 @@ export default function CreateReelPage() {
         </View>
       )}
 
-      {/* STEP 1: Editing Studio */}
+      {/* STEP 1: Video Preview & Edit Controls */}
       {step === 1 && (
-        <ScrollView style={styles.studioBody}>
+        <ScrollView
+          style={styles.studioBody}
+          contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 16) + 40 }}
+        >
           <View style={styles.videoPreviewCard}>
             <View style={styles.previewBox}>
               <Film size={48} color="#f43f5e" />
@@ -237,7 +250,10 @@ export default function CreateReelPage() {
 
       {/* STEP 2: Details & Publish */}
       {step === 2 && (
-        <ScrollView style={styles.publishBody}>
+        <ScrollView
+          style={styles.publishBody}
+          contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 16) + 40 }}
+        >
           <Text style={styles.inputLabel}>Caption & Hashtags</Text>
           <TextInput
             style={[styles.textArea, { height: 100 }]}

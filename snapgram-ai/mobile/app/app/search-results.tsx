@@ -21,6 +21,7 @@ import {
   useLocalSearchParams,
 } from "expo-router";
 import {
+  ArrowLeft,
   BadgeCheck,
   Filter,
   Hash,
@@ -29,6 +30,8 @@ import {
   Users,
   X,
 } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "../../src/contexts/ThemeContext";
 import { useToast } from "../../src/components/ui/Toast";
 import { Avatar } from "../../src/components/ui/Avatar";
 import api from "../../src/services/api";
@@ -107,6 +110,25 @@ const DEFAULT_FILTERS: Filters = {
 };
 
 export default function SearchResultsScreen() {
+  const insets = useSafeAreaInsets();
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === "dark";
+
+  const bgBase       = isDark ? "#0a0510" : "#f8fafc";
+  const bgCard       = isDark ? "#18122b" : "#ffffff";
+  const bgCardBorder = isDark ? "#2d1f4a" : "#e2e8f0";
+  const textPrimary  = isDark ? "#f8fafc" : "#0f172a";
+  const textSecond   = isDark ? "#94a3b8" : "#64748b";
+  const divider      = isDark ? "#2d1f4a" : "#e2e8f0";
+
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/app/explore");
+    }
+  };
+
   const params =
     useLocalSearchParams<{
       q?: string;
@@ -1211,31 +1233,35 @@ export default function SearchResultsScreen() {
 
   return (
     <View
-      style={
-        styles.screen
-      }
+      style={[
+        styles.screen,
+        { backgroundColor: bgBase },
+      ]}
     >
       {/* Header */}
       <View
-        style={
-          styles.header
-        }
+        style={[
+          styles.header,
+          {
+            paddingTop: (insets.top || 20) + 8,
+            backgroundColor: bgBase,
+            borderBottomColor: divider,
+          },
+        ]}
       >
         <Pressable
-          onPress={() =>
-            router.back()
-          }
-          style={
-            styles.backButton
-          }
+          onPress={handleBack}
+          style={[
+            styles.backButton,
+            { backgroundColor: bgCard, borderColor: bgCardBorder, borderWidth: 1, borderRadius: 20 },
+          ]}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
         >
-          <Text
-            style={
-              styles.backButtonText
-            }
-          >
-            ‹
-          </Text>
+          <ArrowLeft
+            size={20}
+            color={textPrimary}
+          />
         </Pressable>
 
         <View
@@ -1353,9 +1379,10 @@ export default function SearchResultsScreen() {
         style={
           styles.resultsScroll
         }
-        contentContainerStyle={
-          styles.resultsContent
-        }
+        contentContainerStyle={[
+          styles.resultsContent,
+          { paddingBottom: Math.max(insets.bottom, 16) + 80 },
+        ]}
         showsVerticalScrollIndicator={
           false
         }

@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import {
+  ArrowLeft,
   Search,
   X,
   Heart,
@@ -24,6 +25,7 @@ import {
   Clock,
   Video,
 } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import api from "../../services/api";
 import { resolveImageSource } from "../../components/ui/Avatar";
 
@@ -31,6 +33,7 @@ const { width } = Dimensions.get("window");
 const ITEM_WIDTH = (width - 24) / 3;
 
 export default function ExplorePage() {
+  const insets = useSafeAreaInsets();
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -169,9 +172,23 @@ export default function ExplorePage() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Search Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: (insets.top || 20) + 8 }]}>
         <View style={styles.searchBar}>
-          <Search size={18} color="#94a3b8" />
+          {isSearchActive ? (
+            <Pressable
+              onPress={() => {
+                setQuery("");
+                setIsSearchActive(false);
+              }}
+              style={{ marginRight: 6, padding: 2 }}
+              accessibilityRole="button"
+              accessibilityLabel="Cancel search"
+            >
+              <ArrowLeft size={18} color="#94a3b8" />
+            </Pressable>
+          ) : (
+            <Search size={18} color="#94a3b8" />
+          )}
           <TextInput
             style={styles.searchInput}
             value={query}
@@ -213,7 +230,11 @@ export default function ExplorePage() {
 
       {/* Main Body */}
       {isSearchActive ? (
-        <ScrollView style={styles.searchBody} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          style={styles.searchBody}
+          contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 16) + 80 }}
+          keyboardShouldPersistTaps="handled"
+        >
           {debouncedQuery.trim().length === 0 ? (
             <View style={styles.suggestionsContainer}>
               {/* Recent Searches */}
@@ -347,7 +368,10 @@ export default function ExplorePage() {
           )}
         </ScrollView>
       ) : (
-        <ScrollView style={styles.exploreBody}>
+        <ScrollView
+          style={styles.exploreBody}
+          contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 16) + 80 }}
+        >
           {/* Newest Drops Carousel */}
           {newestMedia.length > 0 && (
             <View style={styles.carouselSection}>

@@ -24,6 +24,8 @@ import {
   AVPlaybackStatus,
 } from "expo-av";
 import {
+  ArrowLeft,
+  Camera,
   Heart,
   MessageCircle,
   Music2,
@@ -33,6 +35,7 @@ import {
   Volume2,
   VolumeX,
 } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Avatar } from "../../../src/components/ui/Avatar";
 import {
   useSelector,
@@ -97,6 +100,9 @@ const ReelItem = memo(
     isMuted,
     onMuteToggle,
   }: ReelItemProps) => {
+    const insets = useSafeAreaInsets();
+    const bottomNavHeight = 58 + Math.max(insets.bottom, 4);
+
     const { user: authUser } =
       useSelector(
         (state: RootState) => state.auth,
@@ -532,9 +538,10 @@ const ReelItem = memo(
         )}
 
         <View
-          style={
-            styles.actions
-          }
+          style={[
+            styles.actions,
+            { bottom: bottomNavHeight + 20 },
+          ]}
         >
           <View
             style={
@@ -710,9 +717,10 @@ const ReelItem = memo(
         </View>
 
         <View
-          style={
-            styles.bottomInfo
-          }
+          style={[
+            styles.bottomInfo,
+            { bottom: bottomNavHeight + 14 },
+          ]}
         >
           <Pressable
             onPress={() => {
@@ -780,6 +788,8 @@ ReelItem.displayName =
   "ReelItem";
 
 export default function ReelsScreen() {
+  const insets = useSafeAreaInsets();
+
   const [
     reels,
     setReels,
@@ -953,9 +963,13 @@ export default function ReelsScreen() {
   if (loading && !refreshing) {
     return (
       <View
-        style={
-          styles.fullScreenBlack
-        }
+        style={[
+          styles.fullScreenBlack,
+          {
+            paddingTop: insets.top,
+            paddingBottom: Math.max(insets.bottom, 16) + 80,
+          },
+        ]}
       >
         <ActivityIndicator
           size="large"
@@ -968,9 +982,13 @@ export default function ReelsScreen() {
   if (!reels.length) {
     return (
       <View
-        style={
-          styles.emptyContainer
-        }
+        style={[
+          styles.emptyContainer,
+          {
+            paddingTop: (insets.top || 20) + 16,
+            paddingBottom: Math.max(insets.bottom, 16) + 80,
+          },
+        ]}
       >
         <Text
           style={
@@ -1021,6 +1039,43 @@ export default function ReelsScreen() {
         styles.screen
       }
     >
+      {/* Top Header inside Safe Area */}
+      <View
+        pointerEvents="box-none"
+        style={[
+          styles.reelsHeader,
+          {
+            paddingTop: (insets.top || 20) + 8,
+          },
+        ]}
+      >
+        <View style={styles.reelsHeaderLeft}>
+          {router.canGoBack() && (
+            <Pressable
+              onPress={() => {
+                if (router.canGoBack()) router.back();
+                else router.replace("/app");
+              }}
+              style={styles.headerIconButton}
+              accessibilityRole="button"
+              accessibilityLabel="Back"
+            >
+              <ArrowLeft size={22} color="#ffffff" />
+            </Pressable>
+          )}
+          <Text style={styles.reelsHeaderTitle}>Reels</Text>
+        </View>
+
+        <Pressable
+          onPress={() => router.push("/app/reels/create")}
+          style={styles.headerIconButton}
+          accessibilityRole="button"
+          accessibilityLabel="Create reel"
+        >
+          <Camera size={24} color="#ffffff" strokeWidth={2} />
+        </Pressable>
+      </View>
+
       <FlatList
         data={reels}
         keyExtractor={(item) =>
@@ -1105,6 +1160,44 @@ const styles =
       flex: 1,
       backgroundColor:
         "#000000",
+    },
+
+    reelsHeader: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 50,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingBottom: 10,
+    },
+
+    reelsHeaderLeft: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+
+    reelsHeaderTitle: {
+      fontSize: 22,
+      fontWeight: "800",
+      color: "#ffffff",
+      letterSpacing: 0.5,
+      textShadowColor: "rgba(0,0,0,0.5)",
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 3,
+    },
+
+    headerIconButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: "rgba(0,0,0,0.30)",
     },
 
     fullScreenBlack: {

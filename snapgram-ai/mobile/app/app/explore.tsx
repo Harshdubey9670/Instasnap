@@ -21,6 +21,7 @@ import {
   useLocalSearchParams,
 } from "expo-router";
 import {
+  ArrowLeft,
   Clock,
   Compass,
   Hash,
@@ -32,6 +33,8 @@ import {
   Video,
   X,
 } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "../../src/contexts/ThemeContext";
 
 import api from "../../src/services/api";
 import {
@@ -378,6 +381,16 @@ const ExploreGridCard = memo(
 );
 
 export default function ExploreScreen() {
+  const insets = useSafeAreaInsets();
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === "dark";
+
+  const bgBase       = isDark ? "#0a0510" : "#f8fafc";
+  const searchBg     = isDark ? "#18122b" : "#ffffff";
+  const searchBorder = isDark ? "#2d1f4a" : "#e2e8f0";
+  const textPrimary  = isDark ? "#f8fafc" : "#0f172a";
+  const textSecond   = isDark ? "#94a3b8" : "#64748b";
+
   const params =
     useLocalSearchParams<{
       q?: string;
@@ -965,25 +978,51 @@ export default function ExploreScreen() {
 
   return (
     <View
-      style={
-        styles.screen
-      }
+      style={[
+        styles.screen,
+        { backgroundColor: bgBase },
+      ]}
     >
       {/* Search header */}
       <View
-        style={
-          styles.searchHeader
-        }
+        style={[
+          styles.searchHeader,
+          {
+            paddingTop: (insets.top || 20) + 8,
+            backgroundColor: bgBase,
+          },
+        ]}
       >
         <View
-          style={
-            styles.searchBar
-          }
+          style={[
+            styles.searchBar,
+            {
+              backgroundColor: searchBg,
+              borderColor: searchBorder,
+            },
+          ]}
         >
-          <Search
-            size={19}
-            color="#64748b"
-          />
+          {isSearchActive ? (
+            <Pressable
+              onPress={() => {
+                setQuery("");
+                setIsSearchActive(false);
+              }}
+              style={{ marginRight: 6, padding: 2 }}
+              accessibilityRole="button"
+              accessibilityLabel="Cancel search"
+            >
+              <ArrowLeft
+                size={19}
+                color={textPrimary}
+              />
+            </Pressable>
+          ) : (
+            <Search
+              size={19}
+              color={textSecond}
+            />
+          )}
 
           <TextInput
             value={
@@ -999,9 +1038,10 @@ export default function ExploreScreen() {
             }
             placeholder="Search users, posts, reels, hashtags..."
             placeholderTextColor="#94a3b8"
-            style={
-              styles.searchInput
-            }
+            style={[
+              styles.searchInput,
+              { color: textPrimary },
+            ]}
             autoCapitalize="none"
             autoCorrect={
               false
@@ -1103,9 +1143,10 @@ export default function ExploreScreen() {
         style={
           styles.scrollView
         }
-        contentContainerStyle={
-          styles.content
-        }
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: Math.max(insets.bottom, 16) + 80 },
+        ]}
         showsVerticalScrollIndicator={
           false
         }

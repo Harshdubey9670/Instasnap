@@ -19,6 +19,7 @@ import {
   router,
 } from "expo-router";
 import {
+  ArrowLeft,
   AtSign,
   Bell,
   CheckCheck,
@@ -31,6 +32,8 @@ import {
 import {
   useDispatch,
 } from "react-redux";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "../../src/contexts/ThemeContext";
 
 import {
   clearUnreadCount,
@@ -448,6 +451,25 @@ export default function NotificationsScreen() {
 
   const { showToast } =
     useToast();
+
+  const insets = useSafeAreaInsets();
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === "dark";
+
+  const bgBase       = isDark ? "#0a0510" : "#f8fafc";
+  const bgCard       = isDark ? "#18122b" : "#ffffff";
+  const bgCardBorder = isDark ? "#2d1f4a" : "#e2e8f0";
+  const textPrimary  = isDark ? "#f8fafc" : "#0f172a";
+  const textSecond   = isDark ? "#94a3b8" : "#64748b";
+  const divider      = isDark ? "#2d1f4a" : "#e2e8f0";
+
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/app");
+    }
+  };
 
   const [
     notifications,
@@ -1307,9 +1329,14 @@ export default function NotificationsScreen() {
   if (loading) {
     return (
       <View
-        style={
-          styles.loadingScreen
-        }
+        style={[
+          styles.loadingScreen,
+          {
+            backgroundColor: bgBase,
+            paddingTop: insets.top,
+            paddingBottom: Math.max(insets.bottom, 16) + 80,
+          },
+        ]}
       >
         <ActivityIndicator
           size="large"
@@ -1321,29 +1348,51 @@ export default function NotificationsScreen() {
 
   return (
     <View
-      style={
-        styles.screen
-      }
+      style={[
+        styles.screen,
+        { backgroundColor: bgBase },
+      ]}
     >
       <View
-        style={
-          styles.header
-        }
+        style={[
+          styles.header,
+          {
+            paddingTop: (insets.top || 20) + 12,
+            backgroundColor: bgBase,
+            borderBottomColor: divider,
+          },
+        ]}
       >
         <View
           style={
             styles.headerLeft
           }
         >
+          <Pressable
+            onPress={handleBack}
+            style={[
+              styles.backButton,
+              { backgroundColor: bgCard, borderColor: bgCardBorder },
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
+            <ArrowLeft
+              size={20}
+              color={textPrimary}
+            />
+          </Pressable>
+
           <Bell
-            size={24}
+            size={22}
             color="#a855f7"
           />
 
           <Text
-            style={
-              styles.headerTitle
-            }
+            style={[
+              styles.headerTitle,
+              { color: textPrimary },
+            ]}
           >
             Notifications
           </Text>
@@ -1620,9 +1669,10 @@ export default function NotificationsScreen() {
             </View>
           ) : null
         }
-        contentContainerStyle={
-          styles.listContent
-        }
+        contentContainerStyle={[
+          styles.listContent,
+          { paddingBottom: Math.max(insets.bottom, 16) + 80 },
+        ]}
         showsVerticalScrollIndicator={
           false
         }
@@ -1695,6 +1745,16 @@ const styles =
       borderBottomWidth: 1,
       borderBottomColor:
         "#e2e8f0",
+    },
+
+    backButton: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      alignItems: "center",
+      justifyContent: "center",
+      borderWidth: 1,
+      marginRight: 4,
     },
 
     headerLeft: {
