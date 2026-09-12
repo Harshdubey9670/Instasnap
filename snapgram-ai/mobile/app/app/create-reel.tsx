@@ -492,7 +492,7 @@ export default function CreateReelScreen() {
           new FormData();
 
         formData.append(
-          "file",
+          "image",
           {
             uri:
               videoFile.uri,

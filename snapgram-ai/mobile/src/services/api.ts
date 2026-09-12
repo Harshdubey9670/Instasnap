@@ -21,11 +21,6 @@ const API_URL =
 
 const api = axios.create({
   baseURL: API_URL,
-  // Keep this enabled because your existing backend is configured
-  // to support credentials/CORS. Native requests do not use browser
-  // CORS in the same way, but keeping the setting does not change
-  // the existing API contract.
-  withCredentials: true,
 });
 
 api.interceptors.request.use(

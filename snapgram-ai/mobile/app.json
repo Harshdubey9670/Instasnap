@@ -3,11 +3,18 @@
     "name": "snapgram-mobile",
     "slug": "snapgram-mobile",
     "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "scheme": "snapgram",
     "platforms": [
       "ios",
       "android"
     ],
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
     "plugins": [
       "expo-dev-client",
       "expo-router",
@@ -37,6 +44,11 @@
     ],
     "android": {
       "package": "com.snapgramai.mobile",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
@@ -47,16 +59,19 @@
         "android.permission.INTERNET",
         "android.permission.ACCESS_NETWORK_STATE",
         "android.permission.DETECT_SCREEN_CAPTURE",
-        "android.permission.VIBRATE"
+        "android.permission.VIBRATE",
+        "android.permission.ACCESS_MEDIA_LOCATION"
       ]
     },
     "ios": {
       "bundleIdentifier": "com.snapgramai.mobile",
+      "buildNumber": "1",
       "supportsTablet": true,
       "infoPlist": {
         "NSCameraUsageDescription": "Allow SnapGram AI to access your camera.",
         "NSMicrophoneUsageDescription": "Allow SnapGram AI to access your microphone.",
-        "NSPhotoLibraryUsageDescription": "Allow SnapGram AI to access your photos."
+        "NSPhotoLibraryUsageDescription": "Allow SnapGram AI to access your photos.",
+        "NSPhotoLibraryAddUsageDescription": "Allow SnapGram AI to save photos."
       }
     },
     "extra": {
@@ -64,8 +79,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "snapgram-mobile"
+        "projectId": "ec98dc75-efd8-472e-86a8-7ab3f8369e97"
       }
-    }
+    },
+    "owner": "harshdubey9670"
   }
 }

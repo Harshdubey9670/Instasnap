@@ -17,6 +17,7 @@ router.use(protect);
 router.delete('/me', deleteAccount);
 router.get('/popular', getPopularCreators);
 router.get('/suggested', getSuggestedUsers);
+router.get('/recommendations/quick-add', getSuggestedUsers);
 router.get('/saved-posts', getSavedPosts);
 router.get('/username/:username', getUserByUsername);
 router.get('/follow-requests', getFollowRequests);

@@ -61,17 +61,22 @@ export default function AppLayout() {
     const handleFollowRequest = () => dispatch(incrementUnreadCount());
     const handleFollowAccepted = () => dispatch(incrementUnreadCount());
     const handleNewNotification = () => dispatch(incrementUnreadCount());
+    const handleRelationshipUpdated = (data: any) => {
+      console.info("[Socket] Relationship updated:", data?.type, "by:", data?.byUserId);
+    };
 
     socket.on("notification_count_update", handleNotificationCountUpdate);
     socket.on("follow_request", handleFollowRequest);
     socket.on("follow_accepted", handleFollowAccepted);
     socket.on("new_notification", handleNewNotification);
+    socket.on("relationship_updated", handleRelationshipUpdated);
 
     return () => {
       socket.off("notification_count_update", handleNotificationCountUpdate);
       socket.off("follow_request", handleFollowRequest);
       socket.off("follow_accepted", handleFollowAccepted);
       socket.off("new_notification", handleNewNotification);
+      socket.off("relationship_updated", handleRelationshipUpdated);
     };
   }, [socket, authUser, dispatch]);
 

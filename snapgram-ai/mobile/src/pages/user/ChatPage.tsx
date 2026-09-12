@@ -80,7 +80,7 @@ export default function ChatPage() {
 
   const fetchConversationDetail = async (convId: string) => {
     try {
-      const res = await api.get(`/api/conversations/${convId}/messages`);
+      const res = await api.get(`/api/messages/${convId}`);
       if (res.data.success) {
         setActiveMessages(res.data.data || []);
       }
@@ -99,7 +99,7 @@ export default function ChatPage() {
     const text = newMsgText;
     setNewMsgText("");
     try {
-      const res = await api.post(`/api/conversations/${id}/messages`, { text });
+      const res = await api.post(`/api/messages/${id}`, { text });
       if (res.data.success) {
         setActiveMessages((prev) => [...prev, res.data.data]);
       }
