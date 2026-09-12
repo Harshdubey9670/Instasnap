@@ -85,6 +85,7 @@ import api from "../../src/services/api";
 import {
   useToast,
 } from "../../src/components/ui/Toast";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type CaptureType =
   | "image"
@@ -136,6 +137,8 @@ const FILTER_PRESETS: FilterPreset[] = [
 export default function CameraScreen() {
   const { toast } =
     useToast();
+
+  const insets = useSafeAreaInsets();
 
   const { user } =
     useSelector(
@@ -1148,9 +1151,10 @@ export default function CameraScreen() {
             ) : null}
 
             <View
-              style={
-                styles.topBar
-              }
+              style={[
+                styles.topBar,
+                { top: (insets.top || 20) + 6 },
+              ]}
             >
               <Pressable
                 onPress={() =>

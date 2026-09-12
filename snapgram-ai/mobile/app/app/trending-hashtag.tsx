@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { router } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Activity,
   ArrowDownRight,
@@ -45,6 +46,7 @@ const formatNumber = (num: number = 0) => {
 export default function TrendingHashtagsScreen() {
   const [hashtags, setHashtags] = useState<TrendingTag[]>([]);
   const [loading, setLoading] = useState(true);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     const fetchTrending = async () => {
@@ -89,7 +91,7 @@ export default function TrendingHashtagsScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View>
-            <View style={styles.header}>
+            <View style={[styles.header, { paddingTop: (insets.top || 20) + 8 }]}>
               <Pressable
                 onPress={() => router.back()}
                 style={styles.backButton}

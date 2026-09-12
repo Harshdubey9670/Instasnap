@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import { router } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   AlertTriangle,
   Bot,
@@ -74,6 +75,7 @@ type ActiveTab =
 
 export default function AiStudioScreen() {
   const { showToast } = useToast();
+  const insets = useSafeAreaInsets();
 
   const [activeTab, setActiveTab] =
     useState<ActiveTab>("captions");
@@ -999,9 +1001,10 @@ export default function AiStudioScreen() {
         data={[activeTab]}
         keyExtractor={(item) => item}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={
-          styles.content
-        }
+        contentContainerStyle={[
+          styles.content,
+          { paddingTop: (insets.top || 20) + 12 },
+        ]}
         ListHeaderComponent={
           <View>
             <Pressable

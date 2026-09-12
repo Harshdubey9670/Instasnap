@@ -15,6 +15,7 @@ import {
   View,
 } from "react-native";
 import { router } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   Archive,
   ArrowLeft,
@@ -67,6 +68,7 @@ type Tab = "feed" | "editor" | "archive";
 
 export default function StoriesScreen() {
   const { showToast } = useToast();
+  const insets = useSafeAreaInsets();
 
   const [storyGroups, setStoryGroups] =
     useState<StoryGroup[]>([]);
@@ -515,7 +517,7 @@ export default function StoriesScreen() {
         }
         ListHeaderComponent={
           <View>
-            <View style={styles.header}>
+            <View style={[styles.header, { paddingTop: (insets.top || 20) + 8 }]}>
               <Pressable
                 onPress={() => router.back()}
                 style={styles.backButton}

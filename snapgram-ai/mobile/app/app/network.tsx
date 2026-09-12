@@ -29,6 +29,7 @@ import {
   useDispatch,
   useSelector,
 } from "react-redux";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import api from "../../src/services/api";
 import { useToast } from "../../src/components/ui/Toast";
@@ -99,6 +100,8 @@ export default function NetworkScreen() {
 
   const { toast } =
     useToast();
+
+  const insets = useSafeAreaInsets();
 
   const isOwner =
     !routeId ||
@@ -667,9 +670,10 @@ export default function NetworkScreen() {
     >
       {/* Header */}
       <View
-        style={
-          styles.header
-        }
+        style={[
+          styles.header,
+          { paddingTop: (insets.top || 20) + 8 },
+        ]}
       >
         <Pressable
           onPress={() =>
@@ -934,7 +938,7 @@ const styles =
     },
 
     header: {
-      minHeight: 64,
+      paddingBottom: 10,
       paddingHorizontal: 16,
       flexDirection:
         "row",

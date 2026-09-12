@@ -68,6 +68,7 @@ import {
 import type {
   RootState,
 } from "../../src/store/store";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type MediaItem = {
   url?: string;
@@ -167,6 +168,8 @@ export default function PostDetailScreen() {
 
   const { showToast } =
     useToast();
+
+  const insets = useSafeAreaInsets();
 
   const [
     targetPost,
@@ -991,9 +994,10 @@ export default function PostDetailScreen() {
         }
         ListHeaderComponent={
           <View
-            style={
-              styles.header
-            }
+            style={[
+              styles.header,
+              { paddingTop: (insets.top || 20) + 8 },
+            ]}
           >
             <Pressable
               onPress={() =>
