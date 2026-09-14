@@ -16,37 +16,12 @@ import {
   View,
 } from "react-native";
 import {
-  Camera as CameraView,
+  CameraView,
   CameraType,
   FlashMode,
-  getCameraPermissionsAsync,
-  requestCameraPermissionsAsync,
-  getMicrophonePermissionsAsync,
-  requestMicrophonePermissionsAsync,
+  useCameraPermissions,
+  useMicrophonePermissions,
 } from "expo-camera";
-
-// Compatibility shims for expo-camera v15 hook API on top of v14
-const useCameraPermissions = (): [
-  { granted: boolean } | null,
-  () => Promise<{ granted: boolean }>,
-] => {
-  const [perm, setPerm] = React.useState<{ granted: boolean } | null>(null);
-  React.useEffect(() => {
-    getCameraPermissionsAsync().then(setPerm);
-  }, []);
-  return [perm, () => requestCameraPermissionsAsync().then(r => { setPerm(r); return r; })];
-};
-
-const useMicrophonePermissions = (): [
-  { granted: boolean } | null,
-  () => Promise<{ granted: boolean }>,
-] => {
-  const [perm, setPerm] = React.useState<{ granted: boolean } | null>(null);
-  React.useEffect(() => {
-    getMicrophonePermissionsAsync().then(setPerm);
-  }, []);
-  return [perm, () => requestMicrophonePermissionsAsync().then(r => { setPerm(r); return r; })];
-};
 
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library";
@@ -157,7 +132,7 @@ export default function CameraScreen() {
   ] = useMicrophonePermissions();
 
   const cameraRef =
-    useRef<CameraView | null>(
+    useRef<any>(
       null,
     );
 
@@ -166,7 +141,7 @@ export default function CameraScreen() {
     setFacing,
   ] =
     useState<CameraType>(
-      CameraType.back,
+      "back",
     );
 
   const [
@@ -583,15 +558,7 @@ export default function CameraScreen() {
 
   const toggleCamera =
     () => {
-      setFacing(
-        (
-          value,
-        ) =>
-          value ===
-          CameraType.back
-            ? CameraType.front
-            : CameraType.back,
-      );
+      setFacing((value) => (value === "back" ? "front" : "back"));
     };
 
   const importFromGallery =
@@ -1067,18 +1034,17 @@ export default function CameraScreen() {
             style={
               styles.camera
             }
-            type={
+            facing={
               facing
             }
             zoom={
               zoom
             }
-            flashMode={
+            flash={
               mode === "photo" && flash === "on"
-                ? FlashMode.on
-                : FlashMode.off
+                ? "on"
+                : "off"
             }
-            ratio="9:16"
           >
             {nightMode ? (
               <View
