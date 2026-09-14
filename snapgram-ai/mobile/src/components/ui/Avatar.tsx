@@ -20,6 +20,7 @@ import {
 } from "lucide-react-native";
 
 import { useTheme } from "../../contexts/ThemeContext";
+import { getApiBaseUrl } from "../../config/env";
 
 type AvatarSize =
   | "xs"
@@ -232,10 +233,6 @@ const Avatar = forwardRef<
 Avatar.displayName =
   "Avatar";
 
-const API_URL =
-  process.env.EXPO_PUBLIC_API_URL ||
-  (Platform.OS === "android" ? "http://10.0.2.2:5001" : "http://localhost:5001");
-
 export function resolveImageSource(
   src:
     | ImageProps["source"]
@@ -255,23 +252,22 @@ export function resolveImageSource(
     if (!clean || clean === "null" || clean === "undefined") {
       return null;
     }
+    const baseUrl = getApiBaseUrl();
     if (clean.startsWith("/")) {
-      clean = `${API_URL}${clean}`;
+      clean = `${baseUrl}${clean}`;
     }
-    if (clean.includes("localhost:5001")) {
-      clean = clean.replace(
-        "localhost:5001",
-        Platform.OS === "android" ? "10.0.2.2:5001" : "localhost:5001"
-      );
+    if (__DEV__) {
+      if (clean.includes("localhost:5001") && Platform.OS === "android") {
+        clean = clean.replace("localhost:5001", "10.0.2.2:5001");
+      }
     }
     const isExternal =
       (clean.startsWith("http://") || clean.startsWith("https://")) &&
-      !clean.includes("10.0.2.2") &&
-      !clean.includes("localhost") &&
+      !clean.startsWith(baseUrl) &&
       !clean.includes("/api/proxy/image");
 
     if ((useProxy || Platform.OS === "android") && isExternal) {
-      clean = `${API_URL}/api/proxy/image?url=${encodeURIComponent(clean)}`;
+      clean = `${baseUrl}/api/proxy/image?url=${encodeURIComponent(clean)}`;
     }
     return {
       uri: clean,
