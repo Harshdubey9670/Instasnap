@@ -1,5 +1,8 @@
 const Reel = require('../models/Reel');
 const Comment = require('../models/Comment');
+const User = require('../models/User');
+const UserSettings = require('../models/UserSettings');
+const { canDownloadReel } = require('../utils/privacyGuards');
 
 // Helper — extract hashtags from a caption string
 const extractHashtags = (text) =>
@@ -342,3 +345,107 @@ exports.getReelAnalytics = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Authorized reel download
+// @route   POST /api/reels/:id/download
+// @access  Private
+exports.downloadReel = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const viewerId = (req.user._id || req.user.id);
+    const viewerIdStr = viewerId.toString();
+
+    // 1. Load reel with author
+    const reel = await Reel.findById(id)
+      .populate('user', 'username profilePicture avatar isPrivate followers following blockedUsers');
+
+    if (!reel) {
+      return res.status(404).json({ success: false, message: 'Reel not found' });
+    }
+
+    const reelAuthor = reel.user;
+    const isOwner = (reelAuthor._id || reelAuthor).toString() === viewerIdStr;
+
+    // 2. Block check
+    const isBlockedByAuthor = (reelAuthor.blockedUsers || []).some(bid => bid.toString() === viewerIdStr);
+    if (isBlockedByAuthor) {
+      return res.status(403).json({ success: false, message: 'You cannot download this reel' });
+    }
+
+    // 3. Load settings and viewer
+    const ownerSettings = await UserSettings.findOne({ user: reelAuthor._id });
+    const viewer = !isOwner ? await User.findById(viewerId).select('blockedUsers') : null;
+
+    // 4. Download permission guard
+    const { allowed, reason } = canDownloadReel(viewerId, reel, reelAuthor, ownerSettings, viewer);
+    if (!allowed) {
+      const message = reason === 'blocked'
+        ? 'You cannot download this reel'
+        : reason === 'creator_disabled'
+          ? 'The creator has disabled downloads for this reel'
+          : 'Download not permitted';
+      return res.status(403).json({ success: false, message, reason });
+    }
+
+    // 5. Notification (not for owner downloads)
+    if (!isOwner) {
+      const Notification = require('../models/Notification');
+      const { getIo } = require('../socket');
+      const io = getIo();
+
+      const sixtySecondsAgo = new Date(Date.now() - 60 * 1000);
+      const existingNotif = await Notification.findOne({
+        recipient: reelAuthor._id,
+        sender: viewerId,
+        type: 'reel_downloaded',
+        contentId: reel._id,
+        createdAt: { $gte: sixtySecondsAgo }
+      });
+
+      if (!existingNotif) {
+        const viewerProfile = await User.findById(viewerId).select('username');
+        const notifMessage = `${viewerProfile?.username || 'Someone'} downloaded your reel`;
+
+        const notification = await Notification.create({
+          recipient: reelAuthor._id,
+          sender: viewerId,
+          type: 'reel_downloaded',
+          contentId: reel._id,
+          contentType: 'reel',
+          message: notifMessage
+        });
+
+        if (io) {
+          io.to(reelAuthor._id.toString()).emit('new_notification', {
+            type: 'reel_downloaded',
+            senderId: viewerIdStr,
+            senderUsername: viewerProfile?.username,
+            contentId: reel._id,
+            message: notifMessage,
+            notificationId: notification._id
+          });
+          io.to(reelAuthor._id.toString()).emit('notification_count_update', { delta: 1 });
+        }
+      }
+    }
+
+    // 6. Return authorized media URL
+    const videoUrl = reel.video?.url;
+    if (!videoUrl) {
+      return res.status(404).json({ success: false, message: 'No video found for this reel' });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        downloadUrl: videoUrl,
+        contentId: reel._id,
+        contentType: 'reel',
+        mediaType: 'video'
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
