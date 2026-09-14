@@ -21,6 +21,7 @@ const FollowingPage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [isPrivateList, setIsPrivateList] = useState(false);
 
   const observer = useRef();
 
@@ -43,11 +44,18 @@ const FollowingPage = () => {
       });
 
       if (res.data.success) {
+        setIsPrivateList(false);
         setFollowing(prev => reset ? res.data.data : [...prev, ...res.data.data]);
         setHasMore(res.data.pagination.hasMore);
       }
     } catch (err) {
-      toast({ variant: 'error', title: 'Error', description: 'Failed to load following list' });
+      if (err.response?.status === 403) {
+        setIsPrivateList(true);
+        setFollowing([]);
+        setHasMore(false);
+      } else {
+        toast({ variant: 'error', title: 'Error', description: 'Failed to load following list' });
+      }
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -111,6 +119,22 @@ const FollowingPage = () => {
         {loading ? (
           <div className="flex justify-center py-10">
             <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
+          </div>
+        ) : isPrivateList ? (
+          <div className="text-center py-20 bg-bg-surface rounded-2xl border border-border-soft">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-bg-surface-hover mb-4">
+              <Users className="w-8 h-8 text-text-secondary" />
+            </div>
+            <h3 className="text-xl font-semibold text-text-primary mb-2">Following list is private</h3>
+            <p className="text-text-secondary px-4">
+              This account's following list is only visible to approved viewers.
+            </p>
+            <button
+              onClick={() => navigate(-1)}
+              className="mt-6 px-6 py-2 bg-primary-500/10 text-primary-500 rounded-xl font-semibold hover:bg-primary-500/20 transition-colors"
+            >
+              Go back
+            </button>
           </div>
         ) : following.length === 0 ? (
           <div className="text-center py-20 bg-bg-surface rounded-2xl border border-border-soft">
