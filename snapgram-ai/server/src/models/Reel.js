@@ -120,7 +120,16 @@ const reelSchema = new mongoose.Schema(
     ],
     downloadAllowed: {
       type: Boolean,
-      default: false, // Default DRM download prevention architecture
+      default: false, // @deprecated — use downloadPermission or UserSettings.privacy.allowReelDownloads
+    },
+    // Phase T: per-reel download override
+    // 'allow'               → always downloadable (if viewer has access)
+    // 'deny'                → never downloadable
+    // 'use_account_default' → defer to UserSettings.privacy.allowReelDownloads
+    downloadPermission: {
+      type: String,
+      enum: ['allow', 'deny', 'use_account_default'],
+      default: 'use_account_default'
     },
     editingMetadata: {
       speed: { type: Number, default: 1.0 },
