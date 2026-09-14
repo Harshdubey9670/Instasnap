@@ -30,6 +30,13 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { SettingToggle } from "./SettingToggle";
 import { SettingSelect } from "./SettingSelect";
 
+const FOLLOWER_VISIBILITY_OPTIONS = [
+  { value: "public", label: "Everyone" },
+  { value: "followers", label: "My followers" },
+  { value: "following", label: "People I follow" },
+  { value: "private", label: "Only me" },
+];
+
 const PrivacySettings = () => {
   const { settings } = useSelector(
     (state: RootState) => state.auth,
@@ -44,7 +51,7 @@ const PrivacySettings = () => {
   const handleUpdate = async (
     category: string,
     key: string,
-    value: string | boolean,
+    value: string | number | boolean,
   ) => {
     const updates = {
       [category]: {
@@ -156,35 +163,76 @@ const PrivacySettings = () => {
           }
         />
 
+      </SettingsCard>
+
+      <SettingsCard
+        title="Followers & Following Visibility"
+        dark={dark}
+      >
+        <SettingSelect
+          label="Followers list"
+          description="Choose who can see the list of people who follow you."
+          value={
+            settings?.privacy?.followersListVisibility ||
+            (settings?.privacy?.hideFollowers ? "private" : "public")
+          }
+          options={FOLLOWER_VISIBILITY_OPTIONS}
+          onChange={(value) =>
+            handleUpdate(
+              "privacy",
+              "followersListVisibility",
+              value,
+            )
+          }
+        />
+
+        <SettingSelect
+          label="Following list"
+          description="Choose who can see the list of people you follow."
+          value={
+            settings?.privacy?.followingListVisibility ||
+            (settings?.privacy?.hideFollowing ? "private" : "public")
+          }
+          options={FOLLOWER_VISIBILITY_OPTIONS}
+          onChange={(value) =>
+            handleUpdate(
+              "privacy",
+              "followingListVisibility",
+              value,
+            )
+          }
+        />
+      </SettingsCard>
+
+      <SettingsCard
+        title="Downloads"
+        dark={dark}
+      >
         <SettingToggle
-          label="Hide Followers"
-          description="Hide your followers list from other users."
+          label="Allow Story Downloads"
+          description="When enabled, viewers can save your stories to their device."
           checked={
-            settings?.privacy
-              ?.hideFollowers ||
-            false
+            settings?.privacy?.allowStoryDownloads ?? true
           }
           onChange={(value) =>
             handleUpdate(
               "privacy",
-              "hideFollowers",
+              "allowStoryDownloads",
               value,
             )
           }
         />
 
         <SettingToggle
-          label="Hide Following"
-          description="Hide the list of people you follow."
+          label="Allow Reel Downloads"
+          description="When enabled, viewers can save your reels to their device."
           checked={
-            settings?.privacy
-              ?.hideFollowing ||
-            false
+            settings?.privacy?.allowReelDownloads ?? true
           }
           onChange={(value) =>
             handleUpdate(
               "privacy",
-              "hideFollowing",
+              "allowReelDownloads",
               value,
             )
           }

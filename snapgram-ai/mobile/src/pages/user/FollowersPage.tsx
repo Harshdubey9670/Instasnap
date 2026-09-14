@@ -19,6 +19,7 @@ import {
   Search,
   Users,
   X,
+  Lock,
 } from "lucide-react-native";
 import {
   router,
@@ -82,6 +83,7 @@ export default function FollowersPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] =
     useState("");
+  const [isPrivateList, setIsPrivateList] = useState(false);
 
   const loadingMoreRef = useRef(false);
   const requestIdRef = useRef(0);
@@ -149,12 +151,18 @@ export default function FollowersPage() {
           );
           setHasMore(response.data.pagination?.hasMore ?? false);
         }
-      } catch {
-        toast({
-          variant: "error",
-          title: "Error",
-          description: "Failed to load followers",
-        });
+      } catch (err: any) {
+        if (err?.response?.status === 403) {
+          setIsPrivateList(true);
+          setFollowers([]);
+          setHasMore(false);
+        } else {
+          toast({
+            variant: "error",
+            title: "Error",
+            description: "Failed to load followers",
+          });
+        }
       } finally {
         if (pageNumber === 1) {
           setLoading(false);
@@ -352,6 +360,28 @@ export default function FollowersPage() {
         {loading ? (
           <View style={styles.loadingState}>
             <ActivityIndicator size="large" color="#a855f7" />
+          </View>
+        ) : isPrivateList ? (
+          <View
+            style={[
+              styles.emptyState,
+              { backgroundColor: surface, borderColor: border, marginTop: 20 },
+            ]}
+          >
+            <View
+              style={[
+                styles.emptyIcon,
+                { backgroundColor: surfaceHover },
+              ]}
+            >
+              <Lock size={32} color="#a855f7" />
+            </View>
+            <Text style={[styles.emptyTitle, { color: textPrimary }]}>
+              This account's followers list is private
+            </Text>
+            <Text style={[styles.emptyDescription, { color: textSecondary }]}>
+              The account owner has restricted access to their followers list.
+            </Text>
           </View>
         ) : (
           <FlatList
