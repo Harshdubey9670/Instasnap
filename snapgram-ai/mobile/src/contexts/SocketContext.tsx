@@ -18,6 +18,7 @@ import type { RootState } from "../store/store";
 import {
   getAuthToken,
 } from "../utils/authStorage";
+import { getSocketBaseUrl } from "../config/env";
 
 interface SocketContextValue {
   socket: Socket | null;
@@ -80,23 +81,15 @@ export function SocketContextProvider({
           return;
         }
 
-        const socketInstance =
-          io(
-            process.env
-              .EXPO_PUBLIC_API_URL ||
-              (Platform.OS === "android"
-                ? "http://10.0.2.2:5001"
-                : "http://localhost:5001"),
-            {
-              auth: {
-                token,
-              },
-              transports: [
-                "websocket",
-              ],
-              autoConnect: true,
-            },
-          );
+        const socketInstance = io(getSocketBaseUrl(), {
+          auth: {
+            token,
+          },
+          transports: [
+            "websocket",
+          ],
+          autoConnect: true,
+        });
 
         socketRef.current =
           socketInstance;
