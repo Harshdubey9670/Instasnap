@@ -1,5 +1,7 @@
 const Story = require('../models/Story');
 const User = require('../models/User');
+const UserSettings = require('../models/UserSettings');
+const { canDownloadStory } = require('../utils/privacyGuards');
 
 const seedMockStoriesIfNeeded = async () => {
   const count = await Story.countDocuments();
@@ -748,6 +750,118 @@ exports.shareStory = async (req, res, next) => {
     }
 
     res.status(200).json({ success: true, message: 'Story shared to chat', data: createdMessages });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Authorized story download
+// @route   POST /api/stories/:id/download
+// @access  Private
+exports.downloadStory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const viewerId = (req.user._id || req.user.id);
+    const viewerIdStr = viewerId.toString();
+
+    // 1. Load story with author populated
+    const story = await Story.findById(id)
+      .populate('user', 'username profilePicture avatar isPrivate followers following blockedUsers closeFriends');
+
+    if (!story) {
+      return res.status(404).json({ success: false, message: 'Story not found' });
+    }
+
+    // 2. Story expiry: archived stories can still be downloaded by owner
+    const isOwner = (story.user._id || story.user).toString() === viewerIdStr;
+    const isExpired = story.expiresAt && new Date(story.expiresAt) < new Date();
+    if (isExpired && !isOwner) {
+      return res.status(403).json({ success: false, message: 'This story has expired' });
+    }
+
+    // 3. Content access check (privacy, blocks, private account)
+    const accessGranted = await canAccessStory(story, viewerId);
+    if (!accessGranted && !isOwner) {
+      return res.status(403).json({ success: false, message: 'Not authorized to access this story' });
+    }
+
+    // 4. Load story author settings for download permission
+    const storyAuthor = story.user;
+    const ownerSettings = await UserSettings.findOne({ user: storyAuthor._id });
+    const viewer = viewerIdStr !== storyAuthor._id.toString()
+      ? await User.findById(viewerId).select('blockedUsers')
+      : null;
+
+    // 5. Download permission guard
+    const { allowed, reason } = canDownloadStory(viewerId, story, storyAuthor, ownerSettings, viewer);
+    if (!allowed) {
+      const message = reason === 'blocked'
+        ? 'You cannot download this story'
+        : reason === 'creator_disabled'
+          ? 'The creator has disabled downloads for this story'
+          : 'Download not permitted';
+      return res.status(403).json({ success: false, message, reason });
+    }
+
+    // 6. Create notification (owner never notified about their own downloads)
+    if (!isOwner) {
+      const Notification = require('../models/Notification');
+      const { getIo } = require('../socket');
+      const io = getIo();
+
+      // Idempotency: at most ONE download notification per viewer+story within 60 seconds
+      const sixtySecondsAgo = new Date(Date.now() - 60 * 1000);
+      const existingNotif = await Notification.findOne({
+        recipient: storyAuthor._id,
+        sender: viewerId,
+        type: 'story_downloaded',
+        contentId: story._id,
+        createdAt: { $gte: sixtySecondsAgo }
+      });
+
+      if (!existingNotif) {
+        const viewerProfile = await User.findById(viewerId).select('username');
+        const notifMessage = `${viewerProfile?.username || 'Someone'} downloaded your story`;
+
+        const notification = await Notification.create({
+          recipient: storyAuthor._id,
+          sender: viewerId,
+          type: 'story_downloaded',
+          contentId: story._id,
+          contentType: 'story',
+          message: notifMessage
+        });
+
+        // Real-time delivery via existing notification socket
+        if (io) {
+          io.to(storyAuthor._id.toString()).emit('new_notification', {
+            type: 'story_downloaded',
+            senderId: viewerIdStr,
+            senderUsername: viewerProfile?.username,
+            contentId: story._id,
+            message: notifMessage,
+            notificationId: notification._id
+          });
+          io.to(storyAuthor._id.toString()).emit('notification_count_update', { delta: 1 });
+        }
+      }
+    }
+
+    // 7. Return authorized media URL
+    const mediaUrl = story.media?.[0]?.url;
+    if (!mediaUrl) {
+      return res.status(404).json({ success: false, message: 'No media found in this story' });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        downloadUrl: mediaUrl,
+        contentId: story._id,
+        contentType: 'story',
+        mediaType: story.media?.[0]?.type || 'image'
+      }
+    });
   } catch (error) {
     next(error);
   }
