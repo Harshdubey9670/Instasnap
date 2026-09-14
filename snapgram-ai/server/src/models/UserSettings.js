@@ -24,8 +24,33 @@ const userSettingsSchema = new mongoose.Schema({
     storySharing: { type: Boolean, default: true },
     filterOffensiveComments: { type: Boolean, default: true },
     hiddenWords: [{ type: String, trim: true, lowercase: true }],
+
+    // @deprecated — kept for backward compatibility one release cycle.
+    // Migration: hideFollowers=true → followersListVisibility='private'
+    // Migration: hideFollowing=true → followingListVisibility='private'
     hideFollowers: { type: Boolean, default: false },
     hideFollowing: { type: Boolean, default: false },
+
+    // ---- Follower / Following List Visibility (Phase T) ----
+    // PUBLIC     → any authenticated viewer can open the list
+    // FOLLOWERS  → only users who follow this account can open the list
+    // FOLLOWING  → only users that this account follows can open the list
+    // PRIVATE    → only the account owner
+    followersListVisibility: {
+      type: String,
+      enum: ['public', 'followers', 'following', 'private'],
+      default: 'public'
+    },
+    followingListVisibility: {
+      type: String,
+      enum: ['public', 'followers', 'following', 'private'],
+      default: 'public'
+    },
+
+    // ---- Download Permissions (Phase T) ----
+    // Global defaults — per-content override (downloadPermission field on Story/Reel) takes precedence
+    allowStoryDownloads: { type: Boolean, default: true },
+    allowReelDownloads: { type: Boolean, default: true },
   },
 
   // =====================================
