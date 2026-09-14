@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const UserSettings = require('../models/UserSettings');
+const { canViewFollowersList, canViewFollowingList } = require('../utils/privacyGuards');
 
 // @desc    Get user profile by ID
 // @route   GET /api/users/:id
@@ -6,15 +8,74 @@ const User = require('../models/User');
 const getUserProfile = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id)
-      .select('-password -otp -otpExpires')
-      .populate('followers', 'username avatar fullName')
-      .populate('following', 'username avatar fullName');
+      .select('-password -otp -otpExpires -sessions');
 
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    res.status(200).json({ success: true, data: user });
+    const viewerId = (req.user._id || req.user.id).toString();
+    const ownerId = user._id.toString();
+    const isOwner = viewerId === ownerId;
+
+    // Blocked check: if viewer is blocked by this user (or has blocked them), deny
+    const isBlockedByOwner = (user.blockedUsers || []).some(id => id.toString() === viewerId);
+    const viewerDoc = isBlockedByOwner ? null : await User.findById(viewerId).select('blockedUsers');
+    const hasBlockedOwner = viewerDoc && (viewerDoc.blockedUsers || []).some(id => id.toString() === ownerId);
+    if (isBlockedByOwner || hasBlockedOwner) {
+      return res.status(403).json({ success: false, message: 'Profile not accessible' });
+    }
+
+    // Build safe profile response — never expose full populated follower/following arrays to non-owners
+    const profileData = {
+      _id: user._id,
+      fullName: user.fullName,
+      username: user.username,
+      email: isOwner ? user.email : undefined,
+      phone: isOwner ? user.phone : undefined,
+      bio: user.bio,
+      website: user.website,
+      pronouns: user.pronouns,
+      coverPhoto: user.coverPhoto,
+      profilePicture: user.profilePicture,
+      avatar: user.avatar,
+      gender: isOwner ? user.gender : undefined,
+      dateOfBirth: isOwner ? user.dateOfBirth : undefined,
+      socialLinks: user.socialLinks,
+      isVerified: user.isVerified,
+      isPrivate: user.isPrivate,
+      accountType: user.accountType,
+      category: user.category,
+      role: isOwner ? user.role : undefined,
+      verificationRequestStatus: isOwner ? user.verificationRequestStatus : undefined,
+      // Counts only — full lists require separate authorized endpoint
+      followersCount: (user.followers || []).length,
+      followingCount: (user.following || []).length,
+      // Relationship data (owner needs their own lists for UI)
+      ...(isOwner && {
+        followers: user.followers,
+        following: user.following,
+        blockedUsers: user.blockedUsers,
+        mutedUsers: user.mutedUsers,
+        closeFriends: user.closeFriends,
+        restrictedUsers: user.restrictedUsers,
+        followRequests: user.followRequests,
+        sentFollowRequests: user.sentFollowRequests,
+        savedPosts: user.savedPosts,
+        searchHistory: user.searchHistory,
+      }),
+      // For non-owners, expose relationship signals needed for UI decisions
+      ...(!isOwner && {
+        isFollowing: (user.followers || []).some(id => id.toString() === viewerId),
+        isFollowedBy: (user.following || []).some(id => id.toString() === viewerId),
+        hasPendingRequest: (user.followRequests || []).some(id => id.toString() === viewerId),
+        isBlocked: isBlockedByOwner,
+      }),
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    };
+
+    res.status(200).json({ success: true, data: profileData });
   } catch (error) {
     next(error);
   }
@@ -263,10 +324,31 @@ const unfollowUser = async (req, res, next) => {
 // @access  Private
 const getFollowers = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id);
+    const viewerId = (req.user._id || req.user.id).toString();
+
+    // Load profile owner with relationship arrays needed for visibility evaluation
+    const user = await User.findById(req.params.id)
+      .select('followers following blockedUsers username');
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
+
+    // Load settings for visibility policy
+    const ownerSettings = await UserSettings.findOne({ user: user._id });
+
+    // Load viewer for bidirectional block check
+    const viewer = await User.findById(viewerId).select('blockedUsers');
+
+    // ── Privacy Guard ────────────────────────────────────────────────────────
+    const { allowed, reason } = canViewFollowersList(viewerId, user, ownerSettings, viewer);
+    if (!allowed) {
+      const message =
+        reason === 'blocked'
+          ? 'You cannot view this list'
+          : 'This account\'s followers list is private';
+      return res.status(403).json({ success: false, message, reason });
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 20;
@@ -330,10 +412,27 @@ const removeFollower = async (req, res, next) => {
 // @access  Private
 const getFollowing = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id);
+    const viewerId = (req.user._id || req.user.id).toString();
+
+    const user = await User.findById(req.params.id)
+      .select('followers following blockedUsers username');
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
+
+    const ownerSettings = await UserSettings.findOne({ user: user._id });
+    const viewer = await User.findById(viewerId).select('blockedUsers');
+
+    // ── Privacy Guard ────────────────────────────────────────────────────────
+    const { allowed, reason } = canViewFollowingList(viewerId, user, ownerSettings, viewer);
+    if (!allowed) {
+      const message =
+        reason === 'blocked'
+          ? 'You cannot view this list'
+          : 'This account\'s following list is private';
+      return res.status(403).json({ success: false, message, reason });
+    }
+    // ─────────────────────────────────────────────────────────────────────────
 
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 20;
