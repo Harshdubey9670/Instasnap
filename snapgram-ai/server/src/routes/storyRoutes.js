@@ -13,6 +13,7 @@ const {
   toggleLikeStory,
   deleteStory,
   shareStory,
+  downloadStory,
   getStoryComments,
   deleteStoryComment,
   toggleStoryCommentLike,
@@ -40,5 +41,7 @@ router.post('/:id/sticker-interact', protect, interactSticker);
 router.post('/:id/like', protect, toggleLikeStory);
 router.delete('/:id', protect, deleteStory);
 router.post('/:id/share', protect, shareStory);
+router.post('/:id/download', protect, downloadStory);
+
 
 module.exports = router;

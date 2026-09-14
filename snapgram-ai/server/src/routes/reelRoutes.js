@@ -9,7 +9,8 @@ const {
   deleteReel,
   getMusicLibrary,
   generateAICaptions,
-  getReelAnalytics
+  getReelAnalytics,
+  downloadReel
 } = require('../controllers/reelController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -27,5 +28,7 @@ router.put('/:id/like', toggleLike);
 router.put('/:id/view', incrementViews);
 router.put('/:id/share', incrementShares);
 router.delete('/:id', deleteReel);
+router.post('/:id/download', downloadReel);
+
 
 module.exports = router;
