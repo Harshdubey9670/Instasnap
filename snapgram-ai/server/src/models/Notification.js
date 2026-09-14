@@ -14,8 +14,25 @@ const notificationSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['mention', 'like', 'story_like', 'follow', 'comment', 'story_reply', 'reply', 'tag', 'follow_request', 'accept_request', 'follow_accepted', 'story', 'reel', 'save', 'system'],
+    enum: [
+      'mention', 'like', 'story_like', 'follow', 'comment', 'story_reply', 'reply',
+      'tag', 'follow_request', 'accept_request', 'follow_accepted', 'story', 'reel',
+      'save', 'system',
+      // Phase T — download notification types
+      'story_downloaded', 'reel_downloaded'
+    ],
     required: true
+  },
+  // Reference to the downloaded Story or Reel (optional, for deep-linking)
+  contentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: null
+  },
+  // 'story' | 'reel' — used when contentId is set
+  contentType: {
+    type: String,
+    enum: ['story', 'reel', 'post', null],
+    default: null
   },
   post: {
     type: mongoose.Schema.Types.ObjectId,
