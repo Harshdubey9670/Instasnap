@@ -26,7 +26,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react-native";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import * as Sharing from "expo-sharing";
 import { LinearGradient } from "expo-linear-gradient";
 

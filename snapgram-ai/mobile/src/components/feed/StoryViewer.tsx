@@ -30,7 +30,7 @@ import {
   type AVPlaybackStatus,
 } from "expo-av";
 import * as Clipboard from "expo-clipboard";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import * as MediaLibrary from "expo-media-library";
 import {
   router,
