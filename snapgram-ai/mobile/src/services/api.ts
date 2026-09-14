@@ -13,14 +13,10 @@ import {
   isProtectedPath,
 } from "../navigation/navigation";
 
-import { Platform } from "react-native";
-
-const API_URL =
-  process.env.EXPO_PUBLIC_API_URL ||
-  (Platform.OS === "android" ? "http://10.0.2.2:5001" : "http://localhost:5001");
+import { getApiBaseUrl } from "../config/env";
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: getApiBaseUrl(),
 });
 
 api.interceptors.request.use(
