@@ -20,10 +20,14 @@ import {
   VolumeX,
   Music2,
   Film,
+  Download,
 } from "lucide-react-native";
+import * as FileSystem from "expo-file-system";
+import * as MediaLibrary from "expo-media-library";
 import api from "../../services/api";
 import { Avatar } from "../../components/ui/Avatar";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useToast } from "../../components/ui/Toast";
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const DOUBLE_TAP_DELAY = 300;
@@ -43,6 +47,8 @@ const ReelItem = ({ reel, isActive, isMuted, onMuteToggle }: ReelItemProps) => {
   );
   const [likesCount, setLikesCount] = useState<number>(reel.likes?.length ?? 0);
   const [showHeart, setShowHeart] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const { toast } = useToast();
 
   const lastTap = useRef<number>(0);
 
@@ -84,6 +90,54 @@ const ReelItem = ({ reel, isActive, isMuted, onMuteToggle }: ReelItemProps) => {
     }
   };
 
+  const handleDownload = async () => {
+    if (downloading) return;
+    try {
+      setDownloading(true);
+      const res = await api.post(`/api/reels/${reel._id}/download`);
+      const { downloadUrl } = res.data?.data || res.data || {};
+      if (!downloadUrl) throw new Error("No download URL returned");
+
+      const permission = await MediaLibrary.requestPermissionsAsync();
+      if (!permission.granted) {
+        toast({
+          variant: "error",
+          title: "Permission Required",
+          description: "Allow photo/video access to save this reel.",
+        });
+        return;
+      }
+
+      const localUri = `${FileSystem.cacheDirectory}instasnap-reel-${reel._id}.mp4`;
+      const download = await FileSystem.downloadAsync(downloadUrl, localUri);
+      await MediaLibrary.saveToLibraryAsync(download.uri);
+
+      toast({
+        variant: "success",
+        title: "Saved!",
+        description: "Reel saved to your device",
+      });
+    } catch (err: any) {
+      if (err?.response?.status === 403) {
+        toast({
+          variant: "error",
+          title: "Restricted",
+          description:
+            err?.response?.data?.message ||
+            "The creator has disabled downloads for this reel",
+        });
+      } else {
+        toast({
+          variant: "error",
+          title: "Download Failed",
+          description: "Could not download reel. Please try again.",
+        });
+      }
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   return (
     <Pressable style={styles.reelContainer} onPress={handleDoubleTap}>
       {/* Video Placeholder Box / Preview */}
@@ -122,6 +176,15 @@ const ReelItem = ({ reel, isActive, isMuted, onMuteToggle }: ReelItemProps) => {
 
         <Pressable style={styles.sideAction}>
           <Share2 size={26} color="#fff" />
+        </Pressable>
+
+        <Pressable style={styles.sideAction} onPress={handleDownload} disabled={downloading}>
+          {downloading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <Download size={24} color="#fff" />
+          )}
+          <Text style={styles.sideText}>Save</Text>
         </Pressable>
 
         <Pressable style={styles.sideAction} onPress={onMuteToggle}>

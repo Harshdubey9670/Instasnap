@@ -1190,30 +1190,18 @@ export const StoryViewer = ({
 
   const handleSaveMedia =
     async () => {
-      if (!currentStory) {
-        return;
-      }
-
-      if (
-        currentStory.allowDownload ===
-        false
-      ) {
-        toast({
-          variant:
-            "error",
-          title:
-            "Restricted",
-          description:
-            "The owner has disabled saving for this story",
-        });
-        return;
-      }
-
-      if (!currentMediaUrl) {
+      if (!currentStory?._id) {
         return;
       }
 
       try {
+        // 1. Call authorized backend download endpoint
+        const res = await api.post(`/api/stories/${currentStory._id}/download`);
+        const { downloadUrl, mediaType } = res.data?.data || res.data || {};
+        const targetUrl = downloadUrl || currentMediaUrl;
+        if (!targetUrl) throw new Error("No download URL returned");
+
+        // 2. Request device permission
         const permission =
           await MediaLibrary.requestPermissionsAsync();
 
@@ -1231,8 +1219,9 @@ export const StoryViewer = ({
           return;
         }
 
+        const isVid = mediaType === "video" || isVideo;
         const extension =
-          isVideo
+          isVid
             ? "mp4"
             : "jpg";
 
@@ -1241,7 +1230,7 @@ export const StoryViewer = ({
 
         const download =
           await FileSystem.downloadAsync(
-            currentMediaUrl,
+            targetUrl,
             localUri,
           );
 
@@ -1257,19 +1246,27 @@ export const StoryViewer = ({
           description:
             "Story media saved to your device",
         });
-      } catch (error) {
-        console.error(
-          error,
-        );
-
-        toast({
-          variant:
-            "error",
-          title:
-            "Error",
-          description:
-            "Failed to save story media",
-        });
+      } catch (error: any) {
+        if (error?.response?.status === 403) {
+          toast({
+            variant:
+              "error",
+            title:
+              "Restricted",
+            description:
+              error?.response?.data?.message ||
+              "The owner has disabled saving for this story",
+          });
+        } else {
+          toast({
+            variant:
+              "error",
+            title:
+              "Error",
+            description:
+              "Failed to save story media",
+          });
+        }
       } finally {
         setVisibleModal(
           null,
