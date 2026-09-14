@@ -85,7 +85,16 @@ const storySchema = new mongoose.Schema({
   },
   allowDownload: {
     type: Boolean,
-    default: true
+    default: true // @deprecated — use downloadPermission or UserSettings.privacy.allowStoryDownloads
+  },
+  // Phase T: per-story download override
+  // 'allow'               → this story is always downloadable (if viewer has access)
+  // 'deny'                → this story is never downloadable
+  // 'use_account_default' → defer to UserSettings.privacy.allowStoryDownloads
+  downloadPermission: {
+    type: String,
+    enum: ['allow', 'deny', 'use_account_default'],
+    default: 'use_account_default'
   },
   analytics: {
     completionRate: { type: Number, default: 92 },
