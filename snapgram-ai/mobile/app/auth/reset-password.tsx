@@ -440,11 +440,9 @@ export default function ResetPasswordScreen() {
                         ) => (
                             <TextInput
                                 key={index}
-                                ref={(ref) =>
-                                (inputRefs.current[
-                                    index
-                                ] = ref)
-                                }
+                                ref={(ref) => {
+                                    inputRefs.current[index] = ref;
+                                }}
                                 value={digit}
                                 onChangeText={(
                                     value,

@@ -461,11 +461,9 @@ export default function OtpScreen() {
                         ) => (
                             <TextInput
                                 key={index}
-                                ref={(ref) =>
-                                (inputRefs.current[
-                                    index
-                                ] = ref)
-                                }
+                                ref={(ref) => {
+                                    inputRefs.current[index] = ref;
+                                }}
                                 value={digit}
                                 onChangeText={(
                                     value,
