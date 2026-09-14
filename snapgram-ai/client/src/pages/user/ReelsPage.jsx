@@ -11,7 +11,8 @@ import {
   VolumeX,
   Music2,
   Loader2,
-  Repeat
+  Repeat,
+  Download
 } from "lucide-react";
 import api from "../../services/api";
 import { useToast } from "../../components/ui/Toast";
@@ -103,6 +104,45 @@ const ReelItem = ({ reel, isActive, isMuted, onMuteToggle }) => {
       }
     } else {
       triggerLike();
+    }
+  };
+
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    try {
+      setDownloading(true);
+      const res = await api.post(`/api/reels/${reel._id}/download`);
+      const { downloadUrl } = res.data;
+      if (!downloadUrl) throw new Error("No download URL returned");
+
+      const response = await fetch(downloadUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `reel-${reel._id}.mp4`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast({ title: "Reel downloaded successfully" });
+    } catch (err) {
+      if (err.response?.status === 403) {
+        toast({
+          variant: "error",
+          title: "Download Restricted",
+          description: err.response.data?.message || "The creator has disabled downloads for this reel"
+        });
+      } else {
+        toast({
+          variant: "error",
+          title: "Download Failed",
+          description: "Could not download reel. Please try again."
+        });
+      }
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -224,6 +264,21 @@ const ReelItem = ({ reel, isActive, isMuted, onMuteToggle }) => {
           <Repeat className="w-7 h-7 text-white drop-shadow hover:text-primary-400 transition-colors" />
           <span className="text-white text-[10px] font-semibold drop-shadow">Remix</span>
         </Link>
+
+        {/* Download */}
+        <button
+          onClick={handleDownload}
+          disabled={downloading}
+          className="flex flex-col items-center gap-1.5"
+          title="Download Reel"
+        >
+          {downloading ? (
+            <Loader2 className="w-7 h-7 text-white animate-spin drop-shadow" />
+          ) : (
+            <Download className="w-7 h-7 text-white drop-shadow hover:text-primary-400 transition-colors" />
+          )}
+          <span className="text-white text-[10px] font-semibold drop-shadow">Save</span>
+        </button>
 
         {/* Mute toggle */}
         <button onClick={onMuteToggle}>

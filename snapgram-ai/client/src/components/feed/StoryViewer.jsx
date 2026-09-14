@@ -483,24 +483,37 @@ const StoryCard = ({
   };
 
   const handleSaveMedia = async () => {
-    if (story.allowDownload === false) {
-      toast({ variant: "error", title: "Restricted", description: "The owner has disabled saving for this story" });
-      return;
-    }
     try {
-      const response = await fetch(mediaUrl);
+      // Call authorized download endpoint — backend enforces all permissions
+      const res = await api.post(`/api/stories/${story._id}/download`);
+      const { downloadUrl, mediaType } = res.data.data;
+
+      const response = await fetch(downloadUrl);
+      if (!response.ok) throw new Error('Fetch failed');
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = blobUrl;
-      a.download = `instasnap-story-${story._id}.${isVideo ? 'mp4' : 'jpg'}`;
+      const ext = (mediaType === 'video' || isVideo) ? 'mp4' : 'jpg';
+      a.download = `instasnap-story-${story._id}.${ext}`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(blobUrl);
-      toast({ variant: "success", title: "Saved!", description: "Story media saved to your device" });
+      toast({ variant: "success", title: "Saved!", description: "Story saved to your device" });
     } catch (err) {
-      toast({ variant: "error", title: "Error", description: "Failed to download story media" });
+      const status = err.response?.status;
+      if (status === 403) {
+        const reason = err.response?.data?.reason;
+        const msg = reason === 'creator_disabled'
+          ? 'The creator has disabled downloads for this story'
+          : 'You don\'t have permission to download this story';
+        toast({ variant: "error", title: "Restricted", description: msg });
+      } else if (status === 404) {
+        toast({ variant: "error", title: "Not found", description: "Story no longer exists" });
+      } else {
+        toast({ variant: "error", title: "Error", description: "Failed to download story" });
+      }
     } finally {
       setShowShareOptionsSheet(false);
       setIsPaused(false);
