@@ -38,6 +38,11 @@ export async function removeAuthToken(): Promise<void> {
   }
 }
 
+// Per-account tokens are kept in SecureStore (hardware-encrypted), never in
+// AsyncStorage. Only non-sensitive profile metadata is persisted in the
+// plaintext accounts list below.
+const accountTokenKey = (id: string) => `account_token_${id}`;
+
 export async function getSavedAccounts(): Promise<SavedAccount[]> {
   try {
     const raw = await AsyncStorage.getItem(SAVED_ACCOUNTS_KEY);
@@ -51,12 +56,18 @@ export async function getSavedAccounts(): Promise<SavedAccount[]> {
 
 export async function saveAccount(account: SavedAccount): Promise<void> {
   try {
+    const { token, ...metadata } = account;
+    await SecureStore.setItemAsync(accountTokenKey(account._id), token);
+
     const accounts = await getSavedAccounts();
     const existingIndex = accounts.findIndex((a) => a._id === account._id);
+    // `token` is stripped from the persisted entry — SavedAccount.token is
+    // never populated with real data once read back from storage.
+    const entry: SavedAccount = { ...metadata, token: "" };
     if (existingIndex >= 0) {
-      accounts[existingIndex] = { ...accounts[existingIndex], ...account };
+      accounts[existingIndex] = { ...accounts[existingIndex], ...entry };
     } else {
-      accounts.push(account);
+      accounts.push(entry);
     }
     await AsyncStorage.setItem(SAVED_ACCOUNTS_KEY, JSON.stringify(accounts));
   } catch (error) {
@@ -69,6 +80,7 @@ export async function removeSavedAccount(id: string): Promise<void> {
     const accounts = await getSavedAccounts();
     const filtered = accounts.filter((a) => a._id !== id);
     await AsyncStorage.setItem(SAVED_ACCOUNTS_KEY, JSON.stringify(filtered));
+    await SecureStore.deleteItemAsync(accountTokenKey(id));
   } catch (error) {
     console.error("Failed to remove saved account:", error);
   }
@@ -79,7 +91,11 @@ export async function switchAccount(id: string): Promise<SavedAccount | null> {
     const accounts = await getSavedAccounts();
     const target = accounts.find((a) => a._id === id);
     if (!target) return null;
-    await setAuthToken(target.token);
+
+    const token = await SecureStore.getItemAsync(accountTokenKey(id));
+    if (!token) return null;
+
+    await setAuthToken(token);
     return target;
   } catch (error) {
     console.error("Failed to switch account:", error);

@@ -31,6 +31,7 @@ import {
 
 import type { RootState } from "../../src/store/store";
 import { logout } from "../../src/store/authSlice";
+import { removeAuthToken } from "../../src/utils/authStorage";
 import { Input } from "../../src/components/ui/Input";
 import { useTheme } from "../../src/contexts/ThemeContext";
 
@@ -236,6 +237,7 @@ const SettingsPage = () => {
 
   const handleLogout = async () => {
     try {
+      await removeAuthToken();
       dispatch(logout());
       router.replace("/auth/login");
     } catch (error) {
