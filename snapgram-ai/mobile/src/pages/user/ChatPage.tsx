@@ -26,10 +26,17 @@ import {
   ArrowLeft,
 } from "lucide-react-native";
 import api from "../../services/api";
+import { useTheme } from "../../contexts/ThemeContext";
+import { getColors, primary } from "../../theme/colors";
 
 export default function ChatPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const authUser = useSelector((state: any) => state.auth?.user);
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === "dark";
+  const colors = getColors(isDark);
+  const accent = primary[500];
+  const styles = createStyles(colors, isDark);
 
   const [conversations, setConversations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -138,7 +145,7 @@ export default function ChatPage() {
       <SafeAreaView style={styles.container}>
         <View style={styles.chatHeader}>
           <Pressable onPress={() => router.back()} style={styles.backBtn}>
-            <ArrowLeft size={22} color="#f8fafc" />
+            <ArrowLeft size={22} color={colors.textPrimary} />
           </Pressable>
           <View style={styles.headerPartner}>
             <Image
@@ -179,12 +186,12 @@ export default function ChatPage() {
           <TextInput
             style={styles.chatInput}
             placeholder="Message..."
-            placeholderTextColor="#64748b"
+            placeholderTextColor={colors.textSecondary}
             value={newMsgText}
             onChangeText={setNewMsgText}
           />
           <Pressable onPress={handleSendMessage} disabled={!newMsgText.trim()} style={styles.sendBtn}>
-            <Send size={18} color={newMsgText.trim() ? "#0095f6" : "#475569"} />
+            <Send size={18} color={newMsgText.trim() ? accent : colors.textSecondary} />
           </Pressable>
         </View>
       </SafeAreaView>
@@ -198,21 +205,21 @@ export default function ChatPage() {
       <View style={styles.inboxHeader}>
         <View style={styles.titleRow}>
           <Text style={styles.inboxTitle}>{authUser?.username || "Messages"}</Text>
-          <ChevronDown size={16} color="#f8fafc" />
+          <ChevronDown size={16} color={colors.textPrimary} />
         </View>
         <Pressable style={styles.iconBtn}>
-          <SquarePen size={20} color="#f8fafc" />
+          <SquarePen size={20} color={colors.textPrimary} />
         </Pressable>
       </View>
 
       {/* Search */}
       <View style={styles.searchContainer}>
         <View style={styles.searchBox}>
-          <Search size={16} color="#94a3b8" />
+          <Search size={16} color={colors.textSecondary} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search"
-            placeholderTextColor="#64748b"
+            placeholderTextColor={colors.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -269,7 +276,7 @@ export default function ChatPage() {
         {/* Conversations List */}
         {loading ? (
           <View style={{ padding: 40, alignItems: "center" }}>
-            <ActivityIndicator size="small" color="#f43f5e" />
+            <ActivityIndicator size="small" color={accent} />
           </View>
         ) : filteredConversations.length === 0 ? (
           <View style={styles.emptyInbox}>
@@ -314,13 +321,13 @@ export default function ChatPage() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>New Note</Text>
               <Pressable onPress={() => setShowAddNote(false)}>
-                <X size={20} color="#9ca3af" />
+                <X size={20} color={colors.textSecondary} />
               </Pressable>
             </View>
             <TextInput
               style={styles.noteInput}
               placeholder="Share a thought (up to 60 chars)..."
-              placeholderTextColor="#64748b"
+              placeholderTextColor={colors.textSecondary}
               maxLength={60}
               value={noteText}
               onChangeText={setNoteText}
@@ -339,141 +346,152 @@ export default function ChatPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#000000" },
-  inboxHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  titleRow: { flexDirection: "row", alignItems: "center", gap: 6 },
-  inboxTitle: { color: "#ffffff", fontSize: 20, fontWeight: "800" },
-  iconBtn: { padding: 4 },
-  searchContainer: { paddingHorizontal: 16, marginBottom: 8 },
-  searchBox: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#262626",
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 38,
-    gap: 8,
-  },
-  searchInput: { flex: 1, color: "#ffffff", fontSize: 13 },
-  notesContainer: { paddingHorizontal: 16, paddingVertical: 12, gap: 14 },
-  noteItem: { alignItems: "center", width: 66 },
-  avatarWrap: { position: "relative" },
-  noteAvatar: { width: 56, height: 56, borderRadius: 28, borderWidth: 1, borderColor: "#262626" },
-  addNoteBadge: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  noteBubble: {
-    position: "absolute",
-    top: -10,
-    backgroundColor: "#262626",
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 10,
-    zIndex: 10,
-    maxWidth: 60,
-  },
-  noteBubbleText: { color: "#ffffff", fontSize: 9, fontWeight: "600" },
-  noteAuthorText: { color: "#a8a8a8", fontSize: 11, marginTop: 4, textAlign: "center" },
-  tabsRow: {
-    flexDirection: "row",
-    gap: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#171717",
-  },
-  tabLabel: { color: "#737373", fontSize: 14, fontWeight: "700" },
-  tabLabelActive: { color: "#ffffff" },
-  convRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    gap: 12,
-  },
-  convAvatar: { width: 52, height: 52, borderRadius: 26 },
-  convInfo: { flex: 1 },
-  convName: { color: "#ffffff", fontSize: 13, fontWeight: "700" },
-  convPreview: { color: "#a8a8a8", fontSize: 12, marginTop: 2 },
-  emptyInbox: { alignItems: "center", padding: 40, marginTop: 20 },
-  sendIconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    borderWidth: 2,
-    borderColor: "#ffffff",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 16,
-  },
-  emptyInboxTitle: { color: "#ffffff", fontSize: 18, fontWeight: "800", marginBottom: 6 },
-  emptyInboxSubtitle: { color: "#737373", fontSize: 13, textAlign: "center" },
-  chatHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#171717",
-    gap: 12,
-  },
-  backBtn: { padding: 4 },
-  headerPartner: { flexDirection: "row", alignItems: "center", gap: 10 },
-  headerAvatar: { width: 36, height: 36, borderRadius: 18 },
-  headerName: { color: "#ffffff", fontSize: 13, fontWeight: "700" },
-  headerUsername: { color: "#737373", fontSize: 11 },
-  messagesList: { padding: 16, gap: 10 },
-  msgRow: { flexDirection: "row", width: "100%" },
-  msgRowMe: { justifyContent: "flex-end" },
-  msgRowThem: { justifyContent: "flex-start" },
-  msgBubble: { maxWidth: "75%", paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20 },
-  bubbleMe: { backgroundColor: "#3797f0" },
-  bubbleThem: { backgroundColor: "#262626" },
-  msgText: { fontSize: 13, lineHeight: 18 },
-  msgTextMe: { color: "#ffffff" },
-  msgTextThem: { color: "#ffffff" },
-  emptyMessages: { padding: 40, alignItems: "center" },
-  emptyText: { color: "#737373", fontSize: 13 },
-  inputBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#171717",
-    gap: 8,
-  },
-  chatInput: {
-    flex: 1,
-    backgroundColor: "#262626",
-    borderRadius: 20,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    color: "#ffffff",
-    fontSize: 13,
-  },
-  sendBtn: { padding: 8 },
-  modalBackdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.8)", justifyContent: "center", padding: 20 },
-  modalCard: { backgroundColor: "#171717", borderRadius: 20, padding: 20, borderWidth: 1, borderColor: "#262626" },
-  modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 14 },
-  modalTitle: { color: "#ffffff", fontSize: 16, fontWeight: "700" },
-  noteInput: {
-    backgroundColor: "#262626",
-    borderRadius: 12,
-    padding: 12,
-    color: "#ffffff",
-    fontSize: 13,
-    marginBottom: 16,
-  },
-  shareNoteBtn: { backgroundColor: "#0095f6", paddingVertical: 12, borderRadius: 12, alignItems: "center" },
-  shareNoteBtnText: { color: "#ffffff", fontSize: 13, fontWeight: "700" },
-});
+const createStyles = (colors: ReturnType<typeof getColors>, isDark: boolean) => {
+  const accent = primary[500];
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bgBase },
+    inboxHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+    },
+    titleRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+    inboxTitle: { color: colors.textPrimary, fontSize: 20, fontWeight: "800" },
+    iconBtn: { padding: 4 },
+    searchContainer: { paddingHorizontal: 16, marginBottom: 8 },
+    searchBox: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: colors.bgSurface,
+      borderRadius: 12,
+      paddingHorizontal: 12,
+      height: 38,
+      gap: 8,
+      borderWidth: 1,
+      borderColor: colors.borderSoft,
+    },
+    searchInput: { flex: 1, color: colors.textPrimary, fontSize: 13 },
+    notesContainer: { paddingHorizontal: 16, paddingVertical: 12, gap: 14 },
+    noteItem: { alignItems: "center", width: 66 },
+    avatarWrap: { position: "relative" },
+    noteAvatar: { width: 56, height: 56, borderRadius: 28, borderWidth: 1, borderColor: colors.borderSoft },
+    addNoteBadge: {
+      ...StyleSheet.absoluteFillObject,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    noteBubble: {
+      position: "absolute",
+      top: -10,
+      backgroundColor: colors.bgSurface,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: 10,
+      zIndex: 10,
+      maxWidth: 60,
+      borderWidth: 1,
+      borderColor: colors.borderSoft,
+    },
+    noteBubbleText: { color: colors.textPrimary, fontSize: 9, fontWeight: "600" },
+    noteAuthorText: { color: colors.textSecondary, fontSize: 11, marginTop: 4, textAlign: "center" },
+    tabsRow: {
+      flexDirection: "row",
+      gap: 20,
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderSoft,
+    },
+    tabLabel: { color: colors.textSecondary, fontSize: 14, fontWeight: "700" },
+    tabLabelActive: { color: accent },
+    convRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      gap: 12,
+    },
+    convAvatar: { width: 52, height: 52, borderRadius: 26 },
+    convInfo: { flex: 1 },
+    convName: { color: colors.textPrimary, fontSize: 13, fontWeight: "700" },
+    convPreview: { color: colors.textSecondary, fontSize: 12, marginTop: 2 },
+    emptyInbox: { alignItems: "center", padding: 40, marginTop: 20 },
+    sendIconCircle: {
+      width: 72,
+      height: 72,
+      borderRadius: 36,
+      borderWidth: 2,
+      borderColor: accent,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 16,
+    },
+    emptyInboxTitle: { color: colors.textPrimary, fontSize: 18, fontWeight: "800", marginBottom: 6 },
+    emptyInboxSubtitle: { color: colors.textSecondary, fontSize: 13, textAlign: "center" },
+    chatHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderSoft,
+      gap: 12,
+    },
+    backBtn: { padding: 4 },
+    headerPartner: { flexDirection: "row", alignItems: "center", gap: 10 },
+    headerAvatar: { width: 36, height: 36, borderRadius: 18 },
+    headerName: { color: colors.textPrimary, fontSize: 13, fontWeight: "700" },
+    headerUsername: { color: colors.textSecondary, fontSize: 11 },
+    messagesList: { padding: 16, gap: 10 },
+    msgRow: { flexDirection: "row", width: "100%" },
+    msgRowMe: { justifyContent: "flex-end" },
+    msgRowThem: { justifyContent: "flex-start" },
+    msgBubble: { maxWidth: "75%", paddingHorizontal: 14, paddingVertical: 10, borderRadius: 20 },
+    bubbleMe: { backgroundColor: accent },
+    bubbleThem: { backgroundColor: colors.bgSurface, borderWidth: 1, borderColor: colors.borderSoft },
+    msgText: { fontSize: 13, lineHeight: 18 },
+    msgTextMe: { color: "#ffffff" },
+    msgTextThem: { color: colors.textPrimary },
+    emptyMessages: { padding: 40, alignItems: "center" },
+    emptyText: { color: colors.textSecondary, fontSize: 13 },
+    inputBar: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderTopWidth: 1,
+      borderTopColor: colors.borderSoft,
+      gap: 8,
+    },
+    chatInput: {
+      flex: 1,
+      backgroundColor: colors.bgSurface,
+      borderRadius: 20,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      color: colors.textPrimary,
+      fontSize: 13,
+      borderWidth: 1,
+      borderColor: colors.borderSoft,
+    },
+    sendBtn: { padding: 8 },
+    modalBackdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.6)", justifyContent: "center", padding: 20 },
+    modalCard: { backgroundColor: colors.bgSurface, borderRadius: 20, padding: 20, borderWidth: 1, borderColor: colors.borderSoft },
+    modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 14 },
+    modalTitle: { color: colors.textPrimary, fontSize: 16, fontWeight: "700" },
+    noteInput: {
+      backgroundColor: colors.bgBase,
+      borderRadius: 12,
+      padding: 12,
+      color: colors.textPrimary,
+      fontSize: 13,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: colors.borderSoft,
+    },
+    shareNoteBtn: { backgroundColor: accent, paddingVertical: 12, borderRadius: 12, alignItems: "center" },
+    shareNoteBtnText: { color: "#ffffff", fontSize: 13, fontWeight: "700" },
+  });
+};

@@ -29,8 +29,16 @@ import {
   getContentPerformance,
   getDraftsAndScheduled,
 } from "../../services/creatorService";
+import { useTheme } from "../../contexts/ThemeContext";
+import { getColors, primary } from "../../theme/colors";
 
 export default function CreatorStudioPage() {
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === "dark";
+  const colors = getColors(isDark);
+  const accent = primary[500];
+  const styles = createStyles(colors, isDark);
+
   const [activeTab, setActiveTab] = useState<"overview" | "content" | "audience" | "manager">("overview");
   const [timeframe, setTimeframe] = useState("30d");
   const [loading, setLoading] = useState(true);
@@ -79,10 +87,10 @@ export default function CreatorStudioPage() {
       <View style={styles.header}>
         <View style={styles.headerTitleRow}>
           <Pressable onPress={() => router.back()} style={{ padding: 4 }}>
-            <ArrowLeft size={20} color="#f8fafc" />
+            <ArrowLeft size={20} color={colors.textPrimary} />
           </Pressable>
           <View style={styles.iconCircle}>
-            <Sparkles size={18} color="#f43f5e" />
+            <Sparkles size={18} color={accent} />
           </View>
           <View>
             <Text style={styles.headerTitle}>Creator Studio</Text>
@@ -120,7 +128,7 @@ export default function CreatorStudioPage() {
               onPress={() => setActiveTab(t.id as any)}
               style={[styles.tabChip, isActive && styles.tabChipActive]}
             >
-              <Icon size={14} color={isActive ? "#f43f5e" : "#94a3b8"} />
+              <Icon size={14} color={isActive ? accent : colors.textSecondary} />
               <Text style={[styles.tabChipText, isActive && styles.tabChipTextActive]}>{t.label}</Text>
             </Pressable>
           );
@@ -130,7 +138,7 @@ export default function CreatorStudioPage() {
       {/* Main Content */}
       {loading ? (
         <View style={styles.centerBox}>
-          <ActivityIndicator size="large" color="#f43f5e" />
+          <ActivityIndicator size="large" color={accent} />
         </View>
       ) : activeTab === "overview" && overview ? (
         <ScrollView style={styles.contentScroll} contentContainerStyle={{ paddingBottom: 40 }}>
@@ -221,82 +229,85 @@ export default function CreatorStudioPage() {
         </ScrollView>
       ) : (
         <View style={styles.centerBox}>
-          <Text style={{ color: "#94a3b8", fontSize: 13 }}>Section insights loaded</Text>
+          <Text style={{ color: colors.textSecondary, fontSize: 13 }}>Section insights loaded</Text>
         </View>
       )}
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f172a" },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#1e293b",
-  },
-  headerTitleRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  iconCircle: {
-    width: 34,
-    height: 34,
-    borderRadius: 10,
-    backgroundColor: "rgba(244, 63, 94, 0.15)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitle: { color: "#f8fafc", fontSize: 16, fontWeight: "800" },
-  headerSubtitle: { color: "#64748b", fontSize: 11 },
-  timeframeRow: { flexDirection: "row", gap: 4 },
-  tfPill: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: "#1e293b" },
-  tfPillActive: { backgroundColor: "#f43f5e" },
-  tfText: { color: "#94a3b8", fontSize: 11, fontWeight: "700" },
-  tfTextActive: { color: "#fff" },
-  tabsScroll: { maxHeight: 52, borderBottomWidth: 1, borderBottomColor: "#1e293b" },
-  tabsContainer: { paddingHorizontal: 12, alignItems: "center", gap: 6 },
-  tabChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 999,
-    backgroundColor: "#1e293b",
-  },
-  tabChipActive: {
-    backgroundColor: "rgba(244, 63, 94, 0.15)",
-    borderWidth: 1,
-    borderColor: "rgba(244, 63, 94, 0.3)",
-  },
-  tabChipText: { fontSize: 12, color: "#94a3b8", fontWeight: "600" },
-  tabChipTextActive: { color: "#f43f5e", fontWeight: "700" },
-  centerBox: { flex: 1, alignItems: "center", justifyContent: "center" },
-  contentScroll: { flex: 1, padding: 14 },
-  metricsGrid: { gap: 10, marginBottom: 16 },
-  metricCard: {
-    backgroundColor: "#1e293b",
-    borderRadius: 14,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: "#334155",
-  },
-  metricCardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  metricLabel: { color: "#94a3b8", fontSize: 10, fontWeight: "700" },
-  metricValue: { color: "#f8fafc", fontSize: 22, fontWeight: "800", marginVertical: 4 },
-  metricFoot: { color: "#10b981", fontSize: 11 },
-  chartCard: { backgroundColor: "#1e293b", borderRadius: 16, padding: 16 },
-  chartTitle: { color: "#f8fafc", fontSize: 14, fontWeight: "700", marginBottom: 16 },
-  barsContainer: { height: 120, flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between" },
-  barColumn: { flex: 1, alignItems: "center", height: "100%", justifyContent: "flex-end", gap: 6 },
-  barVisual: { width: 14, backgroundColor: "#f43f5e", borderRadius: 4 },
-  barLabel: { color: "#64748b", fontSize: 9 },
-  managerSection: { backgroundColor: "#1e293b", borderRadius: 16, padding: 16 },
-  sectionTitle: { color: "#f8fafc", fontSize: 14, fontWeight: "700", marginBottom: 10 },
-  emptyNotice: { color: "#64748b", fontSize: 12 },
-  draftItem: { paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "#334155" },
-  draftTitle: { color: "#f8fafc", fontSize: 13, fontWeight: "700" },
-  draftDate: { color: "#94a3b8", fontSize: 11, marginTop: 2 },
-});
+const createStyles = (colors: ReturnType<typeof getColors>, isDark: boolean) => {
+  const accent = primary[500];
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bgBase },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderSoft,
+    },
+    headerTitleRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+    iconCircle: {
+      width: 34,
+      height: 34,
+      borderRadius: 10,
+      backgroundColor: "rgba(168, 85, 247, 0.15)",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    headerTitle: { color: colors.textPrimary, fontSize: 16, fontWeight: "800" },
+    headerSubtitle: { color: colors.textSecondary, fontSize: 11 },
+    timeframeRow: { flexDirection: "row", gap: 4 },
+    tfPill: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: colors.bgSurface },
+    tfPillActive: { backgroundColor: accent },
+    tfText: { color: colors.textSecondary, fontSize: 11, fontWeight: "700" },
+    tfTextActive: { color: "#fff" },
+    tabsScroll: { maxHeight: 52, borderBottomWidth: 1, borderBottomColor: colors.borderSoft },
+    tabsContainer: { paddingHorizontal: 12, alignItems: "center", gap: 6 },
+    tabChip: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 7,
+      borderRadius: 999,
+      backgroundColor: colors.bgSurface,
+    },
+    tabChipActive: {
+      backgroundColor: "rgba(168, 85, 247, 0.15)",
+      borderWidth: 1,
+      borderColor: "rgba(168, 85, 247, 0.3)",
+    },
+    tabChipText: { fontSize: 12, color: colors.textSecondary, fontWeight: "600" },
+    tabChipTextActive: { color: accent, fontWeight: "700" },
+    centerBox: { flex: 1, alignItems: "center", justifyContent: "center" },
+    contentScroll: { flex: 1, padding: 14 },
+    metricsGrid: { gap: 10, marginBottom: 16 },
+    metricCard: {
+      backgroundColor: colors.bgSurface,
+      borderRadius: 14,
+      padding: 14,
+      borderWidth: 1,
+      borderColor: colors.borderSoft,
+    },
+    metricCardHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+    metricLabel: { color: colors.textSecondary, fontSize: 10, fontWeight: "700" },
+    metricValue: { color: colors.textPrimary, fontSize: 22, fontWeight: "800", marginVertical: 4 },
+    metricFoot: { color: "#10b981", fontSize: 11 },
+    chartCard: { backgroundColor: colors.bgSurface, borderRadius: 16, padding: 16 },
+    chartTitle: { color: colors.textPrimary, fontSize: 14, fontWeight: "700", marginBottom: 16 },
+    barsContainer: { height: 120, flexDirection: "row", alignItems: "flex-end", justifyContent: "space-between" },
+    barColumn: { flex: 1, alignItems: "center", height: "100%", justifyContent: "flex-end", gap: 6 },
+    barVisual: { width: 14, backgroundColor: accent, borderRadius: 4 },
+    barLabel: { color: colors.textSecondary, fontSize: 9 },
+    managerSection: { backgroundColor: colors.bgSurface, borderRadius: 16, padding: 16 },
+    sectionTitle: { color: colors.textPrimary, fontSize: 14, fontWeight: "700", marginBottom: 10 },
+    emptyNotice: { color: colors.textSecondary, fontSize: 12 },
+    draftItem: { paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.borderSoft },
+    draftTitle: { color: colors.textPrimary, fontSize: 13, fontWeight: "700" },
+    draftDate: { color: colors.textSecondary, fontSize: 11, marginTop: 2 },
+  });
+};

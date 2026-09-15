@@ -28,12 +28,19 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import api from "../../services/api";
 import { resolveImageSource } from "../../components/ui/Avatar";
+import { useTheme } from "../../contexts/ThemeContext";
+import { getColors, primary } from "../../theme/colors";
 
 const { width } = Dimensions.get("window");
 const ITEM_WIDTH = (width - 24) / 3;
 
 export default function ExplorePage() {
   const insets = useSafeAreaInsets();
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === "dark";
+  const colors = getColors(isDark);
+  const accent = primary[500];
+  const s = createStyles(colors, isDark);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -170,10 +177,10 @@ export default function ExplorePage() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={s.container}>
       {/* Search Header */}
-      <View style={[styles.header, { paddingTop: (insets.top || 20) + 8 }]}>
-        <View style={styles.searchBar}>
+      <View style={[s.header, { paddingTop: (insets.top || 20) + 8 }]}>
+        <View style={s.searchBar}>
           {isSearchActive ? (
             <Pressable
               onPress={() => {
@@ -184,18 +191,18 @@ export default function ExplorePage() {
               accessibilityRole="button"
               accessibilityLabel="Cancel search"
             >
-              <ArrowLeft size={18} color="#94a3b8" />
+              <ArrowLeft size={18} color={colors.textSecondary} />
             </Pressable>
           ) : (
-            <Search size={18} color="#94a3b8" />
+            <Search size={18} color={colors.textSecondary} />
           )}
           <TextInput
-            style={styles.searchInput}
+            style={s.searchInput}
             value={query}
             onFocus={() => setIsSearchActive(true)}
             onChangeText={setQuery}
             placeholder="Search users, posts, reels, hashtags..."
-            placeholderTextColor="#64748b"
+            placeholderTextColor={colors.textSecondary}
           />
           {(query.length > 0 || isSearchActive) && (
             <Pressable
@@ -203,23 +210,23 @@ export default function ExplorePage() {
                 setQuery("");
                 setIsSearchActive(false);
               }}
-              style={styles.clearBtn}
+              style={s.clearBtn}
             >
-              <X size={16} color="#94a3b8" />
+              <X size={16} color={colors.textSecondary} />
             </Pressable>
           )}
         </View>
 
         {/* Filter Chips if typing */}
         {isSearchActive && query.length > 0 && (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.chipRow}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={s.chipRow}>
             {(["all", "users", "posts", "reels", "hashtags"] as const).map((tab) => (
               <Pressable
                 key={tab}
                 onPress={() => setSearchTab(tab)}
-                style={[styles.chip, searchTab === tab && styles.chipActive]}
+                style={[s.chip, searchTab === tab && s.chipActive]}
               >
-                <Text style={[styles.chipText, searchTab === tab && styles.chipTextActive]}>
+                <Text style={[s.chipText, searchTab === tab && s.chipTextActive]}>
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </Text>
               </Pressable>
@@ -231,41 +238,41 @@ export default function ExplorePage() {
       {/* Main Body */}
       {isSearchActive ? (
         <ScrollView
-          style={styles.searchBody}
+          style={s.searchBody}
           contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 16) + 80 }}
           keyboardShouldPersistTaps="handled"
         >
           {debouncedQuery.trim().length === 0 ? (
-            <View style={styles.suggestionsContainer}>
+            <View style={s.suggestionsContainer}>
               {/* Recent Searches */}
               {recentSearches.length > 0 && (
-                <View style={styles.section}>
-                  <View style={styles.sectionHeader}>
-                    <Text style={styles.sectionTitle}>Recent Searches</Text>
+                <View style={s.section}>
+                  <View style={s.sectionHeader}>
+                    <Text style={s.sectionTitle}>Recent Searches</Text>
                     <Pressable onPress={clearAllRecent}>
-                      <Text style={styles.clearAllText}>Clear all</Text>
+                      <Text style={s.clearAllText}>Clear all</Text>
                     </Pressable>
                   </View>
                   {recentSearches.slice(0, 5).map((r) => (
                     <Pressable
                       key={r._id || Math.random().toString()}
                       onPress={() => handleSelectSuggestion(r.type, r)}
-                      style={styles.suggestionRow}
+                      style={s.suggestionRow}
                     >
-                      <View style={styles.suggestionLeft}>
-                        <View style={styles.suggestionIcon}>
+                      <View style={s.suggestionLeft}>
+                        <View style={s.suggestionIcon}>
                           {r.type === "hashtag" ? (
-                            <Hash size={16} color="#94a3b8" />
+                            <Hash size={16} color={colors.textSecondary} />
                           ) : r.avatar ? (
-                            <Image source={{ uri: r.avatar }} style={styles.avatarMini} />
+                            <Image source={{ uri: r.avatar }} style={s.avatarMini} />
                           ) : (
-                            <Clock size={16} color="#94a3b8" />
+                            <Clock size={16} color={colors.textSecondary} />
                           )}
                         </View>
-                        <Text style={styles.suggestionText}>{r.query}</Text>
+                        <Text style={s.suggestionText}>{r.query}</Text>
                       </View>
                       <Pressable onPress={() => removeRecent(r._id)}>
-                        <X size={16} color="#64748b" />
+                        <X size={16} color={colors.textSecondary} />
                       </Pressable>
                     </Pressable>
                   ))}
@@ -274,21 +281,21 @@ export default function ExplorePage() {
 
               {/* Popular Users */}
               {searchSuggestions.popularUsers?.length > 0 && (
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Suggested Users</Text>
+                <View style={s.section}>
+                  <Text style={s.sectionTitle}>Suggested Users</Text>
                   {searchSuggestions.popularUsers.map((u) => (
                     <Pressable
                       key={u._id}
                       onPress={() => handleSelectSuggestion("user", u)}
-                      style={styles.suggestionRow}
+                      style={s.suggestionRow}
                     >
                       <Image
                         source={{ uri: u.profilePicture || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" }}
-                        style={styles.avatarUser}
+                        style={s.avatarUser}
                       />
                       <View>
-                        <Text style={styles.userUsername}>{u.username}</Text>
-                        <Text style={styles.userFullname}>{u.fullName}</Text>
+                        <Text style={s.userUsername}>{u.username}</Text>
+                        <Text style={s.userFullname}>{u.fullName}</Text>
                       </View>
                     </Pressable>
                   ))}
@@ -297,17 +304,17 @@ export default function ExplorePage() {
 
               {/* Trending Hashtags */}
               {searchSuggestions.trendingTags?.length > 0 && (
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Trending Hashtags</Text>
-                  <View style={styles.tagWrap}>
+                <View style={s.section}>
+                  <Text style={s.sectionTitle}>Trending Hashtags</Text>
+                  <View style={s.tagWrap}>
                     {searchSuggestions.trendingTags.map((tag) => (
                       <Pressable
                         key={tag.tag}
                         onPress={() => handleSelectSuggestion("hashtag", tag)}
-                        style={styles.tagPill}
+                        style={s.tagPill}
                       >
-                        <TrendingUp size={12} color="#f43f5e" />
-                        <Text style={styles.tagText}>#{tag.tag}</Text>
+                        <TrendingUp size={12} color={accent} />
+                        <Text style={s.tagText}>#{tag.tag}</Text>
                       </Pressable>
                     ))}
                   </View>
@@ -315,28 +322,28 @@ export default function ExplorePage() {
               )}
             </View>
           ) : searchLoading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#f43f5e" />
+            <View style={s.loadingContainer}>
+              <ActivityIndicator size="large" color={accent} />
             </View>
           ) : (
-            <View style={styles.resultsContainer}>
+            <View style={s.resultsContainer}>
               {/* Users */}
               {(searchTab === "all" || searchTab === "users") && searchResults.users?.length > 0 && (
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Users</Text>
+                <View style={s.section}>
+                  <Text style={s.sectionTitle}>Users</Text>
                   {searchResults.users.map((u) => (
                     <Pressable
                       key={u._id}
                       onPress={() => router.push(`/app/profile/${u._id}` as any)}
-                      style={styles.suggestionRow}
+                      style={s.suggestionRow}
                     >
                       <Image
                         source={{ uri: u.profilePicture || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" }}
-                        style={styles.avatarUser}
+                        style={s.avatarUser}
                       />
                       <View>
-                        <Text style={styles.userUsername}>{u.username}</Text>
-                        <Text style={styles.userFullname}>{u.fullName}</Text>
+                        <Text style={s.userUsername}>{u.username}</Text>
+                        <Text style={s.userFullname}>{u.fullName}</Text>
                       </View>
                     </Pressable>
                   ))}
@@ -345,20 +352,20 @@ export default function ExplorePage() {
 
               {/* Hashtags */}
               {(searchTab === "all" || searchTab === "hashtags") && searchResults.hashtags?.length > 0 && (
-                <View style={styles.section}>
-                  <Text style={styles.sectionTitle}>Hashtags</Text>
+                <View style={s.section}>
+                  <Text style={s.sectionTitle}>Hashtags</Text>
                   {searchResults.hashtags.map((h) => (
                     <Pressable
                       key={h._id || h.tag}
                       onPress={() => router.push(`/app/hashtag/${h.tag}` as any)}
-                      style={styles.suggestionRow}
+                      style={s.suggestionRow}
                     >
-                      <View style={styles.suggestionIcon}>
-                        <Hash size={16} color="#f43f5e" />
+                      <View style={s.suggestionIcon}>
+                        <Hash size={16} color={accent} />
                       </View>
                       <View>
-                        <Text style={styles.userUsername}>#{h.tag}</Text>
-                        <Text style={styles.userFullname}>{h.postCount || 0} posts</Text>
+                        <Text style={s.userUsername}>#{h.tag}</Text>
+                        <Text style={s.userFullname}>{h.postCount || 0} posts</Text>
                       </View>
                     </Pressable>
                   ))}
@@ -369,35 +376,35 @@ export default function ExplorePage() {
         </ScrollView>
       ) : (
         <ScrollView
-          style={styles.exploreBody}
+          style={s.exploreBody}
           contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 16) + 80 }}
         >
           {/* Newest Drops Carousel */}
           {newestMedia.length > 0 && (
-            <View style={styles.carouselSection}>
-              <View style={styles.carouselTitleRow}>
-                <Clock size={16} color="#f43f5e" />
-                <Text style={styles.carouselTitle}>Newest Drops</Text>
+            <View style={s.carouselSection}>
+              <View style={s.carouselTitleRow}>
+                <Clock size={16} color={accent} />
+                <Text style={s.carouselTitle}>Newest Drops</Text>
               </View>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalCardsList}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.horizontalCardsList}>
                 {newestMedia.map((post) => (
                   <Pressable
                     key={post._id}
                     onPress={() => router.push(`/app/post/${post._id}` as any)}
-                    style={styles.dropCard}
+                    style={s.dropCard}
                   >
                     <Image
                       source={resolveImageSource(post.media?.[0]?.url) || { uri: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500" }}
-                      style={styles.dropCardImg}
+                      style={s.dropCardImg}
                     />
-                    <View style={styles.dropCardFooter}>
-                      <View style={styles.likesRow}>
+                    <View style={s.dropCardFooter}>
+                      <View style={s.likesRow}>
                         <Heart size={12} color="#fff" fill="#fff" />
-                        <Text style={styles.likesText}>{post.likes?.length || 0}</Text>
+                        <Text style={s.likesText}>{post.likes?.length || 0}</Text>
                       </View>
                       <Image
                         source={resolveImageSource(post.user?.profilePicture || post.user?.avatar) || { uri: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" }}
-                        style={styles.dropAvatar}
+                        style={s.dropAvatar}
                       />
                     </View>
                   </Pressable>
@@ -408,26 +415,26 @@ export default function ExplorePage() {
 
           {/* Suggested Reels */}
           {suggestedReels.length > 0 && (
-            <View style={styles.carouselSection}>
-              <View style={styles.carouselTitleRow}>
-                <Video size={16} color="#f43f5e" />
-                <Text style={styles.carouselTitle}>Suggested Reels</Text>
+            <View style={s.carouselSection}>
+              <View style={s.carouselTitleRow}>
+                <Video size={16} color={accent} />
+                <Text style={s.carouselTitle}>Suggested Reels</Text>
               </View>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalCardsList}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.horizontalCardsList}>
                 {suggestedReels.map((post) => (
                   <Pressable
                     key={post._id}
                     onPress={() => router.push(`/app/post/${post._id}` as any)}
-                    style={styles.dropCard}
+                    style={s.dropCard}
                   >
                     <Image
                       source={resolveImageSource(post.media?.[0]?.url) || { uri: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500" }}
-                      style={styles.dropCardImg}
+                      style={s.dropCardImg}
                     />
-                    <View style={styles.dropCardFooter}>
-                      <View style={styles.likesRow}>
+                    <View style={s.dropCardFooter}>
+                      <View style={s.likesRow}>
                         <Heart size={12} color="#fff" fill="#fff" />
-                        <Text style={styles.likesText}>{post.likes?.length || 0}</Text>
+                        <Text style={s.likesText}>{post.likes?.length || 0}</Text>
                       </View>
                     </View>
                   </Pressable>
@@ -437,22 +444,22 @@ export default function ExplorePage() {
           )}
 
           {/* Discover Header */}
-          <View style={styles.discoverHeader}>
-            <Compass size={18} color="#f43f5e" />
-            <Text style={styles.discoverTitle}>Discover</Text>
+          <View style={s.discoverHeader}>
+            <Compass size={18} color={accent} />
+            <Text style={s.discoverTitle}>Discover</Text>
           </View>
 
           {/* Grid of Posts */}
-          <View style={styles.gridContainer}>
+          <View style={s.gridContainer}>
             {posts.map((post) => (
               <Pressable
                 key={post._id}
                 onPress={() => router.push(`/app/post/${post._id}` as any)}
-                style={styles.gridItem}
+                style={s.gridItem}
               >
                 <Image
                   source={resolveImageSource(post.media?.[0]?.url) || { uri: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=500" }}
-                  style={styles.gridImg}
+                  style={s.gridImg}
                 />
               </Pressable>
             ))}
@@ -460,7 +467,7 @@ export default function ExplorePage() {
 
           {exploreLoading && (
             <View style={{ padding: 20, alignItems: "center" }}>
-              <ActivityIndicator size="small" color="#f43f5e" />
+              <ActivityIndicator size="small" color={accent} />
             </View>
           )}
         </ScrollView>
@@ -469,94 +476,104 @@ export default function ExplorePage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f172a" },
-  header: { paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: "#1e293b" },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#1e293b",
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 42,
-    gap: 8,
-  },
-  searchInput: { flex: 1, color: "#f8fafc", fontSize: 13 },
-  clearBtn: { padding: 4 },
-  chipRow: { marginTop: 8 },
-  chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: "#1e293b",
-    marginRight: 6,
-  },
-  chipActive: { backgroundColor: "#f43f5e" },
-  chipText: { fontSize: 12, color: "#94a3b8", fontWeight: "600" },
-  chipTextActive: { color: "#fff" },
-  searchBody: { flex: 1, paddingHorizontal: 12, paddingTop: 10 },
-  suggestionsContainer: { gap: 16 },
-  section: { marginBottom: 16 },
-  sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 },
-  sectionTitle: { fontSize: 11, fontWeight: "700", color: "#64748b", textTransform: "uppercase", letterSpacing: 0.5 },
-  clearAllText: { fontSize: 12, color: "#f43f5e", fontWeight: "600" },
-  suggestionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(255,255,255,0.03)",
-  },
-  suggestionLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
-  suggestionIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: "#1e293b",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  avatarMini: { width: 34, height: 34, borderRadius: 17 },
-  avatarUser: { width: 44, height: 44, borderRadius: 22, marginRight: 10 },
-  suggestionText: { color: "#f8fafc", fontSize: 13, fontWeight: "600" },
-  userUsername: { color: "#f8fafc", fontSize: 13, fontWeight: "700" },
-  userFullname: { color: "#64748b", fontSize: 11, marginTop: 1 },
-  tagWrap: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 8 },
-  tagPill: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: "#1e293b",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 999,
-  },
-  tagText: { color: "#f8fafc", fontSize: 12, fontWeight: "600" },
-  loadingContainer: { padding: 40, alignItems: "center" },
-  resultsContainer: { gap: 16 },
-  exploreBody: { flex: 1 },
-  carouselSection: { marginTop: 14 },
-  carouselTitleRow: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, marginBottom: 8 },
-  carouselTitle: { color: "#f8fafc", fontSize: 14, fontWeight: "700" },
-  horizontalCardsList: { paddingHorizontal: 12, gap: 10 },
-  dropCard: { width: 110, height: 160, borderRadius: 14, overflow: "hidden", backgroundColor: "#1e293b" },
-  dropCardImg: { width: "100%", height: "100%", resizeMode: "cover" },
-  dropCardFooter: {
-    position: "absolute",
-    bottom: 6,
-    left: 6,
-    right: 6,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  likesRow: { flexDirection: "row", alignItems: "center", gap: 3 },
-  likesText: { color: "#fff", fontSize: 10, fontWeight: "700" },
-  dropAvatar: { width: 18, height: 18, borderRadius: 9, borderWidth: 1, borderColor: "#fff" },
-  discoverHeader: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, marginTop: 20, marginBottom: 10 },
-  discoverTitle: { color: "#f8fafc", fontSize: 15, fontWeight: "800" },
-  gridContainer: { flexDirection: "row", flexWrap: "wrap", paddingHorizontal: 4, gap: 4 },
-  gridItem: { width: ITEM_WIDTH, height: ITEM_WIDTH, borderRadius: 6, overflow: "hidden", backgroundColor: "#1e293b" },
-  gridImg: { width: "100%", height: "100%", resizeMode: "cover" },
-});
+const createStyles = (colors: ReturnType<typeof getColors>, isDark: boolean) => {
+  const accent = primary[500];
+  const divider = isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)";
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bgBase },
+    header: { paddingHorizontal: 12, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: colors.borderSoft },
+    searchBar: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: colors.bgSurface,
+      borderRadius: 12,
+      paddingHorizontal: 12,
+      height: 42,
+      gap: 8,
+      borderWidth: 1,
+      borderColor: colors.borderSoft,
+    },
+    searchInput: { flex: 1, color: colors.textPrimary, fontSize: 13 },
+    clearBtn: { padding: 4 },
+    chipRow: { marginTop: 8 },
+    chip: {
+      paddingHorizontal: 14,
+      paddingVertical: 6,
+      borderRadius: 999,
+      backgroundColor: colors.bgSurface,
+      borderWidth: 1,
+      borderColor: colors.borderSoft,
+      marginRight: 6,
+    },
+    chipActive: { backgroundColor: accent, borderColor: accent },
+    chipText: { fontSize: 12, color: colors.textSecondary, fontWeight: "600" },
+    chipTextActive: { color: "#fff" },
+    searchBody: { flex: 1, paddingHorizontal: 12, paddingTop: 10 },
+    suggestionsContainer: { gap: 16 },
+    section: { marginBottom: 16 },
+    sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 },
+    sectionTitle: { fontSize: 11, fontWeight: "700", color: colors.textSecondary, textTransform: "uppercase", letterSpacing: 0.5 },
+    clearAllText: { fontSize: 12, color: accent, fontWeight: "600" },
+    suggestionRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingVertical: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: divider,
+    },
+    suggestionLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
+    suggestionIcon: {
+      width: 34,
+      height: 34,
+      borderRadius: 17,
+      backgroundColor: colors.bgSurface,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    avatarMini: { width: 34, height: 34, borderRadius: 17 },
+    avatarUser: { width: 44, height: 44, borderRadius: 22, marginRight: 10 },
+    suggestionText: { color: colors.textPrimary, fontSize: 13, fontWeight: "600" },
+    userUsername: { color: colors.textPrimary, fontSize: 13, fontWeight: "700" },
+    userFullname: { color: colors.textSecondary, fontSize: 11, marginTop: 1 },
+    tagWrap: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 8 },
+    tagPill: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      backgroundColor: colors.bgSurface,
+      borderWidth: 1,
+      borderColor: colors.borderSoft,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 999,
+    },
+    tagText: { color: colors.textPrimary, fontSize: 12, fontWeight: "600" },
+    loadingContainer: { padding: 40, alignItems: "center" },
+    resultsContainer: { gap: 16 },
+    exploreBody: { flex: 1 },
+    carouselSection: { marginTop: 14 },
+    carouselTitleRow: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, marginBottom: 8 },
+    carouselTitle: { color: colors.textPrimary, fontSize: 14, fontWeight: "700" },
+    horizontalCardsList: { paddingHorizontal: 12, gap: 10 },
+    dropCard: { width: 110, height: 160, borderRadius: 14, overflow: "hidden", backgroundColor: colors.bgSurface },
+    dropCardImg: { width: "100%", height: "100%", resizeMode: "cover" },
+    dropCardFooter: {
+      position: "absolute",
+      bottom: 6,
+      left: 6,
+      right: 6,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    likesRow: { flexDirection: "row", alignItems: "center", gap: 3 },
+    likesText: { color: "#fff", fontSize: 10, fontWeight: "700" },
+    dropAvatar: { width: 18, height: 18, borderRadius: 9, borderWidth: 1, borderColor: "#fff" },
+    discoverHeader: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 12, marginTop: 20, marginBottom: 10 },
+    discoverTitle: { color: colors.textPrimary, fontSize: 15, fontWeight: "800" },
+    gridContainer: { flexDirection: "row", flexWrap: "wrap", paddingHorizontal: 4, gap: 4 },
+    gridItem: { width: ITEM_WIDTH, height: ITEM_WIDTH, borderRadius: 6, overflow: "hidden", backgroundColor: colors.bgSurface },
+    gridImg: { width: "100%", height: "100%", resizeMode: "cover" },
+  });
+};

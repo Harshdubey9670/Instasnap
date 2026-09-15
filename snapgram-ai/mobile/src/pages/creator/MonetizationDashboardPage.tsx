@@ -34,8 +34,15 @@ import {
   getTaxInfo,
   updateTaxInfo,
 } from "../../services/monetizationService";
+import { useTheme } from "../../contexts/ThemeContext";
+import { getColors } from "../../theme/colors";
 
 export default function MonetizationDashboardPage() {
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === "dark";
+  const colors = getColors(isDark);
+  const styles = createStyles(colors, isDark);
+
   const [activeTab, setActiveTab] = useState<"overview" | "subscriptions" | "tips" | "affiliate" | "payouts">("overview");
   const [loading, setLoading] = useState(true);
 
@@ -114,7 +121,7 @@ export default function MonetizationDashboardPage() {
       <View style={styles.header}>
         <View style={styles.headerTitleRow}>
           <Pressable onPress={() => router.back()} style={{ padding: 4 }}>
-            <ArrowLeft size={20} color="#f8fafc" />
+            <ArrowLeft size={20} color={colors.textPrimary} />
           </Pressable>
           <View style={styles.iconCircle}>
             <DollarSign size={20} color="#10b981" />
@@ -148,7 +155,7 @@ export default function MonetizationDashboardPage() {
               onPress={() => setActiveTab(t.id as any)}
               style={[styles.tabChip, isActive && styles.tabChipActive]}
             >
-              <Icon size={14} color={isActive ? "#10b981" : "#94a3b8"} />
+              <Icon size={14} color={isActive ? "#10b981" : colors.textSecondary} />
               <Text style={[styles.tabChipText, isActive && styles.tabChipTextActive]}>{t.label}</Text>
             </Pressable>
           );
@@ -219,14 +226,14 @@ export default function MonetizationDashboardPage() {
             <TextInput
               style={styles.input}
               placeholder="Link Title (e.g. My Gear Store)"
-              placeholderTextColor="#64748b"
+              placeholderTextColor={colors.textSecondary}
               value={newLinkTitle}
               onChangeText={setNewLinkTitle}
             />
             <TextInput
               style={styles.input}
               placeholder="https://..."
-              placeholderTextColor="#64748b"
+              placeholderTextColor={colors.textSecondary}
               value={newLinkUrl}
               onChangeText={setNewLinkUrl}
             />
@@ -247,7 +254,7 @@ export default function MonetizationDashboardPage() {
         </ScrollView>
       ) : (
         <View style={styles.centerBox}>
-          <Text style={{ color: "#94a3b8", fontSize: 13 }}>No items in this section yet</Text>
+          <Text style={{ color: colors.textSecondary, fontSize: 13 }}>No items in this section yet</Text>
         </View>
       )}
 
@@ -258,7 +265,7 @@ export default function MonetizationDashboardPage() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Request Payout</Text>
               <Pressable onPress={() => setShowPayoutModal(false)}>
-                <X size={20} color="#94a3b8" />
+                <X size={20} color={colors.textSecondary} />
               </Pressable>
             </View>
             <Text style={styles.inputLabel}>Payout Amount ($USD)</Text>
@@ -266,7 +273,7 @@ export default function MonetizationDashboardPage() {
               style={styles.input}
               keyboardType="numeric"
               placeholder="Minimum $10.00"
-              placeholderTextColor="#64748b"
+              placeholderTextColor={colors.textSecondary}
               value={payoutAmount}
               onChangeText={setPayoutAmount}
             />
@@ -280,93 +287,96 @@ export default function MonetizationDashboardPage() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f172a" },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#1e293b",
-  },
-  headerTitleRow: { flexDirection: "row", alignItems: "center", gap: 10 },
-  iconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    backgroundColor: "rgba(16, 185, 129, 0.15)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerTitle: { color: "#f8fafc", fontSize: 16, fontWeight: "800" },
-  headerSubtitle: { color: "#64748b", fontSize: 11 },
-  payoutBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    backgroundColor: "#10b981",
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 10,
-  },
-  payoutBtnText: { color: "#fff", fontSize: 12, fontWeight: "700" },
-  tabsScroll: { maxHeight: 52, borderBottomWidth: 1, borderBottomColor: "#1e293b" },
-  tabsContainer: { paddingHorizontal: 12, alignItems: "center", gap: 6 },
-  tabChip: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 999,
-    backgroundColor: "#1e293b",
-  },
-  tabChipActive: {
-    backgroundColor: "rgba(16, 185, 129, 0.15)",
-    borderWidth: 1,
-    borderColor: "rgba(16, 185, 129, 0.3)",
-  },
-  tabChipText: { fontSize: 12, color: "#94a3b8", fontWeight: "600" },
-  tabChipTextActive: { color: "#10b981", fontWeight: "700" },
-  centerBox: { flex: 1, alignItems: "center", justifyContent: "center" },
-  contentScroll: { flex: 1, padding: 14 },
-  statCardsGrid: { gap: 12, marginBottom: 16 },
-  statCard: {
-    backgroundColor: "#1e293b",
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: "#334155",
-  },
-  statLabel: { color: "#94a3b8", fontSize: 10, fontWeight: "700", letterSpacing: 0.5 },
-  statValue: { color: "#f8fafc", fontSize: 24, fontWeight: "800", marginVertical: 4 },
-  statFoot: { color: "#64748b", fontSize: 11 },
-  sectionBox: { backgroundColor: "#1e293b", borderRadius: 16, padding: 16 },
-  sectionTitle: { color: "#f8fafc", fontSize: 14, fontWeight: "700" },
-  breakdownRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 10 },
-  dot: { width: 8, height: 8, borderRadius: 4 },
-  breakdownLabel: { color: "#94a3b8", fontSize: 13 },
-  breakdownAmt: { color: "#f8fafc", fontSize: 13, fontWeight: "700" },
-  input: {
-    backgroundColor: "#0f172a",
-    borderRadius: 10,
-    padding: 12,
-    color: "#f8fafc",
-    fontSize: 13,
-    marginBottom: 10,
-  },
-  addBtn: { backgroundColor: "#10b981", borderRadius: 10, paddingVertical: 12, alignItems: "center" },
-  addBtnText: { color: "#fff", fontSize: 13, fontWeight: "700" },
-  affiliateItem: { paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: "#334155" },
-  affTitle: { color: "#f8fafc", fontSize: 13, fontWeight: "700" },
-  affUrl: { color: "#10b981", fontSize: 11, marginTop: 2 },
-  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.8)", justifyContent: "center", padding: 20 },
-  modalCard: { backgroundColor: "#1e293b", borderRadius: 20, padding: 20 },
-  modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 14 },
-  modalTitle: { color: "#f8fafc", fontSize: 16, fontWeight: "700" },
-  inputLabel: { color: "#94a3b8", fontSize: 11, fontWeight: "600", marginBottom: 6 },
-  submitPayoutBtn: { backgroundColor: "#10b981", borderRadius: 10, paddingVertical: 12, alignItems: "center", marginTop: 8 },
-  submitPayoutText: { color: "#fff", fontSize: 13, fontWeight: "700" },
-});
+const createStyles = (colors: ReturnType<typeof getColors>, isDark: boolean) =>
+  StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bgBase },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderSoft,
+    },
+    headerTitleRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+    iconCircle: {
+      width: 36,
+      height: 36,
+      borderRadius: 12,
+      backgroundColor: "rgba(16, 185, 129, 0.15)",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    headerTitle: { color: colors.textPrimary, fontSize: 16, fontWeight: "800" },
+    headerSubtitle: { color: colors.textSecondary, fontSize: 11 },
+    payoutBtn: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      backgroundColor: "#10b981",
+      paddingHorizontal: 12,
+      paddingVertical: 7,
+      borderRadius: 10,
+    },
+    payoutBtnText: { color: "#fff", fontSize: 12, fontWeight: "700" },
+    tabsScroll: { maxHeight: 52, borderBottomWidth: 1, borderBottomColor: colors.borderSoft },
+    tabsContainer: { paddingHorizontal: 12, alignItems: "center", gap: 6 },
+    tabChip: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 7,
+      borderRadius: 999,
+      backgroundColor: colors.bgSurface,
+    },
+    tabChipActive: {
+      backgroundColor: "rgba(16, 185, 129, 0.15)",
+      borderWidth: 1,
+      borderColor: "rgba(16, 185, 129, 0.3)",
+    },
+    tabChipText: { fontSize: 12, color: colors.textSecondary, fontWeight: "600" },
+    tabChipTextActive: { color: "#10b981", fontWeight: "700" },
+    centerBox: { flex: 1, alignItems: "center", justifyContent: "center" },
+    contentScroll: { flex: 1, padding: 14 },
+    statCardsGrid: { gap: 12, marginBottom: 16 },
+    statCard: {
+      backgroundColor: colors.bgSurface,
+      borderRadius: 16,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: colors.borderSoft,
+    },
+    statLabel: { color: colors.textSecondary, fontSize: 10, fontWeight: "700", letterSpacing: 0.5 },
+    statValue: { color: colors.textPrimary, fontSize: 24, fontWeight: "800", marginVertical: 4 },
+    statFoot: { color: colors.textSecondary, fontSize: 11 },
+    sectionBox: { backgroundColor: colors.bgSurface, borderRadius: 16, padding: 16 },
+    sectionTitle: { color: colors.textPrimary, fontSize: 14, fontWeight: "700" },
+    breakdownRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 10 },
+    dot: { width: 8, height: 8, borderRadius: 4 },
+    breakdownLabel: { color: colors.textSecondary, fontSize: 13 },
+    breakdownAmt: { color: colors.textPrimary, fontSize: 13, fontWeight: "700" },
+    input: {
+      backgroundColor: colors.bgBase,
+      borderRadius: 10,
+      padding: 12,
+      color: colors.textPrimary,
+      fontSize: 13,
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: colors.borderSoft,
+    },
+    addBtn: { backgroundColor: "#10b981", borderRadius: 10, paddingVertical: 12, alignItems: "center" },
+    addBtnText: { color: "#fff", fontSize: 13, fontWeight: "700" },
+    affiliateItem: { paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.borderSoft },
+    affTitle: { color: colors.textPrimary, fontSize: 13, fontWeight: "700" },
+    affUrl: { color: "#10b981", fontSize: 11, marginTop: 2 },
+    modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.8)", justifyContent: "center", padding: 20 },
+    modalCard: { backgroundColor: colors.bgSurface, borderRadius: 20, padding: 20 },
+    modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 14 },
+    modalTitle: { color: colors.textPrimary, fontSize: 16, fontWeight: "700" },
+    inputLabel: { color: colors.textSecondary, fontSize: 11, fontWeight: "600", marginBottom: 6 },
+    submitPayoutBtn: { backgroundColor: "#10b981", borderRadius: 10, paddingVertical: 12, alignItems: "center", marginTop: 8 },
+    submitPayoutText: { color: "#fff", fontSize: 13, fontWeight: "700" },
+  });

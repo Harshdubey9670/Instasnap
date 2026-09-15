@@ -37,12 +37,19 @@ import {
 } from "lucide-react-native";
 import api from "../../services/api";
 import { resolveImageSource } from "../../components/ui/Avatar";
+import { useTheme } from "../../contexts/ThemeContext";
+import { getColors, primary } from "../../theme/colors";
 
 const { width } = Dimensions.get("window");
 
 export default function PostDetailPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const authUser = useSelector((state: any) => state.auth?.user);
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === "dark";
+  const colors = getColors(isDark);
+  const accent = primary[500];
+  const styles = createStyles(colors, isDark);
 
   const [targetPost, setTargetPost] = useState<any>(null);
   const [targetLoading, setTargetLoading] = useState(true);
@@ -168,7 +175,7 @@ export default function PostDetailPage() {
       {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
-          <ChevronLeft size={24} color="#f8fafc" />
+          <ChevronLeft size={24} color={colors.textPrimary} />
         </Pressable>
         <Text style={styles.headerTitle}>Post Stream</Text>
         <View style={{ width: 40 }} />
@@ -178,7 +185,7 @@ export default function PostDetailPage() {
         {/* Main Target Post */}
         {targetLoading ? (
           <View style={styles.centerBox}>
-            <ActivityIndicator size="large" color="#f43f5e" />
+            <ActivityIndicator size="large" color={accent} />
           </View>
         ) : targetPost ? (
           <PostCardView
@@ -202,7 +209,7 @@ export default function PostDetailPage() {
         {/* Separator */}
         <View style={styles.separator}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-            <Sparkles size={16} color="#f43f5e" />
+            <Sparkles size={16} color={accent} />
             <Text style={styles.sepTitle}>More to Explore</Text>
           </View>
           <Text style={styles.sepSubtitle}>Keep scrolling for more posts</Text>
@@ -227,7 +234,7 @@ export default function PostDetailPage() {
 
         {feedLoading && (
           <View style={{ padding: 20, alignItems: "center" }}>
-            <ActivityIndicator size="small" color="#f43f5e" />
+            <ActivityIndicator size="small" color={accent} />
           </View>
         )}
       </ScrollView>
@@ -239,7 +246,7 @@ export default function PostDetailPage() {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Edit Post Details</Text>
               <Pressable onPress={() => setEditingPost(null)}>
-                <X size={20} color="#9ca3af" />
+                <X size={20} color={colors.textSecondary} />
               </Pressable>
             </View>
             <Text style={styles.label}>Caption</Text>
@@ -275,6 +282,12 @@ export default function PostDetailPage() {
 }
 
 function PostCardView({ post, isMain, authUser, onArchive, onDelete, onEdit }: any) {
+  const { effectiveTheme } = useTheme();
+  const isDark = effectiveTheme === "dark";
+  const colors = getColors(isDark);
+  const accent = primary[500];
+  const styles = createStyles(colors, isDark);
+
   const [liked, setLiked] = useState(post.isLiked || false);
   const [likesCount, setLikesCount] = useState(post.likesCount || post.likes?.length || 0);
   const [saved, setSaved] = useState(post.isSaved || false);
@@ -348,7 +361,7 @@ function PostCardView({ post, isMain, authUser, onArchive, onDelete, onEdit }: a
             <Text style={styles.authorUsername}>@{post.user?.username || "user"}</Text>
             {post.location ? (
               <View style={styles.locRow}>
-                <MapPin size={10} color="#f43f5e" />
+                <MapPin size={10} color={accent} />
                 <Text style={styles.locText}>{post.location}</Text>
               </View>
             ) : null}
@@ -356,7 +369,7 @@ function PostCardView({ post, isMain, authUser, onArchive, onDelete, onEdit }: a
         </Pressable>
 
         <Pressable onPress={() => setShowMenu(!showMenu)} style={styles.menuBtn}>
-          <MoreHorizontal size={20} color="#9ca3af" />
+          <MoreHorizontal size={20} color={colors.textSecondary} />
         </Pressable>
       </View>
 
@@ -372,7 +385,7 @@ function PostCardView({ post, isMain, authUser, onArchive, onDelete, onEdit }: a
                 }}
                 style={styles.menuItem}
               >
-                <Edit3 size={14} color="#f8fafc" />
+                <Edit3 size={14} color={colors.textPrimary} />
                 <Text style={styles.menuItemText}>Edit Post</Text>
               </Pressable>
               <Pressable
@@ -406,7 +419,7 @@ function PostCardView({ post, isMain, authUser, onArchive, onDelete, onEdit }: a
             }}
             style={styles.menuItem}
           >
-            <Share2 size={14} color="#f8fafc" />
+            <Share2 size={14} color={colors.textPrimary} />
             <Text style={styles.menuItemText}>Share Post</Text>
           </Pressable>
         </View>
@@ -438,17 +451,17 @@ function PostCardView({ post, isMain, authUser, onArchive, onDelete, onEdit }: a
       <View style={styles.cardActions}>
         <View style={styles.actionsLeft}>
           <Pressable onPress={handleLike} style={styles.actionBtn}>
-            <Heart size={22} color={liked ? "#ef4444" : "#f8fafc"} fill={liked ? "#ef4444" : "transparent"} />
+            <Heart size={22} color={liked ? "#ef4444" : colors.textPrimary} fill={liked ? "#ef4444" : "transparent"} />
           </Pressable>
           <Pressable style={styles.actionBtn}>
-            <MessageCircle size={22} color="#f8fafc" />
+            <MessageCircle size={22} color={colors.textPrimary} />
           </Pressable>
           <Pressable style={styles.actionBtn}>
-            <Share2 size={22} color="#f8fafc" />
+            <Share2 size={22} color={colors.textPrimary} />
           </Pressable>
         </View>
         <Pressable onPress={handleSave} style={styles.actionBtn}>
-          <Bookmark size={22} color={saved ? "#f43f5e" : "#f8fafc"} fill={saved ? "#f43f5e" : "transparent"} />
+          <Bookmark size={22} color={saved ? accent : colors.textPrimary} fill={saved ? "#f43f5e" : "transparent"} />
         </Pressable>
       </View>
 
@@ -485,88 +498,91 @@ function PostCardView({ post, isMain, authUser, onArchive, onDelete, onEdit }: a
           onChangeText={setNewComment}
         />
         <Pressable onPress={handleAddComment} disabled={!newComment.trim()} style={styles.sendCommentBtn}>
-          <Send size={16} color={newComment.trim() ? "#f43f5e" : "#475569"} />
+          <Send size={16} color={newComment.trim() ? accent : colors.textSecondary} />
         </Pressable>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0f172a" },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#1e293b",
-  },
-  backBtn: { padding: 4 },
-  headerTitle: { fontSize: 16, fontWeight: "800", color: "#f8fafc" },
-  body: { flex: 1, paddingHorizontal: 12, paddingTop: 10 },
-  centerBox: { padding: 40, alignItems: "center" },
-  emptyText: { color: "#64748b", fontSize: 13 },
-  separator: { marginVertical: 16, borderTopWidth: 1, borderTopColor: "#1e293b", paddingTop: 12 },
-  sepTitle: { color: "#f8fafc", fontSize: 14, fontWeight: "700" },
-  sepSubtitle: { color: "#64748b", fontSize: 11, marginTop: 2 },
-  card: { backgroundColor: "#1e293b", borderRadius: 20, marginBottom: 18, overflow: "hidden" },
-  mainCard: { borderWidth: 1, borderColor: "rgba(244, 63, 94, 0.4)" },
-  authorRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 12 },
-  authorInfo: { flexDirection: "row", alignItems: "center", gap: 10 },
-  authorAvatar: { width: 38, height: 38, borderRadius: 19 },
-  authorUsername: { color: "#f8fafc", fontSize: 13, fontWeight: "700" },
-  locRow: { flexDirection: "row", alignItems: "center", gap: 3, marginTop: 2 },
-  locText: { color: "#94a3b8", fontSize: 10 },
-  menuBtn: { padding: 6 },
-  menuDropdown: {
-    backgroundColor: "#0f172a",
-    borderRadius: 12,
-    padding: 6,
-    marginHorizontal: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: "#334155",
-  },
-  menuItem: { flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 8, paddingHorizontal: 10 },
-  menuItemText: { color: "#f8fafc", fontSize: 12, fontWeight: "600" },
-  mediaContainer: { width: "100%", aspectRatio: 1, backgroundColor: "#000", position: "relative" },
-  mediaImage: { width: "100%", height: "100%", resizeMode: "cover" },
-  carouselNav: { ...StyleSheet.absoluteFillObject, justifyContent: "center" },
-  navArrowLeft: { position: "absolute", left: 10, backgroundColor: "rgba(0,0,0,0.5)", padding: 6, borderRadius: 20 },
-  navArrowRight: { position: "absolute", right: 10, backgroundColor: "rgba(0,0,0,0.5)", padding: 6, borderRadius: 20 },
-  cardActions: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 12, paddingTop: 10 },
-  actionsLeft: { flexDirection: "row", alignItems: "center", gap: 14 },
-  actionBtn: { padding: 4 },
-  likesCountText: { color: "#f8fafc", fontSize: 12, fontWeight: "700", paddingHorizontal: 16, marginTop: 6 },
-  captionRow: { flexDirection: "row", flexWrap: "wrap", paddingHorizontal: 16, marginTop: 6 },
-  captionUsername: { color: "#f8fafc", fontSize: 12, fontWeight: "700" },
-  captionText: { color: "#cbd5e1", fontSize: 12 },
-  commentsList: { paddingHorizontal: 16, marginTop: 8, gap: 4 },
-  commentItem: { flexDirection: "row", flexWrap: "wrap" },
-  commentUser: { color: "#f8fafc", fontSize: 11, fontWeight: "700" },
-  commentBody: { color: "#94a3b8", fontSize: 11 },
-  commentInputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(255,255,255,0.05)",
-    marginTop: 8,
-  },
-  commentInput: { flex: 1, color: "#f8fafc", fontSize: 12, paddingVertical: 4 },
-  sendCommentBtn: { padding: 6 },
-  modalBackdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.75)", justifyContent: "center", padding: 20 },
-  modalCard: { backgroundColor: "#1e293b", borderRadius: 20, padding: 20 },
-  modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 14 },
-  modalTitle: { color: "#f8fafc", fontSize: 15, fontWeight: "700" },
-  label: { color: "#94a3b8", fontSize: 11, fontWeight: "600", marginBottom: 4, marginTop: 8 },
-  input: { backgroundColor: "#0f172a", borderRadius: 10, padding: 10, color: "#f8fafc", fontSize: 12 },
-  modalBtns: { flexDirection: "row", gap: 10, marginTop: 16 },
-  cancelBtn: { flex: 1, paddingVertical: 10, backgroundColor: "#334155", borderRadius: 10, alignItems: "center" },
-  cancelBtnText: { color: "#94a3b8", fontSize: 12, fontWeight: "700" },
-  saveBtn: { flex: 1, paddingVertical: 10, backgroundColor: "#f43f5e", borderRadius: 10, alignItems: "center" },
-  saveBtnText: { color: "#fff", fontSize: 12, fontWeight: "700" },
-});
+const createStyles = (colors: ReturnType<typeof getColors>, isDark: boolean) => {
+  const accent = primary[500];
+  return StyleSheet.create({
+    container: { flex: 1, backgroundColor: colors.bgBase },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderSoft,
+    },
+    backBtn: { padding: 4 },
+    headerTitle: { fontSize: 16, fontWeight: "800", color: colors.textPrimary },
+    body: { flex: 1, paddingHorizontal: 12, paddingTop: 10 },
+    centerBox: { padding: 40, alignItems: "center" },
+    emptyText: { color: colors.textSecondary, fontSize: 13 },
+    separator: { marginVertical: 16, borderTopWidth: 1, borderTopColor: colors.borderSoft, paddingTop: 12 },
+    sepTitle: { color: colors.textPrimary, fontSize: 14, fontWeight: "700" },
+    sepSubtitle: { color: colors.textSecondary, fontSize: 11, marginTop: 2 },
+    card: { backgroundColor: colors.bgSurface, borderRadius: 20, marginBottom: 18, overflow: "hidden" },
+    mainCard: { borderWidth: 1, borderColor: "rgba(168, 85, 247, 0.4)" },
+    authorRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 12 },
+    authorInfo: { flexDirection: "row", alignItems: "center", gap: 10 },
+    authorAvatar: { width: 38, height: 38, borderRadius: 19 },
+    authorUsername: { color: colors.textPrimary, fontSize: 13, fontWeight: "700" },
+    locRow: { flexDirection: "row", alignItems: "center", gap: 3, marginTop: 2 },
+    locText: { color: colors.textSecondary, fontSize: 10 },
+    menuBtn: { padding: 6 },
+    menuDropdown: {
+      backgroundColor: colors.bgBase,
+      borderRadius: 12,
+      padding: 6,
+      marginHorizontal: 12,
+      marginBottom: 8,
+      borderWidth: 1,
+      borderColor: colors.borderSoft,
+    },
+    menuItem: { flexDirection: "row", alignItems: "center", gap: 8, paddingVertical: 8, paddingHorizontal: 10 },
+    menuItemText: { color: colors.textPrimary, fontSize: 12, fontWeight: "600" },
+    mediaContainer: { width: "100%", aspectRatio: 1, backgroundColor: "#000", position: "relative" },
+    mediaImage: { width: "100%", height: "100%", resizeMode: "cover" },
+    carouselNav: { ...StyleSheet.absoluteFillObject, justifyContent: "center" },
+    navArrowLeft: { position: "absolute", left: 10, backgroundColor: "rgba(0,0,0,0.5)", padding: 6, borderRadius: 20 },
+    navArrowRight: { position: "absolute", right: 10, backgroundColor: "rgba(0,0,0,0.5)", padding: 6, borderRadius: 20 },
+    cardActions: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 12, paddingTop: 10 },
+    actionsLeft: { flexDirection: "row", alignItems: "center", gap: 14 },
+    actionBtn: { padding: 4 },
+    likesCountText: { color: colors.textPrimary, fontSize: 12, fontWeight: "700", paddingHorizontal: 16, marginTop: 6 },
+    captionRow: { flexDirection: "row", flexWrap: "wrap", paddingHorizontal: 16, marginTop: 6 },
+    captionUsername: { color: colors.textPrimary, fontSize: 12, fontWeight: "700" },
+    captionText: { color: colors.textSecondary, fontSize: 12 },
+    commentsList: { paddingHorizontal: 16, marginTop: 8, gap: 4 },
+    commentItem: { flexDirection: "row", flexWrap: "wrap" },
+    commentUser: { color: colors.textPrimary, fontSize: 11, fontWeight: "700" },
+    commentBody: { color: colors.textSecondary, fontSize: 11 },
+    commentInputRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 12,
+      paddingVertical: 10,
+      borderTopWidth: 1,
+      borderTopColor: colors.borderSoft,
+      marginTop: 8,
+    },
+    commentInput: { flex: 1, color: colors.textPrimary, fontSize: 12, paddingVertical: 4 },
+    sendCommentBtn: { padding: 6 },
+    modalBackdrop: { flex: 1, backgroundColor: "rgba(0,0,0,0.75)", justifyContent: "center", padding: 20 },
+    modalCard: { backgroundColor: colors.bgSurface, borderRadius: 20, padding: 20 },
+    modalHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 14 },
+    modalTitle: { color: colors.textPrimary, fontSize: 15, fontWeight: "700" },
+    label: { color: colors.textSecondary, fontSize: 11, fontWeight: "600", marginBottom: 4, marginTop: 8 },
+    input: { backgroundColor: colors.bgBase, borderRadius: 10, padding: 10, color: colors.textPrimary, fontSize: 12, borderWidth: 1, borderColor: colors.borderSoft },
+    modalBtns: { flexDirection: "row", gap: 10, marginTop: 16 },
+    cancelBtn: { flex: 1, paddingVertical: 10, backgroundColor: colors.bgSurfaceHover, borderRadius: 10, alignItems: "center" },
+    cancelBtnText: { color: colors.textSecondary, fontSize: 12, fontWeight: "700" },
+    saveBtn: { flex: 1, paddingVertical: 10, backgroundColor: accent, borderRadius: 10, alignItems: "center" },
+    saveBtnText: { color: "#fff", fontSize: 12, fontWeight: "700" },
+  });
+};
