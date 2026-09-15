@@ -386,8 +386,9 @@ export default function ExploreScreen() {
   const isDark = effectiveTheme === "dark";
 
   const bgBase       = isDark ? "#0a0510" : "#f8fafc";
-  const searchBg     = isDark ? "#18122b" : "#ffffff";
-  const searchBorder = isDark ? "#2d1f4a" : "#e2e8f0";
+  // Matches web's "uiverse-input" search bar — always dark, independent of theme.
+  const searchBg     = "rgb(28,28,30)";
+  const searchBorder = "transparent";
   const textPrimary  = isDark ? "#f8fafc" : "#0f172a";
   const textSecond   = isDark ? "#94a3b8" : "#64748b";
 
@@ -742,6 +743,11 @@ export default function ExploreScreen() {
       return;
     }
 
+    // Guards against out-of-order responses: if the query/tab changes again
+    // before this request resolves, its response is discarded so a slower,
+    // stale request can't overwrite newer results on screen.
+    let isStale = false;
+
     const search =
       async () => {
         try {
@@ -772,6 +778,8 @@ export default function ExploreScreen() {
               `/api/search/advanced?${searchParams.toString()}`,
             );
 
+          if (isStale) return;
+
           if (
             response.data
               ?.success
@@ -784,18 +792,25 @@ export default function ExploreScreen() {
         } catch (
           error
         ) {
+          if (isStale) return;
           console.error(
             "Search error:",
             error,
           );
         } finally {
-          setSearchLoading(
-            false,
-          );
+          if (!isStale) {
+            setSearchLoading(
+              false,
+            );
+          }
         }
       };
 
     void search();
+
+    return () => {
+      isStale = true;
+    };
   }, [
     debouncedQuery,
     isSearchActive,
@@ -1014,7 +1029,7 @@ export default function ExploreScreen() {
             >
               <ArrowLeft
                 size={19}
-                color={textPrimary}
+                color={textSecond}
               />
             </Pressable>
           ) : (
@@ -1040,7 +1055,7 @@ export default function ExploreScreen() {
             placeholderTextColor="#94a3b8"
             style={[
               styles.searchInput,
-              { color: textPrimary },
+              { color: "#ffffff" },
             ]}
             autoCapitalize="none"
             autoCorrect={

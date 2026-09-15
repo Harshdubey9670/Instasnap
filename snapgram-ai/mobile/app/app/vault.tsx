@@ -53,6 +53,9 @@ import {
 } from "../../src/services/vaultService";
 import { useToast } from "../../src/components/ui/Toast";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import { GradientText } from "../../src/components/ui/GradientText";
+import { heroGradient } from "../../src/theme/colors";
 
 type Memory = {
   _id: string;
@@ -1204,21 +1207,19 @@ export default function VaultScreen() {
                     styles.headerText
                   }
                 >
-                  <Text
-                    style={
-                      styles.title
-                    }
-                  >
-                    Secure Memories Vault
-                  </Text>
+                  <GradientText
+                    text="Secure Memories Vault"
+                    fontSize={16}
+                    fontWeight="800"
+                  />
 
                   <Text
                     style={
                       styles.subtitle
                     }
                   >
-                    Private memories,
-                    albums and backups
+                    Encrypted private albums, hidden vaults, AI memory
+                    timeline, date flashback filters, and trash bin.
                   </Text>
                 </View>
               </View>
@@ -1242,7 +1243,7 @@ export default function VaultScreen() {
                       styles.syncedText
                     }
                   >
-                    Synced
+                    Cloud Synced
                   </Text>
                 </View>
 
@@ -1252,14 +1253,21 @@ export default function VaultScreen() {
                       true,
                     )
                   }
-                  style={
-                    styles.addButton
-                  }
                 >
-                  <Plus
-                    size={17}
-                    color="#ffffff"
-                  />
+                  <LinearGradient
+                    colors={heroGradient}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.addButton}
+                  >
+                    <Plus
+                      size={16}
+                      color="#ffffff"
+                    />
+                    <Text style={styles.addButtonText}>
+                      Add Memory
+                    </Text>
+                  </LinearGradient>
                 </Pressable>
 
                 <Pressable
@@ -1987,12 +1995,18 @@ const styles = StyleSheet.create({
   },
 
   addButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: "#a855f7",
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    gap: 6,
+    height: 34,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+  },
+
+  addButtonText: {
+    color: "#ffffff",
+    fontSize: 13,
+    fontWeight: "700",
   },
 
   lockButton: {

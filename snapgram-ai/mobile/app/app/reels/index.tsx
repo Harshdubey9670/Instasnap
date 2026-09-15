@@ -26,6 +26,7 @@ import {
 import {
   ArrowLeft,
   Camera,
+  Download,
   Heart,
   MessageCircle,
   Music2,
@@ -40,6 +41,8 @@ import { Avatar } from "../../../src/components/ui/Avatar";
 import {
   useSelector,
 } from "react-redux";
+import * as FileSystem from "expo-file-system/legacy";
+import * as MediaLibrary from "expo-media-library";
 
 import api from "../../../src/services/api";
 import {
@@ -405,6 +408,56 @@ const ReelItem = memo(
         toast,
       ]);
 
+    const [downloading, setDownloading] = useState(false);
+
+    const handleSaveReel = useCallback(async () => {
+      if (downloading) return;
+      try {
+        setDownloading(true);
+        const res = await api.post(`/api/reels/${reel._id}/download`);
+        const { downloadUrl } = res.data?.data || res.data || {};
+        if (!downloadUrl) throw new Error("No download URL returned");
+
+        const permission = await MediaLibrary.requestPermissionsAsync();
+        if (!permission.granted) {
+          toast({
+            variant: "error",
+            title: "Permission Required",
+            description: "Allow photo/video access to save this reel.",
+          });
+          return;
+        }
+
+        const localUri = `${FileSystem.cacheDirectory}snapgram-reel-${reel._id}.mp4`;
+        const download = await FileSystem.downloadAsync(downloadUrl, localUri);
+        await MediaLibrary.saveToLibraryAsync(download.uri);
+
+        toast({
+          variant: "success",
+          title: "Saved!",
+          description: "Reel saved to your device",
+        });
+      } catch (err: any) {
+        if (err?.response?.status === 403) {
+          toast({
+            variant: "error",
+            title: "Restricted",
+            description:
+              err?.response?.data?.message ||
+              "The creator has disabled downloads for this reel",
+          });
+        } else {
+          toast({
+            variant: "error",
+            title: "Download Failed",
+            description: "Could not download reel. Please try again.",
+          });
+        }
+      } finally {
+        setDownloading(false);
+      }
+    }, [downloading, reel._id, toast]);
+
     const handleView =
       useCallback(async () => {
         try {
@@ -693,6 +746,28 @@ const ReelItem = memo(
               }
             >
               Remix
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() =>
+              void handleSaveReel()
+            }
+            disabled={downloading}
+            style={
+              styles.actionButton
+            }
+          >
+            <Download
+              size={28}
+              color="#ffffff"
+            />
+            <Text
+              style={
+                styles.remixText
+              }
+            >
+              Save
             </Text>
           </Pressable>
 
