@@ -100,5 +100,11 @@ postSchema.index({ user: 1, createdAt: -1 });
 postSchema.index({ hashtags: 1 });
 postSchema.index({ hashtags: 1, createdAt: -1 });
 
+// Support the advanced search filters (location, media type) in
+// searchController — lets the query planner narrow the candidate set
+// before applying the regex/caption match instead of scanning every post.
+postSchema.index({ location: 1, createdAt: -1 });
+postSchema.index({ 'media.type': 1, createdAt: -1 });
+
 const Post = mongoose.model('Post', postSchema);
 module.exports = Post;

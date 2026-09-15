@@ -205,5 +205,9 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
+// Supports user search (username/fullName lookups in searchController).
+// username/email already get an index from `unique: true`.
+userSchema.index({ fullName: 1 });
+
 const User = mongoose.model('User', userSchema);
 module.exports = User;

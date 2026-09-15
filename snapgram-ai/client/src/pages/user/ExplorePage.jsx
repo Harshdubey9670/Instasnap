@@ -235,14 +235,28 @@ const ExplorePage = () => {
     const params = new URLSearchParams({ q: debouncedQuery, type: searchTab, limit: 15 });
     setSearchParams(params);
 
+    // Guards against out-of-order responses: if the query/tab changes again
+    // before this request resolves, its response is discarded so a slower,
+    // stale request can't overwrite newer results on screen.
+    let isStale = false;
+
     api.get(`/api/search/advanced?${params.toString()}`)
       .then(res => {
+        if (isStale) return;
         if (res.data.success) {
           setSearchResults(res.data.data);
         }
       })
-      .catch(console.error)
-      .finally(() => setSearchLoading(false));
+      .catch((err) => {
+        if (!isStale) console.error(err);
+      })
+      .finally(() => {
+        if (!isStale) setSearchLoading(false);
+      });
+
+    return () => {
+      isStale = true;
+    };
   }, [debouncedQuery, searchTab, isSearchActive, setSearchParams]);
 
   const handleSelectSuggestion = async (type, data) => {
