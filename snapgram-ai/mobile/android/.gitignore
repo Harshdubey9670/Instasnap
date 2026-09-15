@@ -19,3 +19,7 @@ local.properties
 !debug.keystore
 *.jks
 release-signing.properties
+
+# Native CMake / CXX builds
+.cxx/
+.cxx
