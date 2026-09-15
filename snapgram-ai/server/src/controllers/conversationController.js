@@ -2,8 +2,15 @@ const mongoose = require('mongoose');
 const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const User = require('../models/User');
+const logger = require('../utils/logger');
 
 const seedMockConversationsIfNeeded = async (userId) => {
+  // Demo-data helper only — must never run in production. It was previously
+  // unconditional, which meant real users with an empty inbox got 5
+  // fabricated conversations and invented messages attributed to other
+  // real accounts on the platform.
+  if (process.env.NODE_ENV === 'production') return;
+
   const count = await Conversation.countDocuments({ participants: userId });
   if (count > 0) return;
 
@@ -53,8 +60,13 @@ exports.getConversations = async (req, res, next) => {
       })
       .sort({ updatedAt: -1 });
 
+    logger.info('getConversations: fetched', {
+      userId: req.user._id.toString(), count: conversations.length,
+    });
+
     res.status(200).json({ success: true, data: conversations });
   } catch (error) {
+    logger.error('getConversations failed', error, { userId: req.user?._id?.toString() });
     next(error);
   }
 };
@@ -92,8 +104,14 @@ exports.createOrGetConversation = async (req, res, next) => {
 
     conversation = await Conversation.findById(conversation._id).populate('participants', 'username fullName profilePicture lastSeen');
 
+    logger.info('createOrGetConversation: created new conversation', {
+      conversationId: conversation._id.toString(),
+      participants: [req.user._id.toString(), userId.toString()],
+    });
+
     res.status(201).json({ success: true, data: conversation });
   } catch (error) {
+    logger.error('createOrGetConversation failed', error, { userId: req.user?._id?.toString() });
     next(error);
   }
 };
