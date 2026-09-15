@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Message = require('../models/Message');
+const logger = require('../utils/logger');
 
 // Tracks which sockets belong to which user.
 // Map<userId (string), Set<socketId (string)>>
@@ -45,14 +46,14 @@ const initSocket = (io) => {
       socket.user = user;
       next();
     } catch (err) {
-      console.error('Socket Auth Error:', err);
+      logger.error('Socket auth error', err);
       next(new Error('Authentication error: Invalid token'));
     }
   });
 
   io.on('connection', (socket) => {
     const userId = socket.user._id.toString();
-    console.log(`User connected: ${userId} (Socket: ${socket.id})`);
+    logger.info('Socket connected', { userId, socketId: socket.id });
 
     // 1. Join personal room for private notifications and chat
     socket.join(userId);
@@ -82,7 +83,7 @@ const initSocket = (io) => {
         await Message.findByIdAndUpdate(messageId, { status: 'delivered' });
         io.to(senderId).emit('messageDelivered', { messageId });
       } catch (err) {
-        console.error('Error marking delivered:', err);
+        logger.error('Error marking message delivered', err, { messageId, senderId });
       }
     });
 
@@ -134,7 +135,7 @@ const initSocket = (io) => {
 
     // 4. Handle Disconnection
     socket.on('disconnect', async () => {
-      console.log(`User disconnected: ${userId} (Socket: ${socket.id})`);
+      logger.info('Socket disconnected', { userId, socketId: socket.id });
       
       // Cleanup conversation presence
       if (socket.currentConversation) {
@@ -152,7 +153,7 @@ const initSocket = (io) => {
           try {
             await User.findByIdAndUpdate(userId, { lastSeen: new Date() });
           } catch (err) {
-            console.error('Error updating lastSeen:', err);
+            logger.error('Error updating lastSeen', err, { userId });
           }
         }
       }

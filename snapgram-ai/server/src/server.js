@@ -65,6 +65,8 @@ app.use(helmet({
   crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" }
 }));
 app.use(morgan('dev'));
+// Logs a warning for any request taking >1s (e.g. unindexed search scans).
+app.use(requestMonitorMiddleware());
 
 // Apply Global Rate Limiter
 app.use('/api/', globalLimiter);

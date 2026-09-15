@@ -1,6 +1,7 @@
 const Message = require('../models/Message');
 const Conversation = require('../models/Conversation');
 const { getIo } = require('../socket');
+const logger = require('../utils/logger');
 
 // @desc    Get Chat Messages
 // @route   GET /api/messages/:conversationId
@@ -11,6 +12,9 @@ exports.getMessages = async (req, res, next) => {
     
     const conversation = await Conversation.findById(conversationId);
     if (!conversation || !conversation.participants.includes(req.user._id)) {
+      logger.warn('getMessages: conversation not found or not a participant', {
+        conversationId, userId: req.user._id.toString(),
+      });
       return res.status(404).json({ success: false, message: 'Conversation not found' });
     }
 
@@ -48,11 +52,19 @@ exports.getMessages = async (req, res, next) => {
             io.to(participantId.toString()).emit('messagesSeen', { conversationId });
           }
         });
+      } else {
+        logger.warn('getMessages: socket.io not initialized, messagesSeen not broadcast', { conversationId });
       }
     }
-    
+
+    logger.info('getMessages: fetched', {
+      conversationId, userId: req.user._id.toString(),
+      count: messages.length, markedSeen: unreadMessages.modifiedCount,
+    });
+
     res.status(200).json({ success: true, data: messages });
   } catch (error) {
+    logger.error('getMessages failed', error, { conversationId: req.params.conversationId, userId: req.user?._id?.toString() });
     next(error);
   }
 };
@@ -75,6 +87,9 @@ exports.sendMessage = async (req, res, next) => {
 
     const conversation = await Conversation.findById(conversationId);
     if (!conversation || !conversation.participants.includes(req.user._id)) {
+      logger.warn('sendMessage: not authorized for conversation', {
+        conversationId, userId: req.user._id.toString(),
+      });
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
@@ -92,6 +107,9 @@ exports.sendMessage = async (req, res, next) => {
     );
 
     if (isBlockedByAny || hasBlockedAny) {
+      logger.warn('sendMessage: blocked by block-list settings', {
+        conversationId, userId: req.user._id.toString(), isBlockedByAny, hasBlockedAny,
+      });
       return res.status(403).json({ success: false, message: 'Messaging is disabled due to user block settings.' });
     }
 
@@ -114,17 +132,31 @@ exports.sendMessage = async (req, res, next) => {
 
     const io = getIo();
     if (io) {
-      // Attach clientMessageId so the sender's frontend can deduplicate the socket event 
+      // Attach clientMessageId so the sender's frontend can deduplicate the socket event
       // if it arrives before or after the HTTP response.
       const socketPayload = { ...newMessage.toJSON(), clientMessageId };
-      
+
       conversation.participants.forEach((participantId) => {
         io.to(participantId.toString()).emit('newMessage', socketPayload);
       });
+    } else {
+      logger.warn('sendMessage: socket.io not initialized, newMessage not broadcast', {
+        conversationId, messageId: newMessage._id.toString(),
+      });
     }
 
-    res.status(201).json({ success: true, data: newMessage });
+    logger.info('sendMessage: created', {
+      conversationId, userId: req.user._id.toString(),
+      messageId: newMessage._id.toString(), messageType: newMessage.messageType, isSnap,
+    });
+
+    // clientMessageId isn't persisted on the Message document, but the
+    // sender's client needs it back here too (not just via the socket
+    // broadcast) so it can reconcile its optimistic message regardless of
+    // whether the HTTP response or the socket event resolves first.
+    res.status(201).json({ success: true, data: { ...newMessage.toJSON(), clientMessageId } });
   } catch (error) {
+    logger.error('sendMessage failed', error, { conversationId: req.params.conversationId, userId: req.user?._id?.toString() });
     next(error);
   }
 };
