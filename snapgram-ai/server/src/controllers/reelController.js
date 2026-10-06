@@ -14,6 +14,9 @@ const extractMentions = (text) =>
 
 // Seed mock reels with real Cloudinary-compatible stock videos
 const seedMockReelsIfNeeded = async () => {
+  // Require explicit ENABLE_DEV_MOCK_SEEDING=true; never seed in production
+  if (process.env.NODE_ENV === 'production' || process.env.ENABLE_DEV_MOCK_SEEDING !== 'true') return;
+
   const count = await Reel.countDocuments();
   if (count > 0) return;
 
@@ -72,11 +75,17 @@ exports.getReels = async (req, res, next) => {
     const limit = parseInt(req.query.limit, 10) || 10;
     const skip = (page - 1) * limit;
 
+    // 'trending' reuses the { viewsCount: -1, createdAt: -1 } index to surface
+    // the most-watched recent reels; default feed order stays newest-first.
+    const sortOrder = req.query.sort === 'trending'
+      ? { viewsCount: -1, createdAt: -1 }
+      : { createdAt: -1 };
+
     const reels = await Reel.find()
-      .sort({ createdAt: -1 })
+      .sort(sortOrder)
       .skip(skip)
       .limit(limit)
-      .populate('user', 'username fullName profilePicture')
+      .populate('user', 'username fullName profilePicture isVerified')
       .lean();
 
     const total = await Reel.countDocuments();
@@ -159,7 +168,7 @@ exports.createReel = async (req, res, next) => {
       }
     }
 
-    const populated = await reel.populate('user', 'username fullName profilePicture');
+    const populated = await reel.populate('user', 'username fullName profilePicture isVerified');
     res.status(201).json({ success: true, data: populated });
   } catch (error) {
     next(error);
@@ -172,7 +181,7 @@ exports.createReel = async (req, res, next) => {
 exports.getReelById = async (req, res, next) => {
   try {
     const reel = await Reel.findById(req.params.id)
-      .populate('user', 'username fullName profilePicture')
+      .populate('user', 'username fullName profilePicture isVerified')
       .populate({
         path: 'comments',
         options: { sort: { createdAt: -1 }, limit: 20 },
@@ -208,19 +217,55 @@ exports.toggleLike = async (req, res, next) => {
       reel.likes.push(userId);
 
       // Fire like notification (not for self-likes)
+      // Notification model uses contentId+contentType for reel references
       if (reel.user.toString() !== userId.toString()) {
         const Notification = require('../models/Notification');
-        await Notification.create({
+        Notification.create({
           recipient: reel.user,
           sender: userId,
           type: 'like',
-          post: reel._id,
+          reel: reel._id,
+          contentId: reel._id,
+          contentType: 'reel',
+        }).catch(err => {
+          const logger = require('../utils/logger');
+          logger.error('[Reel Notification Error]', err);
         });
       }
     }
 
     await reel.save();
     res.status(200).json({ success: true, likes: reel.likes.length, liked: !alreadyLiked });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Save / Unsave a reel to the current user's collection
+// @route   PUT /api/reels/:id/save
+// @access  Private
+exports.toggleSaveReel = async (req, res, next) => {
+  try {
+    const reel = await Reel.findById(req.params.id);
+    if (!reel) {
+      return res.status(404).json({ success: false, message: 'Reel not found' });
+    }
+
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    const isSaved = user.savedReels.some((id) => id.toString() === reel._id.toString());
+
+    if (isSaved) {
+      user.savedReels = user.savedReels.filter((id) => id.toString() !== reel._id.toString());
+      reel.saves = reel.saves.filter((id) => id.toString() !== userId.toString());
+    } else {
+      user.savedReels.push(reel._id);
+      reel.saves.push(userId);
+    }
+
+    await Promise.all([user.save(), reel.save()]);
+
+    res.status(200).json({ success: true, data: user.savedReels, isSaved: !isSaved });
   } catch (error) {
     next(error);
   }
@@ -243,8 +288,16 @@ exports.incrementViews = async (req, res, next) => {
 // @access  Private
 exports.incrementShares = async (req, res, next) => {
   try {
-    await Reel.findByIdAndUpdate(req.params.id, { $inc: { sharesCount: 1 } });
-    res.status(200).json({ success: true });
+    const update = { $inc: { sharesCount: 1 } };
+    if (req.user?._id) {
+      update.$addToSet = { shares: req.user._id };
+    }
+    const updated = await Reel.findByIdAndUpdate(req.params.id, update, { new: true });
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Reel not found' });
+    }
+    const currentSharesCount = Math.max(updated.sharesCount || 0, updated.shares ? updated.shares.length : 0);
+    res.status(200).json({ success: true, sharesCount: currentSharesCount });
   } catch (error) {
     next(error);
   }
@@ -326,7 +379,7 @@ exports.getReelAnalytics = async (req, res, next) => {
 
     const likesCount = reel.likes ? reel.likes.length : 0;
     const viewsCount = reel.viewsCount || 100;
-    const sharesCount = reel.shares ? reel.shares.length : 0;
+    const sharesCount = Math.max(reel.sharesCount || 0, reel.shares ? reel.shares.length : 0);
 
     res.status(200).json({
       success: true,
@@ -410,6 +463,7 @@ exports.downloadReel = async (req, res, next) => {
           recipient: reelAuthor._id,
           sender: viewerId,
           type: 'reel_downloaded',
+          reel: reel._id,
           contentId: reel._id,
           contentType: 'reel',
           message: notifMessage

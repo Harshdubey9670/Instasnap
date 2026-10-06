@@ -89,12 +89,12 @@ export default function FollowersPage() {
   const requestIdRef = useRef(0);
 
   const darkMode = effectiveTheme === "dark";
-  const background = darkMode ? "#0a0510" : "#f8fafc";
-  const surface = darkMode ? "#130a1c" : "#ffffff";
-  const surfaceHover = darkMode ? "#1e112c" : "#f1f5f9";
+  const background = darkMode ? "#620d0b" : "#f8fafc";
+  const surface = darkMode ? "#4a0f0d" : "#ffffff";
+  const surfaceHover = darkMode ? "#5c1210" : "#f1f5f9";
   const textPrimary = darkMode ? "#f8fafc" : "#0f172a";
   const textSecondary = darkMode ? "#94a3b8" : "#64748b";
-  const border = darkMode ? "#2d1b3b" : "#e2e8f0";
+  const border = darkMode ? "#6e1815" : "#e2e8f0";
 
   const isOwner =
     String(authUser?._id || "") === String(targetUserId || "");
@@ -251,7 +251,7 @@ export default function FollowersPage() {
           accessibilityLabel={`Open ${item.username || "user"} profile`}
         >
           <LinearGradient
-            colors={["#ec4899", "#a855f7", "#facc15"]}
+            colors={["#f43f5e", "#ee7565", "#facc15"]}
             style={styles.avatarRing}
           >
             <View style={[styles.avatarBorder, { borderColor: surface }]}>
@@ -359,7 +359,7 @@ export default function FollowersPage() {
 
         {loading ? (
           <View style={styles.loadingState}>
-            <ActivityIndicator size="large" color="#a855f7" />
+            <ActivityIndicator size="large" color="#ee7565" />
           </View>
         ) : isPrivateList ? (
           <View
@@ -374,7 +374,7 @@ export default function FollowersPage() {
                 { backgroundColor: surfaceHover },
               ]}
             >
-              <Lock size={32} color="#a855f7" />
+              <Lock size={32} color="#ee7565" />
             </View>
             <Text style={[styles.emptyTitle, { color: textPrimary }]}>
               This account's followers list is private
@@ -422,7 +422,7 @@ export default function FollowersPage() {
             ListFooterComponent={
               loadingMore ? (
                 <View style={styles.footerLoader}>
-                  <ActivityIndicator size="small" color="#a855f7" />
+                  <ActivityIndicator size="small" color="#ee7565" />
                 </View>
               ) : null
             }

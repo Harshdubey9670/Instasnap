@@ -133,22 +133,22 @@ export const LikesModal = ({
 
   const surfaceColor =
     dark
-      ? "#130a1c"
+      ? "#4a0f0d"
       : "#ffffff";
 
   const baseColor =
     dark
-      ? "#0a0510"
+      ? "#620d0b"
       : "#f8fafc";
 
   const hoverColor =
     dark
-      ? "#1e112c"
+      ? "#5c1210"
       : "#f1f5f9";
 
   const borderColor =
     dark
-      ? "#2d1b3b"
+      ? "#6e1815"
       : "#e2e8f0";
 
   const primaryText =
@@ -265,7 +265,7 @@ export const LikesModal = ({
               >
                 <ActivityIndicator
                   size="small"
-                  color="#a855f7"
+                  color="#ee7565"
                 />
               </View>
             ) : likes.length ===

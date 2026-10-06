@@ -478,7 +478,7 @@ const MusicPicker = ({
           >
             <ActivityIndicator
               size="small"
-              color="#a855f7"
+              color="#ee7565"
             />
 
             <Text

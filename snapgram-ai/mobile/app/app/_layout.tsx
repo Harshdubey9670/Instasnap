@@ -17,7 +17,7 @@ import api from "../../src/services/api";
 import { Navbar } from "../../src/components/navigation/Navbar";
 import { MobileNav } from "../../src/components/navigation/MobileNav";
 import { AiAssistantDrawer } from "../../src/components/ai/AiAssistantDrawer";
-import { primary, secondary } from "../../src/theme/colors";
+import { getColors, primary, secondary } from "../../src/theme/colors";
 
 export default function AppLayout() {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,6 +31,7 @@ export default function AppLayout() {
   const { user: authUser } = useSelector((state: RootState) => state.auth);
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === "dark";
+  const colors = getColors(isDark);
 
   // Fetch initial unread notification count & user settings
   useEffect(() => {
@@ -80,7 +81,7 @@ export default function AppLayout() {
     };
   }, [socket, authUser, dispatch]);
 
-  const bgBase = isDark ? "#0a0510" : "#f8fafc";
+  const bgBase = colors.bgBase;
 
   // Pages that hide the top Navbar (Navbar already self-manages visibility for /app)
   const isFeedPage = pathname === "/app" || pathname === "/app/";
@@ -120,16 +121,16 @@ export default function AppLayout() {
         />
       </View>
 
-      {/* Top Navbar — receives scrollY for scroll-hide animation */}
-      {isFeedPage && <Navbar scrollY={scrollY} />}
+      {/* Top Navbar — hidden on feed page since FeedScreen has its own header */}
+      {!isFeedPage && <Navbar scrollY={scrollY} />}
 
       {/* Main Screen Content */}
       <View style={styles.content}>
         <Slot />
       </View>
 
-      {/* Floating AI Assistant Copilot Button & Drawer */}
-      {Boolean(authUser) && <AiAssistantDrawer />}
+      {/* Floating AI Assistant Copilot Button & Drawer (shown on secondary screens) */}
+      {Boolean(authUser) && !isFeedPage && <AiAssistantDrawer />}
 
       {/* Bottom Navigation Bar */}
       <MobileNav />

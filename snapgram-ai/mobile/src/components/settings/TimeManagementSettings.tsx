@@ -414,7 +414,7 @@ const TimeManagementSettings =
                   {
                     backgroundColor:
                       dark
-                        ? "#130a1c"
+                        ? "#4a0f0d"
                         : "#ffffff",
                   },
                 ]}
@@ -522,11 +522,11 @@ const TimeButton = ({
         {
           backgroundColor:
             dark
-              ? "#0a0510"
+              ? "#620d0b"
               : "#f8fafc",
           borderColor:
             dark
-              ? "#2d1b3b"
+              ? "#6e1815"
               : "#e2e8f0",
         },
         disabled &&
@@ -565,11 +565,11 @@ const SettingsCard = ({
       {
         backgroundColor:
           dark
-            ? "#130a1c"
+            ? "#4a0f0d"
             : "#ffffff",
         borderColor:
           dark
-            ? "#2d1b3b"
+            ? "#6e1815"
             : "#e2e8f0",
       },
     ]}
@@ -584,7 +584,7 @@ const SettingsCard = ({
               : "#0f172a",
           borderBottomColor:
             dark
-              ? "#2d1b3b"
+              ? "#6e1815"
               : "#e2e8f0",
         },
       ]}
@@ -700,7 +700,7 @@ const styles = StyleSheet.create({
   },
 
   doneText: {
-    color: "#a855f7",
+    color: "#ee7565",
     fontSize: 13,
     fontWeight: "800",
   },

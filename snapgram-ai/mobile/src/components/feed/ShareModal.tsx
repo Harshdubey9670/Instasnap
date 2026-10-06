@@ -269,11 +269,11 @@ export const ShareModal = ({
             {
               backgroundColor:
                 dark
-                  ? "#130a1c"
+                  ? "#4a0f0d"
                   : "#ffffff",
               borderColor:
                 dark
-                  ? "#2d1b3b"
+                  ? "#6e1815"
                   : "#e2e8f0",
             },
           ]}
@@ -331,11 +331,11 @@ export const ShareModal = ({
               {
                 backgroundColor:
                   dark
-                    ? "#1e112c"
+                    ? "#5c1210"
                     : "#f1f5f9",
                 borderColor:
                   dark
-                    ? "#2d1b3b"
+                    ? "#6e1815"
                     : "#e2e8f0",
               },
             ]}
@@ -410,11 +410,11 @@ export const ShareModal = ({
               {
                 backgroundColor:
                   dark
-                    ? "#1e112c"
+                    ? "#5c1210"
                     : "#f1f5f9",
                 borderColor:
                   dark
-                    ? "#2d1b3b"
+                    ? "#6e1815"
                     : "#e2e8f0",
               },
             ]}
@@ -487,8 +487,8 @@ export const ShareModal = ({
               {
                 backgroundColor:
                   dark
-                    ? "rgba(168,85,247,0.12)"
-                    : "rgba(168,85,247,0.10)",
+                    ? "rgba(238, 117, 101,0.12)"
+                    : "rgba(238, 117, 101,0.10)",
               },
             ]}
           >
@@ -498,14 +498,14 @@ export const ShareModal = ({
                 {
                   backgroundColor:
                     dark
-                      ? "#1e112c"
+                      ? "#5c1210"
                       : "#ffffff",
                 },
               ]}
             >
               <Share2
                 size={20}
-                color="#a855f7"
+                color="#ee7565"
               />
             </View>
 
@@ -533,7 +533,7 @@ export const ShareModal = ({
               icon={
                 <Globe
                   size={20}
-                  color="#38bdf8"
+                  color="#ff8878"
                 />
               }
               label="Share to X"
@@ -581,7 +581,7 @@ export const ShareModal = ({
               icon={
                 <Send
                   size={20}
-                  color="#a855f7"
+                  color="#ee7565"
                 />
               }
               label="Send"
@@ -619,11 +619,11 @@ const ShareOption = ({
       {
         backgroundColor:
           dark
-            ? "#1e112c"
+            ? "#5c1210"
             : "#f1f5f9",
         borderColor:
           dark
-            ? "#2d1b3b"
+            ? "#6e1815"
             : "#e2e8f0",
       },
       pressed &&
@@ -808,7 +808,7 @@ const styles =
 
       borderRadius: 10,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     copyButtonCopied: {
@@ -878,7 +878,7 @@ const styles =
         "center",
 
       backgroundColor:
-        "rgba(168,85,247,0.10)",
+        "rgba(238, 117, 101,0.10)",
     },
 
     optionText: {

@@ -403,7 +403,7 @@ export const SuggestedUsersSidebar =
               styles.copyright
             }
           >
-            © 2026 INSTASNAP AI
+            © 2026 NUVYELO AI
           </Text>
         </View>
       </ScrollView>
@@ -476,7 +476,7 @@ const styles =
     switchText: {
       fontSize: 11,
       fontWeight: "700",
-      color: "#a855f7",
+      color: "#ee7565",
     },
 
     sectionHeader: {

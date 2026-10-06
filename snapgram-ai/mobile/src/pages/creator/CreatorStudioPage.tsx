@@ -156,7 +156,7 @@ export default function CreatorStudioPage() {
             <View style={styles.metricCard}>
               <View style={styles.metricCardHeader}>
                 <Text style={styles.metricLabel}>IMPRESSIONS</Text>
-                <Eye size={16} color="#3b82f6" />
+                <Eye size={16} color="#ff8878" />
               </View>
               <Text style={styles.metricValue}>{overview.impressions?.toLocaleString() || "0"}</Text>
               <Text style={styles.metricFoot}>+18.6% engagement growth</Text>
@@ -165,7 +165,7 @@ export default function CreatorStudioPage() {
             <View style={styles.metricCard}>
               <View style={styles.metricCardHeader}>
                 <Text style={styles.metricLabel}>WATCH TIME</Text>
-                <Clock size={16} color="#a855f7" />
+                <Clock size={16} color="#ee7565" />
               </View>
               <Text style={styles.metricValue}>{overview.watchTimeHours || 0} hrs</Text>
               <Text style={styles.metricFoot}>+9.4% video retention</Text>
@@ -254,7 +254,7 @@ const createStyles = (colors: ReturnType<typeof getColors>, isDark: boolean) => 
       width: 34,
       height: 34,
       borderRadius: 10,
-      backgroundColor: "rgba(168, 85, 247, 0.15)",
+      backgroundColor: "rgba(238, 117, 101, 0.15)",
       alignItems: "center",
       justifyContent: "center",
     },
@@ -277,9 +277,9 @@ const createStyles = (colors: ReturnType<typeof getColors>, isDark: boolean) => 
       backgroundColor: colors.bgSurface,
     },
     tabChipActive: {
-      backgroundColor: "rgba(168, 85, 247, 0.15)",
+      backgroundColor: "rgba(238, 117, 101, 0.15)",
       borderWidth: 1,
-      borderColor: "rgba(168, 85, 247, 0.3)",
+      borderColor: "rgba(238, 117, 101, 0.3)",
     },
     tabChipText: { fontSize: 12, color: colors.textSecondary, fontWeight: "600" },
     tabChipTextActive: { color: accent, fontWeight: "700" },

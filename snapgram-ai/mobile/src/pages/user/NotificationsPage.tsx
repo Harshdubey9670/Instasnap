@@ -266,10 +266,10 @@ export default function NotificationsPage() {
   const colors = useMemo(
     () => ({
       background: darkMode
-        ? "#0a0510"
+        ? "#620d0b"
         : "#f8fafc",
       surface: darkMode
-        ? "#130a1c"
+        ? "#4a0f0d"
         : "#ffffff",
       textPrimary: darkMode
         ? "#f8fafc"
@@ -278,10 +278,10 @@ export default function NotificationsPage() {
         ? "#94a3b8"
         : "#64748b",
       border: darkMode
-        ? "#2d1b3b"
+        ? "#6e1815"
         : "#e2e8f0",
-      primary: "#a855f7",
-      primaryDark: "#9333ea",
+      primary: "#ee7565",
+      primaryDark: "#ca4840",
     }),
     [darkMode],
   );
@@ -1197,11 +1197,11 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 999,
     backgroundColor:
-      "rgba(168,85,247,0.18)",
+      "rgba(238, 117, 101,0.18)",
   },
 
   unreadBadgeText: {
-    color: "#a855f7",
+    color: "#ee7565",
     fontSize: 12,
     fontWeight: "700",
   },
@@ -1211,7 +1211,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 11,
     borderRadius: 999,
     backgroundColor:
-      "rgba(168,85,247,0.10)",
+      "rgba(238, 117, 101,0.10)",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

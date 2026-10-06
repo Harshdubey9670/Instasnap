@@ -14,7 +14,7 @@ export const SettingToggle = ({ label, description, checked, onChange, disabled 
         disabled={disabled}
         onClick={() => onChange(!checked)}
         className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-bg-base ${
-          checked ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-600'
+          checked ? 'bg-gradient-to-r from-primary-500 to-primary-700' : 'bg-white/15'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         <span className="sr-only">Toggle {label}</span>

@@ -25,8 +25,10 @@ import {
   getTaxInfo, 
   updateTaxInfo 
 } from '../../services/monetizationService';
+import { useToast } from '../../components/ui/Toast';
 
 export default function MonetizationDashboardPage() {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview'); // overview, subscriptions, tips, affiliate, payouts
   const [loading, setLoading] = useState(true);
 
@@ -84,7 +86,7 @@ export default function MonetizationDashboardPage() {
     e.preventDefault();
     const amt = parseFloat(payoutAmount);
     if (!amt || amt < 10) {
-      alert('Minimum payout amount is $10.00');
+      toast.error('Minimum payout amount is $10.00');
       return;
     }
     try {
@@ -92,9 +94,9 @@ export default function MonetizationDashboardPage() {
       setShowPayoutModal(false);
       setPayoutAmount('');
       fetchData();
-      alert('Payout request submitted!');
+      toast.success('Payout request submitted!');
     } catch (err) {
-      alert(err.response?.data?.message || 'Payout request failed');
+      toast.error(err.response?.data?.message || 'Payout request failed');
     }
   };
 
@@ -106,8 +108,9 @@ export default function MonetizationDashboardPage() {
       setNewLinkTitle('');
       setNewLinkUrl('');
       fetchData();
+      toast.success('Affiliate link added');
     } catch (err) {
-      alert('Failed to add affiliate link');
+      toast.error('Failed to add affiliate link');
     }
   };
 
@@ -117,9 +120,9 @@ export default function MonetizationDashboardPage() {
       const res = await updateTaxInfo({ legalName, taxIdType, taxId });
       setTaxInfo(res.data);
       setTaxId('');
-      alert('Tax information saved!');
+      toast.success('Tax information saved!');
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to save tax info');
+      toast.error(err.response?.data?.message || 'Failed to save tax info');
     }
   };
 
@@ -223,7 +226,7 @@ export default function MonetizationDashboardPage() {
                       { label: 'Tips & Contributions', amount: earnings.summary.revenueBreakdown.tips, color: 'bg-teal-500' },
                       { label: 'Supporter Badges', amount: earnings.summary.revenueBreakdown.badges, color: 'bg-primary-500' },
                       { label: 'Sponsored Posts', amount: earnings.summary.revenueBreakdown.sponsorships, color: 'bg-amber-500' },
-                      { label: 'Ad Revenue Share', amount: earnings.summary.revenueBreakdown.ads, color: 'bg-purple-500' },
+                      { label: 'Ad Revenue Share', amount: earnings.summary.revenueBreakdown.ads, color: 'bg-secondary-500' },
                       { label: 'Affiliate Commissions', amount: earnings.summary.revenueBreakdown.affiliates, color: 'bg-rose-500' },
                     ].map((item) => (
                       <div key={item.label} className="flex items-center justify-between text-sm">

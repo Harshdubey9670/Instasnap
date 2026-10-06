@@ -620,7 +620,7 @@ export default function VaultScreen() {
           >
             <Lock
               size={28}
-              color="#a855f7"
+              color="#ee7565"
             />
           </View>
 
@@ -811,7 +811,7 @@ export default function VaultScreen() {
             >
               <ShieldCheck
                 size={28}
-                color="#94a3b8"
+                color="rgba(255, 247, 245, 0.55)"
               />
             </View>
           )}
@@ -857,7 +857,7 @@ export default function VaultScreen() {
             >
               <Calendar
                 size={13}
-                color="#64748b"
+                color="rgba(255, 247, 245, 0.6)"
               />
 
               <Text
@@ -898,7 +898,7 @@ export default function VaultScreen() {
                   color={
                     item.isFavorite
                       ? "#ef4444"
-                      : "#64748b"
+                      : "rgba(255, 247, 245, 0.6)"
                   }
                   fill={
                     item.isFavorite
@@ -921,7 +921,7 @@ export default function VaultScreen() {
             >
               <Share2
                 size={17}
-                color="#64748b"
+                color="rgba(255, 247, 245, 0.6)"
               />
             </Pressable>
 
@@ -1087,12 +1087,12 @@ export default function VaultScreen() {
             {album.isHidden ? (
               <EyeOff
                 size={20}
-                color="#a855f7"
+                color="#ee7565"
               />
             ) : (
               <FolderPlus
                 size={20}
-                color="#a855f7"
+                color="#ee7565"
               />
             )}
           </View>
@@ -1187,7 +1187,7 @@ export default function VaultScreen() {
                 >
                   <ArrowLeft
                     size={22}
-                    color="#a855f7"
+                    color="#ee7565"
                   />
                 </Pressable>
 
@@ -1198,7 +1198,7 @@ export default function VaultScreen() {
                 >
                   <ShieldCheck
                     size={22}
-                    color="#a855f7"
+                    color="#ee7565"
                   />
                 </View>
 
@@ -1282,7 +1282,7 @@ export default function VaultScreen() {
                 >
                   <Lock
                     size={17}
-                    color="#64748b"
+                    color="rgba(255, 247, 245, 0.6)"
                   />
                 </Pressable>
               </View>
@@ -1318,7 +1318,7 @@ export default function VaultScreen() {
                       dateFilter ===
                       "flashback"
                         ? "#f59e0b"
-                        : "#64748b"
+                        : "rgba(255, 247, 245, 0.6)"
                     }
                   />
 
@@ -1342,7 +1342,7 @@ export default function VaultScreen() {
               >
                 <Search
                   size={17}
-                  color="#64748b"
+                  color="rgba(255, 247, 245, 0.6)"
                 />
 
                 <TextInput
@@ -1351,7 +1351,7 @@ export default function VaultScreen() {
                     setSearchQuery
                   }
                   placeholder="Search memories..."
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="rgba(255, 247, 245, 0.55)"
                   style={
                     styles.searchInput
                   }
@@ -1426,8 +1426,8 @@ export default function VaultScreen() {
                       size={14}
                       color={
                         active
-                          ? "#a855f7"
-                          : "#64748b"
+                          ? "#ee7565"
+                          : "rgba(255, 247, 245, 0.6)"
                       }
                     />
 
@@ -1457,7 +1457,7 @@ export default function VaultScreen() {
                   >
                     <Key
                       size={22}
-                      color="#a855f7"
+                      color="#ee7565"
                     />
 
                     <Text
@@ -1481,7 +1481,7 @@ export default function VaultScreen() {
                       secureTextEntry
                       keyboardType="number-pad"
                       placeholder="New 4-digit PIN"
-                      placeholderTextColor="#94a3b8"
+                      placeholderTextColor="rgba(255, 247, 245, 0.55)"
                       style={
                         styles.pinInput
                       }
@@ -1524,7 +1524,7 @@ export default function VaultScreen() {
                 >
                   <ActivityIndicator
                     size="large"
-                    color="#a855f7"
+                    color="#ee7565"
                   />
                 </View>
               )}
@@ -1549,12 +1549,12 @@ export default function VaultScreen() {
                 "trash" ? (
                   <Trash2
                     size={28}
-                    color="#94a3b8"
+                    color="rgba(255, 247, 245, 0.55)"
                   />
                 ) : (
                   <ShieldCheck
                     size={28}
-                    color="#94a3b8"
+                    color="rgba(255, 247, 245, 0.55)"
                   />
                 )}
               </View>
@@ -1616,7 +1616,7 @@ export default function VaultScreen() {
                 setNewTitle
               }
               placeholder="Memory title"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="rgba(255, 247, 245, 0.55)"
               style={
                 styles.modalInput
               }
@@ -1628,7 +1628,7 @@ export default function VaultScreen() {
                 setNewMediaUrl
               }
               placeholder="Media URL"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="rgba(255, 247, 245, 0.55)"
               autoCapitalize="none"
               style={
                 styles.modalInput
@@ -1649,12 +1649,12 @@ export default function VaultScreen() {
               {isPrivate ? (
                 <Lock
                   size={16}
-                  color="#a855f7"
+                  color="#ee7565"
                 />
               ) : (
                 <Eye
                   size={16}
-                  color="#64748b"
+                  color="rgba(255, 247, 245, 0.6)"
                 />
               )}
 
@@ -1750,7 +1750,7 @@ export default function VaultScreen() {
                 setNewAlbumName
               }
               placeholder="Album name"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="rgba(255, 247, 245, 0.55)"
               style={
                 styles.modalInput
               }
@@ -1770,12 +1770,12 @@ export default function VaultScreen() {
               {isHiddenAlbum ? (
                 <EyeOff
                   size={16}
-                  color="#a855f7"
+                  color="#ee7565"
                 />
               ) : (
                 <Eye
                   size={16}
-                  color="#64748b"
+                  color="rgba(255, 247, 245, 0.6)"
                 />
               )}
 
@@ -1859,7 +1859,7 @@ export default function VaultScreen() {
           >
             <Share2
               size={24}
-              color="#a855f7"
+              color="#ee7565"
             />
 
             <Text
@@ -1907,7 +1907,7 @@ export default function VaultScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#851613",
   },
 
   content: {
@@ -1934,9 +1934,9 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
@@ -1946,9 +1946,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: "rgba(168,85,247,0.10)",
+    backgroundColor: "rgba(238, 117, 101,0.10)",
     borderWidth: 1,
-    borderColor: "rgba(168,85,247,0.20)",
+    borderColor: "rgba(238, 117, 101,0.20)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 8,
@@ -1962,13 +1962,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   subtitle: {
     marginTop: 2,
     fontSize: 10,
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
   },
 
   headerActions: {
@@ -2013,9 +2013,9 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -2031,9 +2031,9 @@ const styles = StyleSheet.create({
     minHeight: 40,
     paddingHorizontal: 10,
     borderRadius: 12,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
@@ -2047,7 +2047,7 @@ const styles = StyleSheet.create({
   flashbackText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
   },
 
   flashbackTextActive: {
@@ -2058,9 +2058,9 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 40,
     borderRadius: 12,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 10,
@@ -2069,7 +2069,7 @@ const styles = StyleSheet.create({
 
   searchInput: {
     flex: 1,
-    color: "#0f172a",
+    color: "#FFF7F5",
     fontSize: 12,
   },
 
@@ -2082,27 +2082,27 @@ const styles = StyleSheet.create({
     minHeight: 38,
     paddingHorizontal: 11,
     borderRadius: 11,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
   },
 
   vaultTabActive: {
-    backgroundColor: "rgba(168,85,247,0.10)",
-    borderColor: "rgba(168,85,247,0.30)",
+    backgroundColor: "rgba(238, 117, 101,0.10)",
+    borderColor: "rgba(238, 117, 101,0.30)",
   },
 
   vaultTabText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
   },
 
   vaultTabTextActive: {
-    color: "#a855f7",
+    color: "#ee7565",
   },
 
   inlineLoader: {
@@ -2128,14 +2128,14 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 17,
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   emptyDescription: {
     marginTop: 5,
     fontSize: 12,
     lineHeight: 18,
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
     textAlign: "center",
     paddingHorizontal: 30,
   },
@@ -2144,15 +2144,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 18,
     overflow: "hidden",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
   },
 
   memoryMediaWrap: {
     width: "100%",
     aspectRatio: 1,
-    backgroundColor: "#0f172a",
+    backgroundColor: "#620d0b",
     position: "relative",
   },
 
@@ -2191,7 +2191,7 @@ const styles = StyleSheet.create({
   memoryTitle: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   metaRow: {
@@ -2203,7 +2203,7 @@ const styles = StyleSheet.create({
 
   metaText: {
     fontSize: 11,
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
   },
 
   memoryActions: {
@@ -2217,9 +2217,9 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#851613",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -2228,7 +2228,7 @@ const styles = StyleSheet.create({
     minHeight: 34,
     paddingHorizontal: 10,
     borderRadius: 17,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     flexDirection: "row",
     alignItems: "center",
     gap: 5,
@@ -2264,7 +2264,7 @@ const styles = StyleSheet.create({
   createAlbumButton: {
     minHeight: 44,
     borderRadius: 13,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
@@ -2281,9 +2281,9 @@ const styles = StyleSheet.create({
   albumCard: {
     minHeight: 70,
     borderRadius: 16,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     marginBottom: 8,
     padding: 12,
     flexDirection: "row",
@@ -2294,7 +2294,7 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 13,
-    backgroundColor: "rgba(168,85,247,0.10)",
+    backgroundColor: "rgba(238, 117, 101,0.10)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 10,
@@ -2307,13 +2307,13 @@ const styles = StyleSheet.create({
   albumName: {
     fontSize: 13,
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   albumSubtitle: {
     marginTop: 2,
     fontSize: 10,
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
   },
 
   lockContainer: {
@@ -2323,19 +2323,24 @@ const styles = StyleSheet.create({
 
   lockCard: {
     width: "100%",
-    borderRadius: 20,
-    backgroundColor: "#ffffff",
+    borderRadius: 28,
+    backgroundColor: "rgba(160, 47, 44, 0.5)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
-    padding: 20,
+    borderColor: "rgba(255, 255, 255, 0.16)",
+    padding: 24,
     alignItems: "center",
+    shadowColor: "#1e0302",
+    shadowOffset: { width: 0, height: 14 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 10,
   },
 
   lockIcon: {
     width: 58,
     height: 58,
     borderRadius: 29,
-    backgroundColor: "rgba(168,85,247,0.10)",
+    backgroundColor: "rgba(238, 117, 101, 0.18)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 12,
@@ -2344,7 +2349,7 @@ const styles = StyleSheet.create({
   lockTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#FFF7F5",
     textAlign: "center",
   },
 
@@ -2352,7 +2357,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 12,
     lineHeight: 18,
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.65)",
     textAlign: "center",
     maxWidth: 260,
   },
@@ -2368,17 +2373,17 @@ const styles = StyleSheet.create({
     height: 14,
     borderRadius: 7,
     borderWidth: 2,
-    borderColor: "#a855f7",
-    backgroundColor: "#ffffff",
+    borderColor: "#EE7565",
+    backgroundColor: "transparent",
   },
 
   pinDotActive: {
-    backgroundColor: "#a855f7",
+    backgroundColor: "#EE7565",
   },
 
   pinError: {
     marginTop: 12,
-    color: "#ef4444",
+    color: "#fb7185",
     fontSize: 11,
     fontWeight: "700",
     textAlign: "center",
@@ -2396,10 +2401,10 @@ const styles = StyleSheet.create({
   keyButton: {
     width: "31%",
     minHeight: 50,
-    borderRadius: 13,
-    backgroundColor: "#f8fafc",
+    borderRadius: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -2411,7 +2416,7 @@ const styles = StyleSheet.create({
   keyText: {
     fontSize: 18,
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   biometricButton: {
@@ -2429,9 +2434,9 @@ const styles = StyleSheet.create({
     width: "31%",
     minHeight: 50,
     borderRadius: 13,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#851613",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -2439,14 +2444,14 @@ const styles = StyleSheet.create({
   clearKeyText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
   },
 
   securityCard: {
     borderRadius: 18,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     padding: 16,
     marginBottom: 10,
   },
@@ -2455,7 +2460,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     fontSize: 16,
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   pinInput: {
@@ -2463,20 +2468,20 @@ const styles = StyleSheet.create({
     minHeight: 46,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
-    backgroundColor: "#f8fafc",
+    borderColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: "#851613",
     textAlign: "center",
     fontSize: 18,
     fontWeight: "800",
     letterSpacing: 7,
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   securityButton: {
     marginTop: 12,
     minHeight: 46,
     borderRadius: 13,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -2496,7 +2501,7 @@ const styles = StyleSheet.create({
   },
 
   modalCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 18,
@@ -2505,7 +2510,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#FFF7F5",
     marginBottom: 12,
   },
 
@@ -2513,10 +2518,10 @@ const styles = StyleSheet.create({
     minHeight: 46,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
-    backgroundColor: "#f8fafc",
+    borderColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: "#851613",
     paddingHorizontal: 12,
-    color: "#0f172a",
+    color: "#FFF7F5",
     fontSize: 13,
     marginBottom: 10,
   },
@@ -2526,9 +2531,9 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     paddingHorizontal: 10,
     borderRadius: 11,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#851613",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
@@ -2537,7 +2542,7 @@ const styles = StyleSheet.create({
   privateToggleText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#475569",
+    color: "rgba(255, 247, 245, 0.7)",
   },
 
   modalButtons: {
@@ -2551,7 +2556,7 @@ const styles = StyleSheet.create({
     minHeight: 42,
     paddingHorizontal: 14,
     borderRadius: 12,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -2559,14 +2564,14 @@ const styles = StyleSheet.create({
   cancelText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
   },
 
   modalPrimaryButton: {
     minHeight: 42,
     paddingHorizontal: 15,
     borderRadius: 12,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -2580,7 +2585,7 @@ const styles = StyleSheet.create({
   shareModal: {
     marginHorizontal: 20,
     borderRadius: 20,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     padding: 20,
   },
 
@@ -2588,10 +2593,10 @@ const styles = StyleSheet.create({
     marginTop: 12,
     padding: 12,
     borderRadius: 12,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#851613",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
-    color: "#334155",
+    borderColor: "rgba(255, 255, 255, 0.15)",
+    color: "rgba(255, 247, 245, 0.85)",
     fontSize: 12,
     lineHeight: 18,
     marginBottom: 14,

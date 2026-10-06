@@ -42,7 +42,7 @@ export const CreateMenuModal = ({
     {
       label: "Create Post",
       icon: ImageIcon,
-      color: "#3b82f6",
+      color: "#ff8878",
       backgroundColor: "rgba(59,130,246,0.15)",
       action: () => {
         onClose();
@@ -62,8 +62,8 @@ export const CreateMenuModal = ({
     {
       label: "Create Story",
       icon: Camera,
-      color: "#ec4899",
-      backgroundColor: "rgba(236,72,153,0.15)",
+      color: "#f43f5e",
+      backgroundColor: "rgba(244, 63, 94,0.15)",
       action: () => {
         onClose();
         router.push("/app/story/create");
@@ -72,8 +72,8 @@ export const CreateMenuModal = ({
     {
       label: "Go Live",
       icon: Radio,
-      color: "#a855f7",
-      backgroundColor: "rgba(168,85,247,0.15)",
+      color: "#ee7565",
+      backgroundColor: "rgba(238, 117, 101,0.15)",
       action: () => {
         onClose();
         router.push("/app/live/new");
@@ -81,11 +81,11 @@ export const CreateMenuModal = ({
     },
   ];
 
-  const modalBg = isDark ? "#130a1c" : "#ffffff";
-  const borderCol = isDark ? "#2d1b3b" : "#e2e8f0";
+  const modalBg = isDark ? "#4a0f0d" : "#ffffff";
+  const borderCol = isDark ? "#6e1815" : "#e2e8f0";
   const textColor = isDark ? "#ffffff" : "#0f172a";
   const itemBg = isDark ? "#1c102b" : "#f8fafc";
-  const itemBorder = isDark ? "#2d1b3b" : "rgba(226,232,240,0.60)";
+  const itemBorder = isDark ? "#6e1815" : "rgba(226,232,240,0.60)";
 
   return (
     <Modal

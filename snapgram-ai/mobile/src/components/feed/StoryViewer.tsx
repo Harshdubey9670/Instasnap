@@ -1128,7 +1128,7 @@ export const StoryViewer = ({
         const { Share } = require("react-native");
         await Share.share({
           title: `@${currentUserGroup?.user.username}'s Story`,
-          message: `Check out @${currentUserGroup?.user.username}'s story on InstaSnap!\n${link}`,
+          message: `Check out @${currentUserGroup?.user.username}'s story on NUVYELO!\n${link}`,
           url: link,
         });
       } catch (error) {
@@ -2706,7 +2706,7 @@ export const StoryViewer = ({
                   >
                     <Eye
                       size={17}
-                      color="#a855f7"
+                      color="#ee7565"
                     />
 
                     <Text
@@ -3320,7 +3320,7 @@ const StoryOptionsModal = ({
           icon={
             <Eye
               size={18}
-              color="#a855f7"
+              color="#ee7565"
             />
           }
           text={`Viewers (${story.viewers?.length || 0})`}
@@ -3359,7 +3359,7 @@ const StoryOptionsModal = ({
           icon={
             <Download
               size={18}
-              color="#c084fc"
+              color="#ffaea3"
             />
           }
           text="Save / Download Media"
@@ -3672,7 +3672,7 @@ const ViewersModal = ({
           >
             <Eye
               size={20}
-              color="#a855f7"
+              color="#ee7565"
             />
 
             <Text
@@ -3885,7 +3885,7 @@ const ShareOptionsModal = ({
       icon={
         <Send
           size={18}
-          color="#a855f7"
+          color="#ee7565"
         />
       }
       text="Send to Chat"
@@ -3957,7 +3957,7 @@ const ShareOptionsModal = ({
         ) : (
           <Download
             size={18}
-            color="#c084fc"
+            color="#ffaea3"
           />
         )
       }
@@ -4060,7 +4060,7 @@ const ShareUsersModal = ({
           >
             <Send
               size={20}
-              color="#a855f7"
+              color="#ee7565"
             />
 
             <Text
@@ -4387,7 +4387,7 @@ const StoryCommentsModal = ({
           >
             <MessageCircle
               size={20}
-              color="#a855f7"
+              color="#ee7565"
             />
 
             <Text
@@ -4431,7 +4431,7 @@ const StoryCommentsModal = ({
             >
               <ActivityIndicator
                 size="large"
-                color="#a855f7"
+                color="#ee7565"
               />
             </View>
           ) : comments.length ===
@@ -4742,7 +4742,7 @@ const StoryInsightsModal = ({
             insights?.stickerClicks ||
             12
           }
-          accent="#c084fc"
+          accent="#ffaea3"
         />
       </View>
     )}
@@ -5132,7 +5132,7 @@ const styles =
         "center",
       borderWidth: 2,
       borderColor:
-        "rgba(168,85,247,0.70)",
+        "rgba(238, 117, 101,0.70)",
       marginRight: 10,
     },
 
@@ -5637,10 +5637,10 @@ const styles =
       paddingHorizontal: 10,
       borderRadius: 16,
       backgroundColor:
-        "rgba(168,85,247,0.18)",
+        "rgba(238, 117, 101,0.18)",
       borderWidth: 1,
       borderColor:
-        "rgba(168,85,247,0.45)",
+        "rgba(238, 117, 101,0.45)",
     },
 
     selectedPillText: {
@@ -5666,7 +5666,7 @@ const styles =
 
     shareUserRowSelected: {
       backgroundColor:
-        "rgba(168,85,247,0.14)",
+        "rgba(238, 117, 101,0.14)",
     },
 
     shareUserName: {
@@ -5691,9 +5691,9 @@ const styles =
 
     checkboxSelected: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     shareNote: {
@@ -5722,7 +5722,7 @@ const styles =
         "center",
       gap: 7,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     sendStoryButtonDisabled: {
@@ -5806,7 +5806,7 @@ const styles =
     },
 
     storyMention: {
-      color: "#a855f7",
+      color: "#ee7565",
       fontWeight:
         "700",
     },

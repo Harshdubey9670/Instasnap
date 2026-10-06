@@ -202,12 +202,12 @@ export const EditPostModal = ({
             {
               backgroundColor:
                 dark
-                  ? "#130a1c"
+                  ? "#4a0f0d"
                   : "#f8fafc",
 
               borderColor:
                 dark
-                  ? "#2d1b3b"
+                  ? "#6e1815"
                   : "#e2e8f0",
             },
           ]}
@@ -218,7 +218,7 @@ export const EditPostModal = ({
               {
                 borderBottomColor:
                   dark
-                    ? "#2d1b3b"
+                    ? "#6e1815"
                     : "#e2e8f0",
               },
             ]}
@@ -374,11 +374,11 @@ export const EditPostModal = ({
                   {
                     backgroundColor:
                       dark
-                        ? "#1e112c"
+                        ? "#5c1210"
                         : "#ffffff",
                     borderColor:
                       dark
-                        ? "#2d1b3b"
+                        ? "#6e1815"
                         : "#e2e8f0",
                     color:
                       dark
@@ -429,11 +429,11 @@ export const EditPostModal = ({
                   {
                     backgroundColor:
                       dark
-                        ? "#1e112c"
+                        ? "#5c1210"
                         : "#ffffff",
                     borderColor:
                       dark
-                        ? "#2d1b3b"
+                        ? "#6e1815"
                         : "#e2e8f0",
                   },
                 ]}
@@ -487,7 +487,7 @@ export const EditPostModal = ({
                 {
                   borderTopColor:
                     dark
-                      ? "#2d1b3b"
+                      ? "#6e1815"
                       : "#e2e8f0",
                 },
               ]}

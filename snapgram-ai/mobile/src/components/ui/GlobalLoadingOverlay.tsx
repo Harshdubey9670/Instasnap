@@ -100,7 +100,7 @@ export const GlobalLoadingOverlay =
       >
         <ActivityIndicator
           size="large"
-          color="#a855f7"
+          color="#ee7565"
         />
 
         <Animated.Text

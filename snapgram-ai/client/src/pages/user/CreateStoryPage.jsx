@@ -602,7 +602,7 @@ export default function CreateStoryPage() {
             {/* Rotate */}
             <button
               onClick={() => setRotation((prev) => (prev + 90) % 360)}
-              className="p-1.5 text-white hover:text-purple-400 transition-colors"
+              className="p-1.5 text-white hover:text-primary-400 transition-colors"
               title="Rotate Image"
             >
               <RotateCw className="w-4 h-4" />
@@ -611,7 +611,7 @@ export default function CreateStoryPage() {
             {/* AI Generator */}
             <button
               onClick={() => setShowAiModal(true)}
-              className="p-1.5 text-purple-400 hover:text-purple-300 transition-colors"
+              className="p-1.5 text-primary-400 hover:text-primary-300 transition-colors"
               title="AI Generator"
             >
               <Wand2 className="w-4 h-4" />
@@ -718,7 +718,7 @@ export default function CreateStoryPage() {
           <div className="grid grid-cols-3 gap-2 text-xs font-bold pt-1">
             {[
               { type: 'poll', label: 'Poll', icon: Vote, color: 'text-yellow-500' },
-              { type: 'question', label: 'Question', icon: HelpCircle, color: 'text-blue-500' },
+              { type: 'question', label: 'Question', icon: HelpCircle, color: 'text-primary-400' },
               { type: 'countdown', label: 'Timer', icon: Clock, color: 'text-rose-500' },
               { type: 'link', label: 'Link', icon: LinkIcon, color: 'text-emerald-500' },
               { type: 'mention', label: 'Mention', icon: AtSign, color: 'text-primary-500' },
@@ -775,7 +775,7 @@ export default function CreateStoryPage() {
                 onClick={() => setShowPrivacyModal(true)}
                 className={`p-2 rounded-full border text-xs font-bold transition-all ${
                   ['followers', 'custom'].includes(privacy) || hiddenFrom.length > 0
-                    ? 'bg-sky-500 text-white border-sky-500 shadow-lg'
+                    ? 'bg-primary-500 text-white border-primary-500 shadow-lg'
                     : 'bg-black/60 text-white border-white/20 backdrop-blur-md hover:bg-black/80'
                 }`}
                 title="Story Privacy Settings"
@@ -884,7 +884,7 @@ export default function CreateStoryPage() {
                   }}
                   className={`w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all ${
                     privacy === 'custom'
-                      ? 'bg-purple-500/20 border-purple-500 text-white font-bold'
+                      ? 'bg-primary-500/20 border-primary-500 text-white font-bold'
                       : 'bg-neutral-800/50 border-neutral-800 text-neutral-300 hover:bg-neutral-800'
                   }`}
                 >
@@ -896,7 +896,7 @@ export default function CreateStoryPage() {
                       Select specific users allowed to view story
                     </div>
                   </div>
-                  {privacy === 'custom' && <Check className="w-5 h-5 text-purple-400" />}
+                  {privacy === 'custom' && <Check className="w-5 h-5 text-primary-400" />}
                 </button>
               </div>
 
@@ -995,7 +995,7 @@ export default function CreateStoryPage() {
 
                       <div className={`w-6 h-6 rounded-full border flex items-center justify-center transition-all ${
                         isSelected 
-                          ? (userPickerMode === 'custom' ? 'bg-purple-500 border-purple-500' : 'bg-rose-500 border-rose-500') 
+                          ? (userPickerMode === 'custom' ? 'bg-primary-500 border-primary-500' : 'bg-secondary-500 border-secondary-500') 
                           : 'border-neutral-600'
                       }`}>
                         {isSelected && <Check className="w-4 h-4 text-white stroke-[3]" />}
@@ -1166,7 +1166,7 @@ export default function CreateStoryPage() {
           <div className="bg-bg-surface p-6 rounded-3xl border border-border-soft max-w-md w-full space-y-4 shadow-2xl">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-lg text-text-primary flex items-center gap-2">
-                <Wand2 className="w-5 h-5 text-purple-500" />
+                <Wand2 className="w-5 h-5 text-primary-400" />
                 AI Story Background Generator
               </h3>
               <button onClick={() => setShowAiModal(false)} className="text-text-secondary hover:text-text-primary">
@@ -1187,7 +1187,7 @@ export default function CreateStoryPage() {
               <button
                 type="submit"
                 disabled={generatingAi}
-                className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm rounded-xl transition-all disabled:opacity-50"
+                className="w-full py-3 bg-primary-600 hover:bg-primary-500 text-white font-bold text-sm rounded-xl transition-all disabled:opacity-50"
               >
                 {generatingAi ? "Generating..." : "Generate AI Background"}
               </button>

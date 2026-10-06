@@ -506,7 +506,7 @@ export default function HashtagScreen() {
       >
         <Hash
           size={52}
-          color="#a855f7"
+          color="#ee7565"
         />
 
         <Text
@@ -727,7 +727,7 @@ export default function HashtagScreen() {
             color={
               activeTab ===
               "top"
-                ? "#a855f7"
+                ? "#ee7565"
                 : "#64748b"
             }
           />
@@ -762,7 +762,7 @@ export default function HashtagScreen() {
             color={
               activeTab ===
               "recent"
-                ? "#a855f7"
+                ? "#ee7565"
                 : "#64748b"
             }
           />
@@ -789,7 +789,7 @@ export default function HashtagScreen() {
         >
           <ActivityIndicator
             size="large"
-            color="#a855f7"
+            color="#ee7565"
           />
         </View>
       ) : posts.length ===
@@ -867,7 +867,7 @@ export default function HashtagScreen() {
               >
                 <ActivityIndicator
                   size="small"
-                  color="#a855f7"
+                  color="#ee7565"
                 />
               </View>
             ) : !hasMore &&
@@ -998,7 +998,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderWidth: 4,
       borderColor:
         "rgba(248,250,252,0.9)",
@@ -1112,7 +1112,7 @@ const styles =
 
     activeTab: {
       borderBottomColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     tabText: {
@@ -1125,7 +1125,7 @@ const styles =
 
     activeTabText: {
       color:
-        "#a855f7",
+        "#ee7565",
     },
 
     loadingContainer: {
@@ -1317,7 +1317,7 @@ const styles =
         "center",
       gap: 7,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     backButtonText: {

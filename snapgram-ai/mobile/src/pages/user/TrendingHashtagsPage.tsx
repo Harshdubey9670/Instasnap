@@ -21,13 +21,13 @@ const TrendingHashtagsPage = () => {
   const [loading, setLoading] = useState(true);
 
   const colors = {
-    bg: dark ? "#0d0a14" : "#fafafa",
+    bg: dark ? "#3c0a09" : "#fafafa",
     text: dark ? "#f8fafc" : "#0f172a",
     textSecondary: dark ? "#94a3b8" : "#64748b",
-    primary: "#a855f7",
-    card: dark ? "#1a0d27" : "#fff",
+    primary: "#ee7565",
+    card: dark ? "#551210" : "#fff",
     cardBorder: dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
-    surface: dark ? "#1e112c" : "#f1f5f9",
+    surface: dark ? "#5c1210" : "#f1f5f9",
   };
 
   useEffect(() => {
@@ -54,10 +54,10 @@ const TrendingHashtagsPage = () => {
   const remaining = hashtags.slice(3);
 
   const renderTopCard = ({ item, index }: { item: any; index: number }) => {
-    const gradient = ["rgba(168,85,247,0.8)", "rgba(236,72,153,0.8)", "rgba(99,102,241,0.8)"][index] || "rgba(168,85,247,0.6)";
+    const gradient = ["rgba(238, 117, 101,0.8)", "rgba(244, 63, 94,0.8)", "rgba(99,102,241,0.8)"][index] || "rgba(238, 117, 101,0.6)";
     return (
       <Pressable
-        style={[styles.topCard, { backgroundColor: dark ? "#1a0d27" : "#fff", borderColor: colors.cardBorder }]}
+        style={[styles.topCard, { backgroundColor: dark ? "#551210" : "#fff", borderColor: colors.cardBorder }]}
         onPress={() => router.push(`/hashtag/${item.tag}` as any)}
       >
         <View style={[styles.topCardBadge, { backgroundColor: gradient }]}>
@@ -95,7 +95,7 @@ const TrendingHashtagsPage = () => {
       <View style={[styles.rankBadge, { backgroundColor: colors.surface }]}>
         <Text style={[styles.rankText, { color: colors.textSecondary }]}>{index + 4}</Text>
       </View>
-      <View style={[styles.hashIcon, { backgroundColor: "rgba(168,85,247,0.1)" }]}>
+      <View style={[styles.hashIcon, { backgroundColor: "rgba(238, 117, 101,0.1)" }]}>
         <Hash size={14} color={colors.primary} />
       </View>
       <View style={styles.rowInfo}>

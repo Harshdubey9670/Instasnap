@@ -5,14 +5,14 @@ const AboutSettings = () => {
     <div className="space-y-8 pb-10">
       <div>
         <h2 className="text-2xl font-bold hero-text mb-2">About</h2>
-        <p className="text-text-secondary">Learn more about InstaSnap AI.</p>
+        <p className="text-text-secondary">Learn more about NUVYELO AI.</p>
       </div>
 
       <div className="flex flex-col items-center justify-center py-6 bg-bg-surface border border-border-soft rounded-2xl shadow-sm">
-        <div className="w-20 h-20 rounded-2xl hero-gradient flex items-center justify-center shadow-lg shadow-primary-500/20 mb-4">
-          <Code className="w-10 h-10 text-white" />
+        <div className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/20 mb-4 overflow-hidden">
+          <img src="/nuvyelo-emblem.png" alt="NUVYELO" className="w-16 h-16 object-contain" />
         </div>
-        <h3 className="text-xl font-bold text-text-primary">InstaSnap AI</h3>
+        <h3 className="text-xl font-bold text-text-primary">NUVYELO AI</h3>
         <p className="text-text-secondary text-sm mt-1">Version 1.0.0 (Build 42)</p>
         <p className="text-xs text-text-tertiary mt-2 text-center max-w-xs">
           Built with React, Redux, Node.js, and MongoDB.

@@ -1153,7 +1153,7 @@ const MediaEditorStudio = ({
             >
               <Wand2
                 size={19}
-                color="#a855f7"
+                color="#ee7565"
               />
 
               <Text
@@ -1164,7 +1164,7 @@ const MediaEditorStudio = ({
                   1
                 }
               >
-                InstaSnap Studio & Media Editor
+                NUVYELO Studio & Media Editor
               </Text>
             </View>
 
@@ -2137,7 +2137,7 @@ const MediaEditorStudio = ({
                           size={16}
                           color={
                             flipH
-                              ? "#a855f7"
+                              ? "#ee7565"
                               : "#f8fafc"
                           }
                         />
@@ -2169,7 +2169,7 @@ const MediaEditorStudio = ({
                         size={16}
                         color={
                           flipV
-                            ? "#a855f7"
+                            ? "#ee7565"
                             : "#f8fafc"
                         }
                       />
@@ -2398,7 +2398,7 @@ const MediaEditorStudio = ({
                       >
                         <ActivityIndicator
                           size="small"
-                          color="#a855f7"
+                          color="#ee7565"
                         />
 
                         <Text
@@ -2898,7 +2898,7 @@ const styles =
       borderRadius: 24,
 
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
 
       borderWidth: 1,
       borderColor:
@@ -2922,7 +2922,7 @@ const styles =
 
       borderBottomWidth: 1,
       borderBottomColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     headerTitleRow: {
@@ -3034,7 +3034,7 @@ const styles =
       ...StyleSheet.absoluteFillObject,
       borderWidth: 4,
       borderColor:
-        "#ec4899",
+        "#f43f5e",
       borderRadius: 18,
     },
 
@@ -3146,11 +3146,11 @@ const styles =
       minHeight: 320,
 
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
 
       borderTopWidth: 1,
       borderTopColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     tabs: {
@@ -3159,7 +3159,7 @@ const styles =
       maxHeight: 58,
       borderBottomWidth: 1,
       borderBottomColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     tabsContent: {
@@ -3188,7 +3188,7 @@ const styles =
 
     activeTab: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     tabLabel: {
@@ -3242,14 +3242,14 @@ const styles =
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     activeFilterCard: {
       backgroundColor:
-        "rgba(168,85,247,0.10)",
+        "rgba(238, 117, 101,0.10)",
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     filterName: {
@@ -3309,7 +3309,7 @@ const styles =
       height: 4,
       borderRadius: 2,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     sliderThumb: {
@@ -3363,7 +3363,7 @@ const styles =
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     inlineSettingText: {
@@ -3388,7 +3388,7 @@ const styles =
 
     toggleActive: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     toggleThumb: {
@@ -3420,7 +3420,7 @@ const styles =
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     emojiButton: {
@@ -3459,7 +3459,7 @@ const styles =
       borderRadius: 20,
 
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     gradientChipText: {
@@ -3485,7 +3485,7 @@ const styles =
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     secondaryChipText: {
@@ -3520,14 +3520,14 @@ const styles =
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     activeLayerRow: {
       borderColor:
-        "#a855f7",
+        "#ee7565",
       backgroundColor:
-        "rgba(168,85,247,0.08)",
+        "rgba(238, 117, 101,0.08)",
     },
 
     layerEmoji: {
@@ -3554,7 +3554,7 @@ const styles =
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
 
       backgroundColor:
         "rgba(255,255,255,0.04)",
@@ -3585,7 +3585,7 @@ const styles =
 
     activeStyleButton: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     styleButtonText: {
@@ -3660,7 +3660,7 @@ const styles =
         "rgba(255,255,255,0.04)",
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     cropInfoTitle: {
@@ -3691,14 +3691,14 @@ const styles =
         "rgba(255,255,255,0.04)",
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     ratioChipActive: {
       backgroundColor:
-        "rgba(168,85,247,0.10)",
+        "rgba(238, 117, 101,0.10)",
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     ratioText: {
@@ -3733,14 +3733,14 @@ const styles =
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     aiButtonPrimary: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     aiText: {
@@ -3780,7 +3780,7 @@ const styles =
       borderRadius: 12,
 
       backgroundColor:
-        "rgba(168,85,247,0.08)",
+        "rgba(238, 117, 101,0.08)",
     },
 
     processingText: {
@@ -3804,7 +3804,7 @@ const styles =
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
 
       backgroundColor:
         "rgba(255,255,255,0.04)",
@@ -3812,9 +3812,9 @@ const styles =
 
     activeResolutionButton: {
       borderColor:
-        "#a855f7",
+        "#ee7565",
       backgroundColor:
-        "rgba(168,85,247,0.10)",
+        "rgba(238, 117, 101,0.10)",
     },
 
     resolutionText: {
@@ -3858,14 +3858,14 @@ const styles =
         "hidden",
       borderRadius: 4,
       backgroundColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     progressFill: {
       height: "100%",
       borderRadius: 4,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     nativeCompatibilityBox: {
@@ -3873,10 +3873,10 @@ const styles =
       padding: 10,
       borderRadius: 12,
       backgroundColor:
-        "rgba(168,85,247,0.06)",
+        "rgba(238, 117, 101,0.06)",
       borderWidth: 1,
       borderColor:
-        "rgba(168,85,247,0.15)",
+        "rgba(238, 117, 101,0.15)",
     },
 
     nativeCompatibilityText: {

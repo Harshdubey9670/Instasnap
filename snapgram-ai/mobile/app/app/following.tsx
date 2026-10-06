@@ -39,13 +39,13 @@ export default function FollowingScreen() {
   const isDark = effectiveTheme === "dark";
 
   // Dynamic tokens
-  const bgBase       = isDark ? "#0a0510" : "#f8fafc";
+  const bgBase       = isDark ? "#620d0b" : "#f8fafc";
   const bgCard       = isDark ? "#18122b" : "#ffffff";
-  const bgCardBorder = isDark ? "#2d1f4a" : "#e2e8f0";
+  const bgCardBorder = isDark ? "#6e1815" : "#e2e8f0";
   const textPrimary  = isDark ? "#f8fafc" : "#0f172a";
   const textSecond   = isDark ? "#94a3b8" : "#64748b";
   const searchBg     = isDark ? "#1e1235" : "#ffffff";
-  const divider      = isDark ? "#2d1f4a" : "#e2e8f0";
+  const divider      = isDark ? "#6e1815" : "#e2e8f0";
 
   const targetUserId = typeof id === "string" ? id : typeof userId === "string" ? userId : authUser?._id;
 
@@ -297,7 +297,7 @@ export default function FollowingScreen() {
         <View style={styles.loadingContainer}>
           <ActivityIndicator
             size="large"
-            color="#a855f7"
+            color="#ee7565"
           />
         </View>
       ) : following.length === 0 ? (
@@ -338,7 +338,7 @@ export default function FollowingScreen() {
               <View style={styles.footerLoader}>
                 <ActivityIndicator
                   size="small"
-                  color="#a855f7"
+                  color="#ee7565"
                 />
               </View>
             ) : null
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 26,
     padding: 2,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     marginRight: 12,
   },
 

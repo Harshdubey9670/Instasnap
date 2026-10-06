@@ -91,7 +91,7 @@ const getNotificationIcon =
       case "tag":
         return {
           Icon: AtSign,
-          color: "#38bdf8",
+          color: "#ff8878",
           filled: false,
         };
 
@@ -115,7 +115,7 @@ const getNotificationIcon =
       case "reply":
         return {
           Icon: MessageCircle,
-          color: "#a855f7",
+          color: "#ee7565",
           filled: false,
         };
 
@@ -124,7 +124,7 @@ const getNotificationIcon =
       case "reel":
         return {
           Icon: Send,
-          color: "#a855f7",
+          color: "#ee7565",
           filled: false,
         };
 
@@ -138,7 +138,7 @@ const getNotificationIcon =
       case "system":
         return {
           Icon: Bell,
-          color: "#a855f7",
+          color: "#ee7565",
           filled: false,
         };
 
@@ -810,7 +810,7 @@ const styles =
 
     unreadContainer: {
       backgroundColor:
-        "rgba(168,85,247,0.05)",
+        "rgba(238, 117, 101,0.05)",
     },
 
     pressed: {
@@ -979,7 +979,7 @@ const styles =
       height: 10,
       borderRadius: 5,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     deleteButton: {

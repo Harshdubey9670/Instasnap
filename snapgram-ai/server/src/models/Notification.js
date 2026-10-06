@@ -39,6 +39,11 @@ const notificationSchema = new mongoose.Schema({
     ref: 'Post',
     default: null
   },
+  reel: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Reel',
+    default: null
+  },
   read: {
     type: Boolean,
     default: false

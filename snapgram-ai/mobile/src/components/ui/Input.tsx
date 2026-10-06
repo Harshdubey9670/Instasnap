@@ -71,12 +71,12 @@ const Input = forwardRef<
       error
         ? "#ef4444"
         : dark
-          ? "#2d1b3b"
+          ? "#6e1815"
           : "#e2e8f0";
 
     const backgroundColor =
       dark
-        ? "#1e112c"
+        ? "#5c1210"
         : "#f1f5f9";
 
     const textColor =
@@ -144,10 +144,10 @@ const Input = forwardRef<
               secondaryColor
             }
             selectionColor={
-              "#a855f7"
+              "#ee7565"
             }
             cursorColor={
-              "#a855f7"
+              "#ee7565"
             }
             style={[
               styles.input,

@@ -51,6 +51,14 @@ export const getApiBaseUrl = (): string => {
 
   // In development, allow configured URL or safe local defaults
   if (envUrl) {
+    if (Platform.OS === "android") {
+      if (envUrl.includes("localhost") || envUrl.includes("127.0.0.1")) {
+        return envUrl
+          .replace("localhost", "10.0.2.2")
+          .replace("127.0.0.1", "10.0.2.2")
+          .replace(/\/+$/, "");
+      }
+    }
     return envUrl.replace(/\/+$/, "");
   }
 

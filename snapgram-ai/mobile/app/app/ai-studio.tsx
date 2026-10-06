@@ -431,7 +431,7 @@ export default function AiStudioScreen() {
               size={15}
               color={
                 isActive
-                  ? "#a855f7"
+                  ? "#ee7565"
                   : "#64748b"
               }
             />
@@ -483,7 +483,7 @@ export default function AiStudioScreen() {
       {renderSectionHeader(
         <Sparkles
           size={20}
-          color="#a855f7"
+          color="#ee7565"
         />,
         "Generate AI Caption",
         "Create captions and hashtags from your topic.",
@@ -605,7 +605,7 @@ export default function AiStudioScreen() {
               >
                 <Hash
                   size={13}
-                  color="#a855f7"
+                  color="#ee7565"
                 />
                 <Text
                   style={styles.hashChipText}
@@ -625,7 +625,7 @@ export default function AiStudioScreen() {
       {renderSectionHeader(
         <User
           size={20}
-          color="#a855f7"
+          color="#ee7565"
         />,
         "Bio & Username Studio",
         "Generate a profile bio and username ideas.",
@@ -976,7 +976,7 @@ export default function AiStudioScreen() {
           <View style={styles.resultHeaderLeft}>
             <Bot
               size={17}
-              color="#a855f7"
+              color="#ee7565"
             />
             <Text style={styles.resultLabel}>
               Fake Account Detection
@@ -1090,7 +1090,7 @@ const styles = StyleSheet.create({
     width: 54,
     height: 54,
     borderRadius: 16,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 12,
@@ -1128,8 +1128,8 @@ const styles = StyleSheet.create({
   },
 
   tabButtonActive: {
-    backgroundColor: "rgba(168,85,247,0.10)",
-    borderColor: "rgba(168,85,247,0.35)",
+    backgroundColor: "rgba(238, 117, 101,0.10)",
+    borderColor: "rgba(238, 117, 101,0.35)",
   },
 
   tabText: {
@@ -1139,7 +1139,7 @@ const styles = StyleSheet.create({
   },
 
   tabTextActive: {
-    color: "#a855f7",
+    color: "#ee7565",
   },
 
   sectionHeader: {
@@ -1228,8 +1228,8 @@ const styles = StyleSheet.create({
   },
 
   choiceActive: {
-    backgroundColor: "rgba(168,85,247,0.10)",
-    borderColor: "#a855f7",
+    backgroundColor: "rgba(238, 117, 101,0.10)",
+    borderColor: "#ee7565",
   },
 
   choiceText: {
@@ -1239,13 +1239,13 @@ const styles = StyleSheet.create({
   },
 
   choiceTextActive: {
-    color: "#a855f7",
+    color: "#ee7565",
   },
 
   primaryButton: {
     minHeight: 48,
     borderRadius: 14,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
@@ -1280,7 +1280,7 @@ const styles = StyleSheet.create({
   resultLabel: {
     fontSize: 11,
     fontWeight: "800",
-    color: "#a855f7",
+    color: "#ee7565",
     textTransform: "uppercase",
     letterSpacing: 0.7,
   },
@@ -1328,9 +1328,9 @@ const styles = StyleSheet.create({
     minHeight: 34,
     paddingHorizontal: 10,
     borderRadius: 12,
-    backgroundColor: "rgba(168,85,247,0.08)",
+    backgroundColor: "rgba(238, 117, 101,0.08)",
     borderWidth: 1,
-    borderColor: "rgba(168,85,247,0.20)",
+    borderColor: "rgba(238, 117, 101,0.20)",
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
@@ -1338,7 +1338,7 @@ const styles = StyleSheet.create({
 
   hashChipText: {
     fontSize: 12,
-    color: "#a855f7",
+    color: "#ee7565",
     fontWeight: "600",
   },
 
@@ -1380,7 +1380,7 @@ const styles = StyleSheet.create({
     width: 27,
     height: 27,
     borderRadius: 13.5,
-    backgroundColor: "rgba(168,85,247,0.10)",
+    backgroundColor: "rgba(238, 117, 101,0.10)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1388,7 +1388,7 @@ const styles = StyleSheet.create({
   ideaNumberText: {
     fontSize: 11,
     fontWeight: "800",
-    color: "#a855f7",
+    color: "#ee7565",
   },
 
   ideaText: {

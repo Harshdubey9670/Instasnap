@@ -224,13 +224,13 @@ export default function ProfilePage() {
   const darkMode = effectiveTheme === "dark";
   const colors = useMemo(
     () => ({
-      background: darkMode ? "#0a0510" : "#f8fafc",
-      surface: darkMode ? "#130a1c" : "#ffffff",
-      surfaceHover: darkMode ? "#1e112c" : "#f1f5f9",
+      background: darkMode ? "#620d0b" : "#f8fafc",
+      surface: darkMode ? "#4a0f0d" : "#ffffff",
+      surfaceHover: darkMode ? "#5c1210" : "#f1f5f9",
       textPrimary: darkMode ? "#f8fafc" : "#0f172a",
       textSecondary: darkMode ? "#94a3b8" : "#64748b",
-      border: darkMode ? "#2d1b3b" : "#e2e8f0",
-      primary: "#a855f7",
+      border: darkMode ? "#6e1815" : "#e2e8f0",
+      primary: "#ee7565",
     }),
     [darkMode],
   );
@@ -590,7 +590,7 @@ export default function ProfilePage() {
       {profile.music ? (
         <View style={styles.musicContainer}>
           <View style={styles.musicBadge}>
-            <Music2 size={13} color="#38bdf8" />
+            <Music2 size={13} color="#ff8878" />
             <Text numberOfLines={1} style={styles.musicText}>
               {profile.music.title || "Let Me Love You"}
             </Text>
@@ -654,8 +654,8 @@ export default function ProfilePage() {
           {profile.isVerified ? (
             <BadgeCheck
               size={18}
-              color="#3b82f6"
-              fill="#3b82f6"
+              color="#ff8878"
+              fill="#ff8878"
               style={styles.verifiedBadge}
             />
           ) : null}
@@ -684,7 +684,7 @@ export default function ProfilePage() {
             onPress={() => void openWebsite(profile.website || "")}
             style={styles.websiteRow}
           >
-            <LinkIcon size={14} color="#38bdf8" />
+            <LinkIcon size={14} color="#ff8878" />
             <Text numberOfLines={1} style={styles.websiteText}>
               @{profile.website.replace(/^https?:\/\//, "")}
             </Text>
@@ -1157,7 +1157,7 @@ const styles = StyleSheet.create({
   },
   websiteText: {
     maxWidth: 280,
-    color: "#38bdf8",
+    color: "#ff8878",
     fontSize: 13,
     fontWeight: "700",
   },
@@ -1237,7 +1237,7 @@ const styles = StyleSheet.create({
   noPostsTitle: { fontSize: 17, fontWeight: "700" },
   noPostsSubtitle: { fontSize: 13, textAlign: "center", lineHeight: 18 },
   listFooter: { height: 110 },
-  floatingFab: { position: "absolute", right: 20, bottom: 24, width: 54, height: 54, borderRadius: 27, backgroundColor: "#a855f7", alignItems: "center", justifyContent: "center", shadowColor: "#a855f7", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 12, elevation: 10 },
+  floatingFab: { position: "absolute", right: 20, bottom: 24, width: 54, height: 54, borderRadius: 27, backgroundColor: "#ee7565", alignItems: "center", justifyContent: "center", shadowColor: "#ee7565", shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.45, shadowRadius: 12, elevation: 10 },
   loadingProfile: { width: "100%", maxWidth: 896, alignSelf: "center", padding: 24, flexDirection: "row", alignItems: "center", gap: 40 },
   loadingAvatar: { width: 138, height: 138, borderRadius: 69, backgroundColor: "#262626" },
   loadingDetails: { flex: 1, gap: 16 },

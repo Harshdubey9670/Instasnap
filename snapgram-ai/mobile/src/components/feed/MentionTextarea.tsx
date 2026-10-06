@@ -389,7 +389,7 @@ export const MentionTextarea = ({
             >
               <ActivityIndicator
                 size="small"
-                color="#a855f7"
+                color="#ee7565"
               />
             </View>
           ) : suggestions.length ===
@@ -600,7 +600,7 @@ const styles =
 
     activeSuggestion: {
       backgroundColor:
-        "rgba(168,85,247,0.10)",
+        "rgba(238, 117, 101,0.10)",
     },
 
     suggestionText: {

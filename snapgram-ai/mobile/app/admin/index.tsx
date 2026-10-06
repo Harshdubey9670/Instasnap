@@ -105,8 +105,8 @@ function getThemeColors(isDark: boolean) {
     textSecondary: isDark ? "#94a3b8" : "#64748b",
     rose: "#f43f5e",
     emerald: "#10b981",
-    purple: "#a855f7",
-    blue: "#3b82f6",
+    purple: "#ee7565",
+    blue: "#ff8878",
     amber: "#f59e0b",
   };
 }
@@ -169,7 +169,7 @@ function OverviewTab({
     {
       label: "Total Feed Posts",
       value: metrics.totalPosts,
-      accent: "#8b5cf6",
+      accent: "#ee7565",
       emoji: "🖼️",
     },
     {

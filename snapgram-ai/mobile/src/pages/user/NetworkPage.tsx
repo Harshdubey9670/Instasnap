@@ -45,16 +45,16 @@ const NetworkPage = ({ initialTab }: NetworkPageProps = {}) => {
   const [search, setSearch] = useState("");
 
   const colors = {
-    bg: dark ? "#0d0a14" : "#fafafa",
+    bg: dark ? "#3c0a09" : "#fafafa",
     text: dark ? "#f8fafc" : "#0f172a",
     textSecondary: dark ? "#94a3b8" : "#64748b",
-    primary: "#a855f7",
-    card: dark ? "#1a0d27" : "#fff",
+    primary: "#ee7565",
+    card: dark ? "#551210" : "#fff",
     cardBorder: dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
-    inputBg: dark ? "#1e112c" : "#f1f5f9",
-    inputBorder: dark ? "#2d1b3b" : "#e2e8f0",
-    tabActive: "#a855f7",
-    tabActiveBg: dark ? "rgba(168,85,247,0.12)" : "rgba(168,85,247,0.1)",
+    inputBg: dark ? "#5c1210" : "#f1f5f9",
+    inputBorder: dark ? "#6e1815" : "#e2e8f0",
+    tabActive: "#ee7565",
+    tabActiveBg: dark ? "rgba(238, 117, 101,0.12)" : "rgba(238, 117, 101,0.1)",
   };
 
   useEffect(() => {

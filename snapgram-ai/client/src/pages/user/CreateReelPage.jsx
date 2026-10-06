@@ -185,7 +185,7 @@ export default function CreateReelPage() {
 
         <div className="flex items-center gap-2">
           <Film className="w-6 h-6 text-primary-500" />
-          <h1 className="text-xl font-black bg-gradient-to-r from-primary-500 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-xl font-black bg-gradient-to-r from-primary-500 to-secondary-500 bg-clip-text text-transparent">
             Reels Creator Studio
           </h1>
         </div>
@@ -221,7 +221,7 @@ export default function CreateReelPage() {
 
           <button
             onClick={() => videoInputRef.current?.click()}
-            className="px-8 py-3.5 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-extrabold text-sm rounded-2xl shadow-xl hover:scale-105 transition-all"
+            className="px-8 py-3.5 bg-gradient-to-r from-primary-500 to-secondary-600 text-white font-extrabold text-sm rounded-2xl shadow-xl hover:scale-105 transition-all"
           >
             Choose Video File
           </button>
@@ -267,7 +267,7 @@ export default function CreateReelPage() {
             <div className="p-4 bg-bg-surface rounded-2xl border border-border-soft space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm flex items-center gap-2">
-                  <Music2 className="w-4 h-4 text-purple-500" />
+                  <Music2 className="w-4 h-4 text-primary-400" />
                   Audio & Music
                 </span>
                 <button
@@ -338,13 +338,13 @@ export default function CreateReelPage() {
             <div className="p-4 bg-bg-surface rounded-2xl border border-border-soft space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-blue-500" />
+                  <Sparkles className="w-4 h-4 text-primary-400" />
                   AI Auto Captions
                 </span>
                 <button
                   onClick={handleGenerateCaptions}
                   disabled={generatingCaptions}
-                  className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition-all disabled:opacity-50"
+                  className="px-3 py-1.5 bg-primary-600 hover:bg-primary-500 text-white text-xs font-bold rounded-xl transition-all disabled:opacity-50"
                 >
                   {generatingCaptions ? "Generating..." : "Generate AI Captions"}
                 </button>
@@ -461,7 +461,7 @@ export default function CreateReelPage() {
             <button
               onClick={handleSubmitReel}
               disabled={isSubmitting}
-              className="w-full py-4 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-extrabold text-base rounded-2xl shadow-xl hover:scale-[1.01] active:scale-95 transition-all disabled:opacity-50"
+              className="w-full py-4 bg-gradient-to-r from-primary-500 to-secondary-600 text-white font-extrabold text-base rounded-2xl shadow-xl hover:scale-[1.01] active:scale-95 transition-all disabled:opacity-50"
             >
               {isSubmitting ? "Processing Video..." : publishStatus === "draft" ? "Save Draft" : publishStatus === "scheduled" ? "Schedule Reel" : "Share Reel Now"}
             </button>
@@ -475,7 +475,7 @@ export default function CreateReelPage() {
           <div className="bg-bg-surface p-6 rounded-3xl border border-border-soft max-w-md w-full space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-lg flex items-center gap-2">
-                <Music2 className="w-5 h-5 text-purple-500" />
+                <Music2 className="w-5 h-5 text-primary-400" />
                 Trending Music Library
               </h3>
               <button onClick={() => setShowMusicModal(false)}>
@@ -497,7 +497,7 @@ export default function CreateReelPage() {
                     <p className="font-bold text-sm">{track.title}</p>
                     <p className="text-xs text-text-secondary">{track.artist}</p>
                   </div>
-                  <span className="text-xs text-purple-500 font-bold">{track.duration}</span>
+                  <span className="text-xs text-primary-400 font-bold">{track.duration}</span>
                 </div>
               ))}
             </div>

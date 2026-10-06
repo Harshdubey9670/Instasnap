@@ -35,6 +35,7 @@ const getUserProfile = async (req, res, next) => {
       phone: isOwner ? user.phone : undefined,
       bio: user.bio,
       website: user.website,
+      location: user.location,
       pronouns: user.pronouns,
       coverPhoto: user.coverPhoto,
       profilePicture: user.profilePicture,
@@ -46,6 +47,7 @@ const getUserProfile = async (req, res, next) => {
       isPrivate: user.isPrivate,
       accountType: user.accountType,
       category: user.category,
+      interests: user.interests,
       role: isOwner ? user.role : undefined,
       verificationRequestStatus: isOwner ? user.verificationRequestStatus : undefined,
       // Counts only — full lists require separate authorized endpoint
@@ -92,10 +94,10 @@ const updateUserProfile = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
 
-    const { 
-      avatar, username, bio, website, 
-      coverPhoto, pronouns, gender, category, 
-      accountType, isPrivate 
+    const {
+      avatar, username, bio, website, location,
+      coverPhoto, pronouns, gender, category, interests,
+      accountType, isPrivate
     } = req.body;
 
     // Check if new username is already taken by someone else
@@ -114,10 +116,12 @@ const updateUserProfile = async (req, res, next) => {
     
     if (bio !== undefined) user.bio = bio;
     if (website !== undefined) user.website = website;
+    if (location !== undefined) user.location = location;
     if (coverPhoto !== undefined) user.coverPhoto = coverPhoto;
     if (pronouns !== undefined) user.pronouns = pronouns;
     if (gender !== undefined) user.gender = gender;
     if (category !== undefined) user.category = category;
+    if (interests !== undefined) user.interests = interests;
     if (accountType !== undefined) user.accountType = accountType;
     if (isPrivate !== undefined) user.isPrivate = isPrivate;
 
@@ -916,31 +920,126 @@ const getSuggestedUsers = async (req, res, next) => {
 // @route   DELETE /api/users/me
 // @access  Private
 const deleteAccount = async (req, res, next) => {
+  const logger = require('../utils/logger');
   try {
-    const user = await User.findById(req.user.id);
-    
+    const userId = (req.user._id || req.user.id).toString();
+    const user = await User.findById(userId);
+
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
     }
-    
-    // In a real application, you would also delete related Posts, Comments, Settings, Notifications, etc.
-    // For this module scope, we will delete the User and UserSettings models at minimum.
-    const UserSettings = require('../models/UserSettings');
-    await UserSettings.deleteOne({ user: req.user.id });
-    
-    // Remove from other users' followers/following arrays
-    await User.updateMany(
-      { followers: req.user.id },
-      { $pull: { followers: req.user.id } }
-    );
-    await User.updateMany(
-      { following: req.user.id },
-      { $pull: { following: req.user.id } }
-    );
-    
+
+    // Lazy-load models to avoid circular dependencies at module load time
+    const UserSettings  = require('../models/UserSettings');
+    const Post          = require('../models/Post');
+    const Comment       = require('../models/Comment');
+    const Notification  = require('../models/Notification');
+    const Reel          = require('../models/Reel');
+    const Story         = require('../models/Story');
+    const Highlight     = require('../models/Highlight');
+    const MemoryVault   = require('../models/MemoryVault');
+    const Note          = require('../models/Note');
+    const LiveStream    = require('../models/LiveStream');
+    const Monetization  = require('../models/Monetization');
+    const Message       = require('../models/Message');
+
+    const Conversation  = require('../models/Conversation');
+
+    // Asynchronously attempt to clean up owned Cloudinary media assets (best-effort, non-blocking)
+    try {
+      const cloudinary = require('../config/cloudinary');
+      const userPosts = await Post.find({ user: userId }).select('media.public_id');
+      const publicIds = [];
+      userPosts.forEach(p => (p.media || []).forEach(m => { if (m.public_id) publicIds.push(m.public_id); }));
+      if (publicIds.length > 0 && process.env.CLOUDINARY_API_KEY) {
+        cloudinary.api.delete_resources(publicIds).catch(err => {
+          logger.warn('deleteAccount: Cloudinary resource deletion skipped or failed', { err: err.message });
+        });
+      }
+    } catch (mediaErr) {
+      logger.warn('deleteAccount: Cloudinary cleanup not configured or failed', { err: mediaErr.message });
+    }
+
+    // Run all cascade deletions in parallel; use allSettled so one failure
+    // doesn't prevent other cleanups.
+    const results = await Promise.allSettled([
+      // 1. Delete user's own content and assets
+      Post.deleteMany({ user: userId }),
+      Reel.deleteMany({ user: userId }),
+      Story.deleteMany({ user: userId }),
+      Comment.deleteMany({ user: userId }),
+      Highlight.deleteMany({ user: userId }),
+      MemoryVault.deleteMany({ user: userId }),
+      Note.deleteMany({ user: userId }),
+      LiveStream.deleteMany({ host: userId }),
+      Monetization.deleteMany({ user: userId }),
+      Message.deleteMany({ sender: userId }),
+
+      // 2. Direct 1-on-1 conversations and group participant cleanup
+      Conversation.deleteMany({ isGroupChat: false, participants: userId }),
+      Conversation.updateMany({ isGroupChat: true, participants: userId }, { $pull: { participants: userId } }),
+
+      // 3. Delete all notifications to/from this user
+      Notification.deleteMany({ $or: [{ recipient: userId }, { sender: userId }] }),
+
+      // 4. Delete account settings
+      UserSettings.deleteOne({ user: userId }),
+
+      // 5. Clean up user's likes, saves, and shares across posts, reels, and comments
+      Post.updateMany({ likes: userId }, { $pull: { likes: userId } }),
+      Post.updateMany({ saves: userId }, { $pull: { saves: userId } }),
+      Reel.updateMany({ likes: userId }, { $pull: { likes: userId } }),
+      Reel.updateMany({ saves: userId }, { $pull: { saves: userId } }),
+      Reel.updateMany({ shares: userId }, { $pull: { shares: userId } }),
+      Comment.updateMany({ likes: userId }, { $pull: { likes: userId } }),
+
+      // 6. Remove from other users' social arrays
+      User.updateMany(
+        {
+          $or: [
+            { followers: userId },
+            { following: userId },
+            { followRequests: userId },
+            { sentFollowRequests: userId },
+            { blockedUsers: userId },
+            { closeFriends: userId },
+            { mutedUsers: userId },
+            { restrictedUsers: userId }
+          ]
+        },
+        {
+          $pull: {
+            followers: userId,
+            following: userId,
+            followRequests: userId,
+            sentFollowRequests: userId,
+            blockedUsers: userId,
+            closeFriends: userId,
+            mutedUsers: userId,
+            restrictedUsers: userId
+          }
+        }
+      ),
+    ]);
+
+    let hadErrors = false;
+    results.forEach((r, i) => {
+      if (r.status === 'rejected') {
+        hadErrors = true;
+        logger.error(`deleteAccount: cascade step ${i} failed`, r.reason);
+      }
+    });
+
+    // Delete the user document itself
     await user.deleteOne();
-    
-    res.status(200).json({ success: true, message: 'Account deleted successfully' });
+
+    // Clear session cookies upon account deletion
+    const isProd = process.env.NODE_ENV === 'production';
+    res.clearCookie('token', { httpOnly: true, secure: isProd, sameSite: isProd ? 'none' : 'lax', path: '/' });
+    res.clearCookie('csrf-token', { httpOnly: false, secure: isProd, sameSite: isProd ? 'none' : 'lax', path: '/' });
+
+    logger.info('deleteAccount: account and associated data deleted', { userId });
+    res.status(200).json({ success: true, message: 'Account and associated repository data deleted successfully' });
   } catch (error) {
     next(error);
   }

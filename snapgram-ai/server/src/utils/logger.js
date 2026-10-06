@@ -3,13 +3,33 @@
  * Formats log messages with timestamps and severity levels for Sentry / Datadog / OpenTelemetry log aggregators.
  */
 
+const SENSITIVE_KEYS = new Set([
+  'password', 'token', 'jwt', 'secret', 'otp', 'devotp', 'authorization', 'cookie', 'credential', 'apikey'
+]);
+
+const redactSensitive = (obj, depth = 0) => {
+  if (!obj || typeof obj !== 'object' || depth > 5) return obj;
+  if (Array.isArray(obj)) return obj.map(item => redactSensitive(item, depth + 1));
+  const clean = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (SENSITIVE_KEYS.has(key.toLowerCase())) {
+      clean[key] = '[REDACTED]';
+    } else if (typeof value === 'object' && value !== null) {
+      clean[key] = redactSensitive(value, depth + 1);
+    } else {
+      clean[key] = value;
+    }
+  }
+  return clean;
+};
+
 const formatLog = (level, message, meta = {}) => {
   const logObj = {
     timestamp: new Date().toISOString(),
     level,
     message,
     environment: process.env.NODE_ENV || 'development',
-    ...meta
+    ...redactSensitive(meta)
   };
   return JSON.stringify(logObj);
 };

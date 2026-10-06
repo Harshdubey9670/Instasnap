@@ -19,7 +19,7 @@ export default function UserLayout() {
   
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === "dark";
-  // Use token system — dark: #0a0510 (was wrong #0f172a), light: #f8fafc
+  // Use token system — dark: #620d0b (was wrong #0f172a), light: #f8fafc
   const colors = getColors(isDark);
   const bgBase = colors.bgBase;
 

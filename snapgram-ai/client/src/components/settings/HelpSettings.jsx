@@ -26,7 +26,7 @@ const HelpSettings = () => {
 
         <button className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-bg-surface-hover transition-colors text-left group">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500 group-hover:bg-purple-500 group-hover:text-white transition-colors">
+            <div className="p-2 rounded-lg bg-primary-500/10 text-primary-500 group-hover:bg-primary-500 group-hover:text-white transition-colors">
               <MessageSquare className="w-5 h-5" />
             </div>
             <div>

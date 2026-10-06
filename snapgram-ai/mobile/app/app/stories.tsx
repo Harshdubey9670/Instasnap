@@ -524,7 +524,7 @@ export default function StoriesScreen() {
               >
                 <ArrowLeft
                   size={22}
-                  color="#0f172a"
+                  color="#FFF7F5"
                 />
               </Pressable>
 
@@ -538,7 +538,7 @@ export default function StoriesScreen() {
                 >
                   <Sparkles
                     size={20}
-                    color="#a855f7"
+                    color="#ee7565"
                   />
                 </View>
 
@@ -619,7 +619,7 @@ export default function StoriesScreen() {
                       color={
                         active
                           ? "#ffffff"
-                          : "#64748b"
+                          : "rgba(255, 247, 245, 0.6)"
                       }
                     />
 
@@ -646,7 +646,7 @@ export default function StoriesScreen() {
                 >
                   <ActivityIndicator
                     size="large"
-                    color="#a855f7"
+                    color="#ee7565"
                   />
                 </View>
               )}
@@ -732,7 +732,7 @@ export default function StoriesScreen() {
                     >
                       <ImageIcon
                         size={46}
-                        color="#a855f7"
+                        color="#ee7565"
                       />
 
                       <Text
@@ -803,7 +803,7 @@ export default function StoriesScreen() {
                       >
                         <Sliders
                           size={18}
-                          color="#a855f7"
+                          color="#ee7565"
                         />
 
                         <Text
@@ -893,7 +893,7 @@ export default function StoriesScreen() {
                         >
                           <ChevronLeft
                             size={18}
-                            color="#0f172a"
+                            color="#FFF7F5"
                           />
                         </Pressable>
 
@@ -919,7 +919,7 @@ export default function StoriesScreen() {
                         >
                           <ChevronRight
                             size={18}
-                            color="#0f172a"
+                            color="#FFF7F5"
                           />
                         </Pressable>
                       </View>
@@ -937,7 +937,7 @@ export default function StoriesScreen() {
                         }
                         style={styles.input}
                         placeholder="Type story text overlay..."
-                        placeholderTextColor="#94a3b8"
+                        placeholderTextColor="rgba(255, 247, 245, 0.55)"
                       />
 
                       <Text
@@ -1032,7 +1032,7 @@ export default function StoriesScreen() {
                 >
                   <ActivityIndicator
                     size="large"
-                    color="#a855f7"
+                    color="#ee7565"
                   />
                 </View>
               )}
@@ -1079,7 +1079,7 @@ export default function StoriesScreen() {
                   >
                     <ImageIcon
                       size={28}
-                      color="#94a3b8"
+                      color="rgba(255, 247, 245, 0.55)"
                     />
                   </View>
                 )}
@@ -1198,7 +1198,7 @@ export default function StoriesScreen() {
             >
               <Archive
                 size={36}
-                color="#94a3b8"
+                color="rgba(255, 247, 245, 0.55)"
               />
 
               <Text
@@ -1474,7 +1474,7 @@ export default function StoriesScreen() {
               >
                 <X
                   size={19}
-                  color="#0f172a"
+                  color="#FFF7F5"
                 />
               </Pressable>
             </View>
@@ -1486,7 +1486,7 @@ export default function StoriesScreen() {
             >
               <Eye
                 size={34}
-                color="#94a3b8"
+                color="rgba(255, 247, 245, 0.55)"
               />
               <Text
                 style={
@@ -1508,7 +1508,7 @@ export default function StoriesScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#851613",
   },
 
   content: {
@@ -1529,9 +1529,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     marginRight: 10,
   },
 
@@ -1545,9 +1545,9 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 13,
-    backgroundColor: "rgba(168,85,247,0.10)",
+    backgroundColor: "rgba(238, 117, 101,0.10)",
     borderWidth: 1,
-    borderColor: "rgba(168,85,247,0.20)",
+    borderColor: "rgba(238, 117, 101,0.20)",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 10,
@@ -1560,13 +1560,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 17,
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   subtitle: {
     marginTop: 2,
     fontSize: 11,
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
   },
 
   tabs: {
@@ -1578,23 +1578,23 @@ const styles = StyleSheet.create({
     minHeight: 40,
     paddingHorizontal: 13,
     borderRadius: 12,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
   },
 
   tabButtonActive: {
-    backgroundColor: "#a855f7",
-    borderColor: "#a855f7",
+    backgroundColor: "#ee7565",
+    borderColor: "#ee7565",
   },
 
   tabText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
   },
 
   tabTextActive: {
@@ -1617,8 +1617,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     borderStyle: "dashed",
-    borderColor: "rgba(168,85,247,0.45)",
-    backgroundColor: "#ffffff",
+    borderColor: "rgba(238, 117, 101,0.45)",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 10,
@@ -1628,7 +1628,7 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 6,
@@ -1637,7 +1637,7 @@ const styles = StyleSheet.create({
   addStoryText: {
     fontSize: 12,
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   storyCard: {
@@ -1659,7 +1659,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#e2e8f0",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
   },
 
   storyOverlay: {
@@ -1771,7 +1771,7 @@ const styles = StyleSheet.create({
     minHeight: 44,
     paddingHorizontal: 18,
     borderRadius: 13,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1785,24 +1785,24 @@ const styles = StyleSheet.create({
   secondaryButton: {
     minHeight: 44,
     borderRadius: 13,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 10,
   },
 
   secondaryButtonText: {
-    color: "#0f172a",
+    color: "#FFF7F5",
     fontSize: 13,
     fontWeight: "700",
   },
 
   editorCard: {
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     borderRadius: 18,
     padding: 14,
   },
@@ -1817,7 +1817,7 @@ const styles = StyleSheet.create({
   editorCardTitle: {
     fontSize: 14,
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   filterList: {
@@ -1829,22 +1829,22 @@ const styles = StyleSheet.create({
     minHeight: 34,
     paddingHorizontal: 11,
     borderRadius: 11,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#851613",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     alignItems: "center",
     justifyContent: "center",
   },
 
   filterActive: {
-    backgroundColor: "#a855f7",
-    borderColor: "#a855f7",
+    backgroundColor: "#ee7565",
+    borderColor: "#ee7565",
   },
 
   filterText: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
     textTransform: "capitalize",
   },
 
@@ -1857,7 +1857,7 @@ const styles = StyleSheet.create({
     marginBottom: 7,
     fontSize: 12,
     fontWeight: "700",
-    color: "#475569",
+    color: "rgba(255, 247, 245, 0.7)",
   },
 
   adjustRow: {
@@ -1872,9 +1872,9 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 17,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#851613",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1884,17 +1884,17 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 13,
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   input: {
     minHeight: 44,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#e2e8f0",
-    backgroundColor: "#f8fafc",
+    borderColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: "#851613",
     paddingHorizontal: 12,
-    color: "#0f172a",
+    color: "#FFF7F5",
     fontSize: 13,
   },
 
@@ -1914,13 +1914,13 @@ const styles = StyleSheet.create({
   },
 
   colorDotActive: {
-    borderColor: "#0f172a",
+    borderColor: "#FFF7F5",
   },
 
   publishButton: {
     minHeight: 46,
     borderRadius: 13,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -1941,9 +1941,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 12,
     borderRadius: 18,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderWidth: 1,
-    borderColor: "#e2e8f0",
+    borderColor: "rgba(255, 255, 255, 0.15)",
     flexDirection: "row",
     alignItems: "center",
   },
@@ -1952,7 +1952,7 @@ const styles = StyleSheet.create({
     width: 78,
     height: 102,
     borderRadius: 14,
-    backgroundColor: "#0f172a",
+    backgroundColor: "#620d0b",
     marginRight: 12,
   },
 
@@ -1963,14 +1963,14 @@ const styles = StyleSheet.create({
   archiveTitle: {
     fontSize: 14,
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   archiveSubtitle: {
     marginTop: 4,
     fontSize: 12,
     lineHeight: 18,
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
   },
 
   emptyArchive: {
@@ -1984,7 +1984,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     fontWeight: "700",
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
   },
 
   viewerBackdrop: {
@@ -2142,7 +2142,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -2155,7 +2155,7 @@ const styles = StyleSheet.create({
 
   sheet: {
     minHeight: 250,
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 16,
@@ -2170,14 +2170,14 @@ const styles = StyleSheet.create({
   sheetTitle: {
     fontSize: 18,
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#FFF7F5",
   },
 
   closeSheetButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: "rgba(255, 255, 255, 0.08)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -2194,7 +2194,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 13,
     lineHeight: 19,
-    color: "#64748b",
+    color: "rgba(255, 247, 245, 0.6)",
     textAlign: "center",
   },
 });

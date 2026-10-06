@@ -202,12 +202,12 @@ export const RelationshipActionsModal = ({ isOpen, onClose, targetUser, onAction
                 disabled={loadingAction !== null}
                 className={`w-full p-3 rounded-2xl border text-xs font-bold flex items-center justify-between transition-all ${
                   relations.isRestricted 
-                    ? 'bg-purple-500/15 border-purple-500/40 text-purple-400' 
+                    ? 'bg-primary-500/15 border-primary-500/40 text-primary-400' 
                     : 'glass border-white/10 text-text-primary hover:bg-white/10'
                 }`}
               >
                 <span className="flex items-center gap-2.5">
-                  <EyeOff className="w-4 h-4 text-purple-400" />
+                  <EyeOff className="w-4 h-4 text-primary-400" />
                   {relations.isRestricted ? 'Unrestrict User' : 'Restrict User'}
                 </span>
                 {loadingAction === 'restrict' ? <Loader2 className="w-4 h-4 animate-spin" /> : relations.isRestricted && <CheckCircle2 className="w-4 h-4" />}

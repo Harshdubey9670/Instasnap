@@ -6,8 +6,8 @@ import { FollowButton } from '../profile/FollowButton';
 
 export const notificationIcon = (type) => {
   switch (type) {
-    case "mention":  return <AtSign className="w-3 h-3 text-sky-400" />;
-    case "tag":      return <AtSign className="w-3 h-3 text-sky-400" />;
+    case "mention":  return <AtSign className="w-3 h-3 text-primary-400" />;
+    case "tag":      return <AtSign className="w-3 h-3 text-primary-400" />;
     case "like":     return <Heart className="w-3 h-3 text-red-500 fill-red-500" />;
     case "follow":   
     case "accept_request":
@@ -153,10 +153,14 @@ export const NotificationItem = ({
           <FollowButton userId={primarySender._id} targetUser={primarySender} />
         )}
 
-        {/* Post thumbnail for likes/comments/mentions */}
-        {group.post?.media?.[0]?.url && (
+        {/* Post or Reel thumbnail for likes/comments/mentions */}
+        {(group.post?.media?.[0]?.url || group.reel?.video?.thumbnailUrl || group.reel?.video?.url) && (
           <div className="w-11 h-11 rounded-lg overflow-hidden border border-border-soft/60 shrink-0">
-            <img src={group.post.media[0].url} alt="Post" className="w-full h-full object-cover" />
+            <img
+              src={group.post?.media?.[0]?.url || group.reel?.video?.thumbnailUrl || group.reel?.video?.url}
+              alt="Media"
+              className="w-full h-full object-cover"
+            />
           </div>
         )}
 

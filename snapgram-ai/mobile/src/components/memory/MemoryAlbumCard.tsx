@@ -105,7 +105,7 @@ export const MemoryAlbumCard = ({
           >
             <FolderPlus
               size={48}
-              color="#c084fc"
+              color="#ffaea3"
               strokeWidth={1.8}
             />
           </View>
@@ -226,11 +226,11 @@ const styles =
       borderRadius: 18,
 
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
 
       shadowColor:
         "#000000",

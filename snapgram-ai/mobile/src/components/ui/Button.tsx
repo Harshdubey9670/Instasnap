@@ -278,7 +278,7 @@ function getVariantStyle(
     case "primary":
       return {
         backgroundColor:
-          "#a855f7",
+          "#ee7565",
         shadowColor:
           "#000000",
         shadowOffset: {
@@ -293,7 +293,7 @@ function getVariantStyle(
     case "secondary":
       return {
         backgroundColor:
-          "#ec4899",
+          "#f43f5e",
         shadowColor:
           "#000000",
         shadowOffset: {
@@ -311,7 +311,7 @@ function getVariantStyle(
           "transparent",
         borderWidth: 2,
         borderColor:
-          "#a855f7",
+          "#ee7565",
       };
 
     case "ghost":
@@ -341,7 +341,7 @@ function getVariantStyle(
     case "gradient":
       return {
         backgroundColor:
-          "#a855f7",
+          "#ee7565",
         shadowColor:
           "#000000",
         shadowOffset: {
@@ -356,9 +356,9 @@ function getVariantStyle(
     case "ai":
       return {
         backgroundColor:
-          "#c084fc",
+          "#ffaea3",
         shadowColor:
-          "#a855f7",
+          "#ee7565",
         shadowOffset: {
           width: 0,
           height: 0,
@@ -422,7 +422,7 @@ function getTextColor(
       return "#FFFFFF";
 
     case "outline":
-      return "#a855f7";
+      return "#ee7565";
 
     case "ghost":
       return "#0f172a";

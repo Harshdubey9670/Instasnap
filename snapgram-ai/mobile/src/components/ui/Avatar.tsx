@@ -78,11 +78,11 @@ const Avatar = forwardRef<
       getAvatarSize(size);
 
     const backgroundColor = dark
-      ? "#1e112c"
+      ? "#5c1210"
       : "#f1f5f9";
 
     const surfaceColor = dark
-      ? "#130a1c"
+      ? "#4a0f0d"
       : "#ffffff";
 
     const fallbackBackground =
@@ -216,7 +216,7 @@ const Avatar = forwardRef<
                   "#22c55e",
                 borderColor:
                   dark
-                    ? "#0a0510"
+                    ? "#620d0b"
                     : "#f8fafc",
                 borderWidth: 2,
               },

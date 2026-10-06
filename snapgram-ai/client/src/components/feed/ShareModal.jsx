@@ -24,8 +24,8 @@ const shareOptions = [
     id: "twitter",
     label: "Share to X",
     icon: Globe,
-    color: "text-sky-400",
-    bg: "bg-sky-400/10 hover:bg-sky-400/20",
+    color: "text-primary-400",
+    bg: "bg-primary-400/10 hover:bg-primary-400/20",
     available: () => true,
   },
   {

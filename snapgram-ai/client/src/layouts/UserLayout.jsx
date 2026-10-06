@@ -6,10 +6,9 @@ import { useTheme } from "../contexts/ThemeContext";
 import { useSocketContext } from "../contexts/SocketContext";
 import api from "../services/api";
 import { Navbar } from "../components/navigation/Navbar";
-import { Sidebar } from "../components/navigation/Sidebar";
+import { SpatialNavRail } from "../components/ui/spatial/SpatialNavRail";
 import { MobileNav } from "../components/navigation/MobileNav";
-import { CreatePostModal } from "../components/post/CreatePostModal";
-import { Plus } from "lucide-react";
+import { CreateMenuModal } from "../components/navigation/CreateMenuModal";
 import { useNavigate } from "react-router-dom";
 import { useEdgeSwipe } from "../hooks/useEdgeSwipe";
 import { Suspense, useRef } from "react";
@@ -22,8 +21,9 @@ export const UserLayout = () => {
   const location = useLocation();
   const { socket } = useSocketContext();
   const { user: authUser } = useSelector((state) => state.auth);
-  
+
   const scrollRef = useRef(null);
+  const [isCreateMenuOpen, setIsCreateMenuOpen] = useState(false);
 
   // Fetch initial unread notification count on mount
   useEffect(() => {
@@ -162,57 +162,68 @@ export const UserLayout = () => {
   // Pages that should take full available width (no padding, no max-width)
   const isFullWidthPage = location.pathname.includes('/chat')
     || location.pathname.includes('/settings')
-    || location.pathname.includes('/camera');
+    || location.pathname.includes('/camera')
+    || location.pathname.includes('/reels')
+    || location.pathname.includes('/spotlight');
 
   // Pages where the feed/main area uses overflow-hidden (e.g. reels use their own scroll)
   const isOwnScrollPage = location.pathname.includes('/reels')
+    || location.pathname.includes('/spotlight')
     || location.pathname.includes('/camera');
+
+  const isDesktopHome = location.pathname === '/app' || location.pathname === '/app/';
 
   return (
     <div className="h-dvh w-screen overflow-hidden bg-bg-base text-text-primary flex flex-col relative selection:bg-primary-500/20 selection:text-primary-500">
-      {/* Background ambient lighting (fixed, pointer-events-none) */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-30 dark:opacity-20">
-        <div className="absolute -top-40 -left-40 w-80 h-80 sm:w-96 sm:h-96 rounded-full bg-primary-500/30 blur-[120px]" />
-        <div className="absolute top-1/2 -right-40 w-80 h-80 sm:w-96 sm:h-96 rounded-full bg-secondary-500/30 blur-[120px]" />
+      {/* Warm cream environment lighting (fixed, pointer-events-none) */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden spatial-env-bg">
+        <div className="absolute -top-40 -left-40 w-[28rem] h-[28rem] sm:w-[40rem] sm:h-[40rem] rounded-full bg-[#FF6B35]/6 dark:bg-primary-400/25 blur-[160px]" />
+        <div className="absolute top-1/3 -right-40 w-[28rem] h-[28rem] sm:w-[40rem] sm:h-[40rem] rounded-full bg-[#FFB347]/5 dark:bg-secondary-500/20 blur-[160px]" />
+        <div className="absolute bottom-0 left-1/3 w-64 h-64 sm:w-96 sm:h-96 rounded-full bg-[#FF8C5A]/4 dark:bg-primary-700/25 blur-[120px]" />
       </div>
 
-      {/* ── Fixed top Navbar ── */}
-      <div className="relative z-40 flex-shrink-0">
-        <Navbar scrollContainerRef={scrollRef} />
+      {/* ── Fixed floating top Navbar (hidden on desktop for desktop homepage) ── */}
+      <div className={`relative z-40 flex-shrink-0 ${isDesktopHome ? 'lg:hidden' : ''}`}>
+        <Navbar scrollContainerRef={scrollRef} onOpenCreate={() => setIsCreateMenuOpen(true)} />
       </div>
 
-      {/* ── Body row: sidebar + main content ── */}
-      <div className="relative z-10 flex flex-1 min-h-0 w-full max-w-[1400px] mx-auto">
+      {/* ── Floating spatial nav rail (hidden on desktop for desktop homepage) ── */}
+      <div className={`hidden md:flex ${isDesktopHome ? 'lg:hidden' : ''} fixed left-4 lg:left-6 top-1/2 -translate-y-1/2 z-40`}>
+        <SpatialNavRail onOpenCreate={() => setIsCreateMenuOpen(true)} />
+      </div>
 
-        {/* Left Sidebar — fixed height, never scrolls */}
-        <Sidebar />
+      {/* ── Body row: main content ── */}
+      <div className={`relative z-10 flex flex-1 min-h-0 w-full ${isDesktopHome ? 'max-w-none md:pl-24 lg:pl-0' : 'max-w-[1600px] mx-auto md:pl-24 lg:pl-28'}`}>
 
         {/* Main content — THE ONLY scroll container */}
         <main
           ref={scrollRef}
           className={[
             "flex-1 min-w-0",
-            location.pathname === '/app' ? "pt-14 sm:pt-16" : "",
-            // Give main its own scroll box — this is the key change
+            isDesktopHome ? "pt-16 sm:pt-20 lg:pt-0" : "pt-16 sm:pt-20",
             isOwnScrollPage ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden",
-            // Smooth scrolling
             "scroll-smooth",
-            // Hide scrollbar on mobile for clean feel
             "hide-scrollbar md:no-scrollbar",
-            // Mobile: add bottom padding for MobileNav
-            "pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))] md:pb-0",
+            isDesktopHome ? "pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-6 lg:pb-0" : "pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))] md:pb-6",
           ].join(" ")}
           id="main-feed-scroll"
         >
-          <div className={isFullWidthPage ? "w-full h-full" : "w-full max-w-full"}>
+          <div className={isFullWidthPage || isDesktopHome ? "w-full h-full" : "w-full max-w-full"}>
             <Outlet />
           </div>
         </main>
       </div>
 
-      {/* Bottom mobile navigation — fixed, never moves */}
-      <MobileNav />
+      {/* Bottom mobile navigation — floating glass pill, fixed, never moves */}
+      <MobileNav onOpenCreate={() => setIsCreateMenuOpen(true)} />
       {authUser && <AiAssistantDrawer />}
+
+      {/* Shared create flow — triggered from nav rail (desktop) and mobile nav.
+          "Create Post" navigates to the dedicated /app/create/post page. */}
+      <CreateMenuModal
+        isOpen={isCreateMenuOpen}
+        onClose={() => setIsCreateMenuOpen(false)}
+      />
     </div>
   );
 };

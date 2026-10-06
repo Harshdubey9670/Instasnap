@@ -158,7 +158,7 @@ function getBadgeColors(
           ? "#f8fafc"
           : "#0f172a",
         border: dark
-          ? "#2d1b3b"
+          ? "#6e1815"
           : "#e2e8f0",
         borderWidth: 1,
       };
@@ -172,7 +172,7 @@ function getBadgeColors(
           ? "#f8fafc"
           : "#0f172a",
         border: dark
-          ? "rgba(168,85,247,0.15)"
+          ? "rgba(238, 117, 101,0.15)"
           : "rgba(255,255,255,0.40)",
         borderWidth: 1,
       };

@@ -87,9 +87,9 @@ export const Loader = ({
             borderRadius:
               dimension / 2,
             borderColor:
-              "rgba(168,85,247,0.22)",
+              "rgba(238, 117, 101,0.22)",
             borderTopColor:
-              "#a855f7",
+              "#ee7565",
             transform: [
               {
                 rotate,

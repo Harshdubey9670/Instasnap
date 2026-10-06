@@ -458,8 +458,8 @@ export default function VaultPage() {
 
 const createStyles = (colors: ReturnType<typeof getColors>, isDark: boolean) => {
   const accent = primary[500];
-  const accentTint15 = "rgba(168, 85, 247, 0.15)";
-  const accentTint30 = "rgba(168, 85, 247, 0.3)";
+  const accentTint15 = "rgba(238, 117, 101, 0.15)";
+  const accentTint30 = "rgba(238, 117, 101, 0.3)";
   return StyleSheet.create({
     container: { flex: 1, backgroundColor: colors.bgBase },
     header: {

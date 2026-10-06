@@ -16,6 +16,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "../../contexts/ThemeContext";
 import { GradientText } from "../ui/GradientText";
 import { useToast } from "../ui/Toast";
+import { getColors } from "../../theme/colors";
 
 interface AuthPageLayoutProps {
   children: React.ReactNode;
@@ -24,6 +25,7 @@ interface AuthPageLayoutProps {
 export const AuthPageLayout: React.FC<AuthPageLayoutProps> = ({ children }) => {
   const { effectiveTheme, toggleTheme } = useTheme();
   const isDark = effectiveTheme === "dark";
+  const colors = getColors(isDark);
   const { toast } = useToast();
 
   const handleBack = () => {
@@ -45,7 +47,7 @@ export const AuthPageLayout: React.FC<AuthPageLayoutProps> = ({ children }) => {
     <SafeAreaView
       style={[
         styles.safeArea,
-        { backgroundColor: isDark ? "#0a0510" : "#f8fafc" },
+        { backgroundColor: colors.bgBase },
       ]}
       edges={["top", "left", "right"]}
     >
@@ -54,22 +56,14 @@ export const AuthPageLayout: React.FC<AuthPageLayoutProps> = ({ children }) => {
         pointerEvents="none"
         style={[
           styles.ambientGlowTop,
-          {
-            backgroundColor: isDark
-              ? "rgba(168, 85, 247, 0.12)"
-              : "rgba(168, 85, 247, 0.08)",
-          },
+          { backgroundColor: "rgba(238, 117, 101, 0.22)" },
         ]}
       />
       <View
         pointerEvents="none"
         style={[
           styles.ambientGlowBottom,
-          {
-            backgroundColor: isDark
-              ? "rgba(236, 72, 153, 0.10)"
-              : "rgba(236, 72, 153, 0.06)",
-          },
+          { backgroundColor: "rgba(244, 63, 94, 0.16)" },
         ]}
       />
 
@@ -81,21 +75,15 @@ export const AuthPageLayout: React.FC<AuthPageLayoutProps> = ({ children }) => {
           style={({ pressed }) => [
             styles.roundButton,
             {
-              backgroundColor: isDark
-                ? "rgba(255, 255, 255, 0.06)"
-                : "#ffffff",
-              borderColor: isDark ? "rgba(255, 255, 255, 0.12)" : "#e2e8f0",
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              borderColor: "rgba(255, 255, 255, 0.15)",
               opacity: pressed ? 0.7 : 1,
             },
           ]}
           accessibilityRole="button"
           accessibilityLabel="Go back"
         >
-          <ChevronLeft
-            size={22}
-            color={isDark ? "#f8fafc" : "#0f172a"}
-            strokeWidth={2.2}
-          />
+          <ChevronLeft size={22} color="#FFF7F5" strokeWidth={2.2} />
         </Pressable>
 
         {/* Center Title and Subtitle */}
@@ -104,12 +92,12 @@ export const AuthPageLayout: React.FC<AuthPageLayoutProps> = ({ children }) => {
             text="SnapGram AI"
             fontSize={25}
             fontWeight="800"
-            colors={["#d946ef", "#c084fc", "#ec4899"]}
+            colors={["#FFAEA3", "#EE7565", "#851613"]}
           />
           <Text
             style={[
               styles.headerSubtitle,
-              { color: isDark ? "#94a3b8" : "#64748b" },
+              { color: "rgba(255, 247, 245, 0.65)" },
             ]}
           >
             Join the next generation of social media.
@@ -122,21 +110,15 @@ export const AuthPageLayout: React.FC<AuthPageLayoutProps> = ({ children }) => {
           style={({ pressed }) => [
             styles.roundButton,
             {
-              backgroundColor: isDark
-                ? "rgba(255, 255, 255, 0.06)"
-                : "#ffffff",
-              borderColor: isDark ? "rgba(255, 255, 255, 0.12)" : "#e2e8f0",
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              borderColor: "rgba(255, 255, 255, 0.15)",
               opacity: pressed ? 0.7 : 1,
             },
           ]}
           accessibilityRole="button"
           accessibilityLabel="Toggle theme"
         >
-          {isDark ? (
-            <Moon size={19} color="#f8fafc" strokeWidth={2} />
-          ) : (
-            <Moon size={19} color="#0f172a" strokeWidth={2} />
-          )}
+          <Moon size={19} color="#FFF7F5" strokeWidth={2} />
         </Pressable>
       </View>
 
@@ -168,7 +150,7 @@ export const AuthPageLayout: React.FC<AuthPageLayoutProps> = ({ children }) => {
         accessibilityLabel="SnapGram AI Copilot"
       >
         <LinearGradient
-          colors={["#a855f7", "#9333ea", "#ec4899"]}
+          colors={["#ee7565", "#ca4840", "#f43f5e"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.floatingAiGradient}
@@ -259,7 +241,7 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 23,
-    shadowColor: "#a855f7",
+    shadowColor: "#ee7565",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.55,
     shadowRadius: 10,

@@ -142,7 +142,7 @@ function getNotificationIconColor(
   switch (type) {
     case "mention":
     case "tag":
-      return "#38bdf8";
+      return "#ff8878";
 
     case "like":
       return "#ef4444";
@@ -157,7 +157,7 @@ function getNotificationIconColor(
     case "story_reply":
     case "story":
     case "reel":
-      return "#a855f7";
+      return "#ee7565";
 
     case "save":
       return "#f59e0b";
@@ -456,12 +456,12 @@ export default function NotificationsScreen() {
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === "dark";
 
-  const bgBase       = isDark ? "#0a0510" : "#f8fafc";
+  const bgBase       = isDark ? "#620d0b" : "#f8fafc";
   const bgCard       = isDark ? "#18122b" : "#ffffff";
-  const bgCardBorder = isDark ? "#2d1f4a" : "#e2e8f0";
+  const bgCardBorder = isDark ? "#6e1815" : "#e2e8f0";
   const textPrimary  = isDark ? "#f8fafc" : "#0f172a";
   const textSecond   = isDark ? "#94a3b8" : "#64748b";
-  const divider      = isDark ? "#2d1f4a" : "#e2e8f0";
+  const divider      = isDark ? "#6e1815" : "#e2e8f0";
 
   const handleBack = () => {
     if (router.canGoBack()) {
@@ -978,19 +978,26 @@ export default function NotificationsScreen() {
         );
       }
 
+      const reelId =
+        (group as any).reel?._id ||
+        (group as any).reel ||
+        ((group as any).contentType === 'reel' ? (group as any).contentId : null);
+
       const senderId =
         group.sender?._id ||
-        group.senders?.[0]?._id;
+        (typeof group.sender === 'string' ? group.sender : (group as any).senders?.[0]?._id);
 
-      if (senderId) {
-        router.push(
-          `/app/profile/${senderId}`,
-        );
+      if (reelId) {
+        router.push({ pathname: '/app/reels', params: { id: reelId } } as any);
       } else if (
         group.post?._id
       ) {
         router.push(
           `/app/post/${group.post._id}`,
+        );
+      } else if (senderId) {
+        router.push(
+          `/app/profile/${senderId}`,
         );
       }
     };
@@ -1340,7 +1347,7 @@ export default function NotificationsScreen() {
       >
         <ActivityIndicator
           size="large"
-          color="#a855f7"
+          color="#ee7565"
         />
       </View>
     );
@@ -1385,7 +1392,7 @@ export default function NotificationsScreen() {
 
           <Bell
             size={22}
-            color="#a855f7"
+            color="#ee7565"
           />
 
           <Text
@@ -1431,13 +1438,13 @@ export default function NotificationsScreen() {
             {markingRead ? (
               <ActivityIndicator
                 size="small"
-                color="#a855f7"
+                color="#ee7565"
               />
             ) : (
               <>
                 <CheckCheck
                   size={16}
-                  color="#a855f7"
+                  color="#ee7565"
                 />
                 <Text
                   style={
@@ -1684,7 +1691,7 @@ export default function NotificationsScreen() {
             onRefresh={
               handleRefresh
             }
-            tintColor="#a855f7"
+            tintColor="#ee7565"
           />
         }
         onEndReached={
@@ -1702,7 +1709,7 @@ export default function NotificationsScreen() {
             >
               <ActivityIndicator
                 size="small"
-                color="#a855f7"
+                color="#ee7565"
               />
             </View>
           ) : null
@@ -1780,7 +1787,7 @@ const styles =
       paddingVertical: 4,
       borderRadius: 999,
       backgroundColor:
-        "rgba(168,85,247,0.12)",
+        "rgba(238, 117, 101,0.12)",
     },
 
     unreadCountText: {
@@ -1788,7 +1795,7 @@ const styles =
       lineHeight: 15,
       fontWeight:
         "700",
-      color: "#a855f7",
+      color: "#ee7565",
     },
 
     markAllButton: {
@@ -1803,14 +1810,14 @@ const styles =
         "center",
       gap: 5,
       backgroundColor:
-        "rgba(168,85,247,0.10)",
+        "rgba(238, 117, 101,0.10)",
     },
 
     markAllText: {
       fontSize: 12,
       fontWeight:
         "700",
-      color: "#a855f7",
+      color: "#ee7565",
     },
 
     listContent: {
@@ -1847,7 +1854,7 @@ const styles =
 
     unreadRow: {
       backgroundColor:
-        "rgba(168,85,247,0.045)",
+        "rgba(238, 117, 101,0.045)",
     },
 
     senderContainer: {
@@ -1968,7 +1975,7 @@ const styles =
       height: 10,
       borderRadius: 5,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     deleteButton: {
@@ -2043,7 +2050,7 @@ const styles =
       paddingVertical: 8,
       borderRadius: 8,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     confirmText: {

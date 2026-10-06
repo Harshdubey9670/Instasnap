@@ -46,7 +46,7 @@ const Modal = ({
 
   const borderColor =
     dark
-      ? "rgba(168,85,247,0.15)"
+      ? "rgba(238, 117, 101,0.15)"
       : "rgba(255,255,255,0.40)";
 
   const textPrimary =

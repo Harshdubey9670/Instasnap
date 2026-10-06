@@ -1,20 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { motion } from 'framer-motion';
 import { Modal } from '../ui/Modal';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { useToast } from '../ui/Toast';
 import api from '../../services/api';
 import { loginSuccess } from '../../store/authSlice';
-import { Image as ImageIcon, Camera, Loader2, CheckCircle, ShieldAlert } from 'lucide-react';
+import { Image as ImageIcon, Camera, Loader2, CheckCircle, MapPin, Sparkles } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { AvatarCropModal } from './AvatarCropModal';
+import { TagsInput } from '../create/TagsInput';
 
 export const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) => {
   const [formData, setFormData] = useState({
     username: '',
     bio: '',
     website: '',
+    location: '',
     avatar: '',
     coverPhoto: '',
     pronouns: '',
@@ -22,8 +25,10 @@ export const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) =>
     category: '',
     accountType: 'personal',
     isPrivate: false,
-    verificationRequestStatus: 'none'
+    verificationRequestStatus: 'none',
+    interests: []
   });
+  const [interestInput, setInterestInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
@@ -38,6 +43,7 @@ export const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) =>
         username: user.username || '',
         bio: user.bio || '',
         website: user.website || '',
+        location: user.location || '',
         avatar: user.avatar || user.profilePicture || '',
         coverPhoto: user.coverPhoto || '',
         pronouns: user.pronouns || '',
@@ -45,7 +51,8 @@ export const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) =>
         category: user.category || '',
         accountType: user.accountType || 'personal',
         isPrivate: user.isPrivate || false,
-        verificationRequestStatus: user.verificationRequestStatus || 'none'
+        verificationRequestStatus: user.verificationRequestStatus || 'none',
+        interests: user.interests || []
       });
     }
   }, [user, isOpen]);
@@ -223,10 +230,34 @@ export const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) =>
               <div className="text-right text-xs text-text-secondary mt-1">{formData.bio.length} / 150</div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-text-secondary mb-1">Website</label>
-              <Input name="website" placeholder="https://yourwebsite.com" value={formData.website} onChange={handleChange} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1">Website</label>
+                <Input name="website" placeholder="https://yourwebsite.com" value={formData.website} onChange={handleChange} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-text-secondary mb-1 flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> Location</label>
+                <Input name="location" placeholder="e.g. Seoul, Korea" value={formData.location} onChange={handleChange} maxLength={100} />
+              </div>
             </div>
+
+            <TagsInput
+              tagInput={interestInput}
+              setTagInput={setInterestInput}
+              tags={formData.interests}
+              addTagsFromInput={() => {
+                const raw = interestInput.trim();
+                if (!raw) return;
+                const parsed = raw.split(/[,]+/).map(t => t.trim()).filter(Boolean).slice(0, 3);
+                setFormData(prev => ({ ...prev, interests: [...new Set([...prev.interests, ...parsed])].slice(0, 15) }));
+                setInterestInput('');
+              }}
+              removeTag={(i) => setFormData(prev => ({ ...prev, interests: prev.interests.filter((_, idx) => idx !== i) }))}
+              label="Interests"
+              icon={Sparkles}
+              placeholder="e.g. Travel, Photography"
+              showHashPrefix={false}
+            />
 
             <div>
               <label className="block text-sm font-medium text-text-secondary mb-1">Gender</label>
@@ -303,7 +334,7 @@ export const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) =>
               <div>
                 <p className="text-text-primary text-sm font-medium flex items-center gap-1.5">
                   Verification Badge
-                  {user?.isVerified && <CheckCircle className="w-4 h-4 text-blue-500" />}
+                  {user?.isVerified && <CheckCircle className="w-4 h-4 text-primary-400" />}
                 </p>
                 <p className="text-text-secondary text-xs mt-1 max-w-[250px]">
                   {user?.isVerified 

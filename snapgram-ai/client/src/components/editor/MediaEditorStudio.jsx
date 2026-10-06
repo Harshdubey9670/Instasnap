@@ -220,7 +220,7 @@ export function MediaEditorStudio({ isOpen, onClose, mediaSrc, mediaType = 'imag
         <div className="p-4 border-b border-border-soft flex items-center justify-between bg-bg-surface/50">
           <div className="flex items-center gap-2">
             <Wand2 className="w-5 h-5 text-primary-500 animate-pulse" />
-            <h2 className="text-lg font-black hero-text">InstaSnap Studio & Media Editor</h2>
+            <h2 className="text-lg font-black hero-text">NUVYELO Studio & Media Editor</h2>
           </div>
 
           <div className="flex items-center gap-2">
@@ -558,7 +558,7 @@ export function MediaEditorStudio({ isOpen, onClose, mediaSrc, mediaType = 'imag
                     className="w-full p-3 rounded-2xl glass text-text-primary font-bold text-xs flex items-center justify-between"
                   >
                     <span>AI 4K Super Resolution</span>
-                    <Zap className="w-4 h-4 text-blue-400" />
+                    <Zap className="w-4 h-4 text-primary-300" />
                   </button>
                 </div>
               )}

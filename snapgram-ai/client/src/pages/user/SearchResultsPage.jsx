@@ -358,7 +358,7 @@ const SearchResultsPage = () => {
                           <div className="flex-1 min-w-0">
                             <h4 className="font-bold text-text-primary truncate flex items-center gap-1">
                               {user.fullName || user.username}
-                              {user.isVerified && <BadgeCheck className="w-4 h-4 text-blue-500 fill-blue-500/10" />}
+                              {user.isVerified && <BadgeCheck className="w-4 h-4 text-primary-400 fill-primary-400/10" />}
                             </h4>
                             <p className="text-sm text-text-secondary truncate">@{user.username}</p>
                           </div>

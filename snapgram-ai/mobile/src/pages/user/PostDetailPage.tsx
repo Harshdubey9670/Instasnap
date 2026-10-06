@@ -527,7 +527,7 @@ const createStyles = (colors: ReturnType<typeof getColors>, isDark: boolean) => 
     sepTitle: { color: colors.textPrimary, fontSize: 14, fontWeight: "700" },
     sepSubtitle: { color: colors.textSecondary, fontSize: 11, marginTop: 2 },
     card: { backgroundColor: colors.bgSurface, borderRadius: 20, marginBottom: 18, overflow: "hidden" },
-    mainCard: { borderWidth: 1, borderColor: "rgba(168, 85, 247, 0.4)" },
+    mainCard: { borderWidth: 1, borderColor: "rgba(238, 117, 101, 0.4)" },
     authorRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", padding: 12 },
     authorInfo: { flexDirection: "row", alignItems: "center", gap: 10 },
     authorAvatar: { width: 38, height: 38, borderRadius: 19 },

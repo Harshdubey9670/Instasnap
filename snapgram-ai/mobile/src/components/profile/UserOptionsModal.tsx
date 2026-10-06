@@ -253,7 +253,7 @@ export const UserOptionsModal = ({
         ? "rgba(19,10,28,0.98)"
         : "rgba(255,255,255,0.98)",
       surface: darkMode
-        ? "#1e112c"
+        ? "#5c1210"
         : "#f1f5f9",
       textPrimary: darkMode
         ? "#f8fafc"
@@ -262,7 +262,7 @@ export const UserOptionsModal = ({
         ? "#94a3b8"
         : "#64748b",
       border: darkMode
-        ? "#2d1b3b"
+        ? "#6e1815"
         : "#e2e8f0",
       overlay:
         "rgba(0,0,0,0.70)",
@@ -1033,8 +1033,8 @@ const styles = StyleSheet.create({
   },
 
   submitButton: {
-    backgroundColor: "#a855f7",
-    borderColor: "#a855f7",
+    backgroundColor: "#ee7565",
+    borderColor: "#ee7565",
   },
 
   cancelText: {

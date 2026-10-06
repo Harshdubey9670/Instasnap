@@ -17,11 +17,32 @@ const getOnlineUsersList = () => {
   return Array.from(onlineUsers.keys());
 };
 
+const crypto = require('crypto');
+
+const parseCookies = (cookieHeader) => {
+  if (!cookieHeader) return {};
+  return cookieHeader.split(';').reduce((res, c) => {
+    const [k, v] = c.trim().split('=');
+    if (k && v) res[k] = decodeURIComponent(v);
+    return res;
+  }, {});
+};
+
+const hashToken = (token) =>
+  crypto.createHash('sha256').update(token).digest('hex');
+
 const initSocket = (io) => {
   ioInstance = io;
   io.use(async (socket, next) => {
     try {
       let token = socket.handshake.auth?.token || socket.handshake.query?.token;
+      
+      // If token not provided in auth payload, check cookies
+      if (!token && socket.handshake.headers?.cookie) {
+        const cookies = parseCookies(socket.handshake.headers.cookie);
+        token = cookies.token;
+      }
+
       if (!token) {
         return next(new Error('Authentication error: No token provided'));
       }
@@ -32,15 +53,23 @@ const initSocket = (io) => {
 
       let decoded;
       try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET);
+        decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret');
       } catch (jwtErr) {
         return next(new Error(`Authentication error: ${jwtErr.message}`));
       }
 
-      const user = await User.findById(decoded.id).select('-password');
+      const user = await User.findById(decoded.id).select('+sessions -password -otp -otpExpires');
       
       if (!user) {
         return next(new Error('Authentication error: User not found'));
+      }
+
+      // Session revocation check
+      const tokenHash = hashToken(token);
+      const activeSessions = user.sessions || [];
+      const hasActiveSession = activeSessions.some(s => s.token === tokenHash || s.token === token);
+      if (activeSessions.length > 0 && !hasActiveSession) {
+        return next(new Error('Authentication error: Session revoked or expired'));
       }
 
       socket.user = user;
@@ -59,14 +88,19 @@ const initSocket = (io) => {
     socket.join(userId);
 
     // 2. Track online user
+    const wasAlreadyOnline = onlineUsers.has(userId) && onlineUsers.get(userId).size > 0;
     if (!onlineUsers.has(userId)) {
       onlineUsers.set(userId, new Set());
     }
     onlineUsers.get(userId).add(socket.id);
 
-    // 3. Broadcast updated online users list
-    // Send to everyone, including the new socket
-    io.emit('getOnlineUsers', getOnlineUsersList());
+    // 3. Send initial presence state directly to the connecting client
+    socket.emit('getOnlineUsers', getOnlineUsersList());
+
+    // If user just transitioned from offline to online, broadcast to other authenticated clients
+    if (!wasAlreadyOnline) {
+      socket.broadcast.emit('getOnlineUsers', getOnlineUsersList());
+    }
 
     // Handle Typing events
     socket.on('typing', (conversationId) => {
@@ -147,7 +181,7 @@ const initSocket = (io) => {
         userSockets.delete(socket.id);
         if (userSockets.size === 0) {
           onlineUsers.delete(userId);
-          io.emit('getOnlineUsers', getOnlineUsersList());
+          socket.broadcast.emit('getOnlineUsers', getOnlineUsersList());
           
           // Update lastSeen in DB
           try {

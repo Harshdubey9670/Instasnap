@@ -1,108 +1,82 @@
-import { NavLink, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { motion } from "framer-motion";
-import { Home, Camera, MessageCircle, User, Compass, Bell, ShieldCheck, Film, Search } from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ArrowLeft, ArrowRight, Plus, MoreHorizontal } from "lucide-react";
 import { cn } from "../../utils/cn";
-import { Avatar } from "../ui/Avatar";
 
-export const MobileNav = () => {
+export const MobileNav = ({ onOpenCreate }) => {
+  const navigate = useNavigate();
   const location = useLocation();
-  const { user: authUser, unreadNotificationsCount } = useSelector((state) => state.auth);
 
   // Hide on full-screen pages
   const hiddenPages = ['/spotlight', '/camera', '/story/create', '/reels/create'];
   const shouldHide = hiddenPages.some(p => location.pathname.includes(p));
   if (shouldHide) return null;
 
-  const navItems = [
-    { name: "Home",          icon: Home,          path: "/app",             exact: true },
-    { name: "Search",        icon: Search,        path: "/app/explore" },
-    { name: "Reels",         icon: Film,          path: "/app/reels" },
-    { name: "Vault",         icon: ShieldCheck,   path: "/app/vault" },
-    { name: "Profile",       icon: User,          path: "/app/profile",     isProfile: true },
-  ];
-
   return (
-    // Show on mobile + tablet (below md:), hide at md and above (sidebar takes over)
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-bg-base/95 backdrop-blur-2xl border-t border-border-soft/80 shadow-2xl"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex justify-center px-4"
+      style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom, 0px))' }}
       aria-label="Mobile navigation"
     >
-      <div className="flex h-14 items-center justify-around px-1 max-w-lg mx-auto">
-        {navItems.map((item) => {
-          const isActive = item.exact
-            ? location.pathname === item.path
-            : location.pathname.startsWith(item.path);
+      <div
+        className={cn(
+          "flex items-center justify-between w-full max-w-sm h-14 px-6 rounded-full",
+          "bg-white/95 dark:bg-[#1E1210]/95 backdrop-blur-xl",
+          "border border-black/[0.06] dark:border-white/10",
+          "shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]"
+        )}
+      >
+        {/* Back */}
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="p-2 text-[#78716C] dark:text-white/70 active:scale-90 transition-transform"
+          aria-label="Back"
+        >
+          <ArrowLeft className="w-5 h-5 stroke-[2]" />
+        </button>
 
-          if (item.isCTA) {
-            return (
-              <NavLink
-                key={item.name}
-                to={item.path}
-                aria-label={item.name}
-                className="relative flex flex-col items-center justify-center w-full h-full active:scale-90 transition-transform"
-              >
-                <div className="w-11 h-11 rounded-full hero-gradient flex items-center justify-center shadow-glow border-2 border-bg-base">
-                  <item.icon className="h-5 w-5 text-white" strokeWidth={2.5} />
-                </div>
-              </NavLink>
-            );
-          }
+        {/* Forward */}
+        <button
+          type="button"
+          onClick={() => navigate(1)}
+          className="p-2 text-[#78716C] dark:text-white/70 active:scale-90 transition-transform"
+          aria-label="Forward"
+        >
+          <ArrowRight className="w-5 h-5 stroke-[2]" />
+        </button>
 
-          return (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              end={item.exact}
-              aria-label={item.name}
-              aria-current={isActive ? "page" : undefined}
-              className="relative flex flex-col items-center justify-center w-full h-full text-text-secondary transition-all active:scale-90"
-            >
-              <div className="relative flex items-center justify-center w-10 h-9">
-                {/* Animated active indicator bubble */}
-                {isActive && (
-                  <motion.div
-                    layoutId="mobile-nav-bubble"
-                    className="absolute inset-0 bg-primary-500/15 rounded-2xl"
-                    transition={{ type: "spring", stiffness: 450, damping: 30 }}
-                  />
-                )}
+        {/* Create Plus (Center pill) */}
+        <button
+          type="button"
+          onClick={onOpenCreate}
+          className="w-10 h-10 rounded-full bg-[#E5E0D8]/80 dark:bg-white/15 flex items-center justify-center text-[#1A1A1A] dark:text-white active:scale-90 transition-transform shadow-sm"
+          aria-label="Create Post"
+        >
+          <Plus className="w-5 h-5 stroke-[2.5]" />
+        </button>
 
-                {item.isProfile ? (
-                  <div className={`p-0.5 rounded-full transition-all duration-200 ${isActive ? 'ring-2 ring-primary-500 scale-110' : 'opacity-80'}`}>
-                    <Avatar
-                      src={authUser?.profilePicture || authUser?.avatar}
-                      className="w-6 h-6 rounded-full object-cover"
-                      fallback={authUser?.username?.charAt(0)?.toUpperCase() || 'U'}
-                    />
-                  </div>
-                ) : (
-                  <div className="relative">
-                    <item.icon
-                      className={cn(
-                        "h-5 w-5 relative z-10 transition-all duration-200",
-                        isActive ? "text-primary-500 scale-110 drop-shadow-sm" : "text-text-secondary"
-                      )}
-                      strokeWidth={isActive ? 2.5 : 2}
-                    />
-                    {/* Notification badge */}
-                    {item.badge > 0 && (
-                      <span className="absolute -top-1.5 -right-2 flex h-4 min-w-[14px] items-center justify-center rounded-full bg-secondary-500 px-0.5 text-[9px] font-black text-white ring-2 ring-bg-base">
-                        {item.badge > 99 ? '99+' : item.badge}
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
+        {/* Tab switcher [ 1 ] */}
+        <button
+          type="button"
+          onClick={() => navigate("/app")}
+          className="w-6 h-6 rounded-md border-2 border-[#78716C] dark:border-white/70 flex items-center justify-center text-[11px] font-bold text-[#78716C] dark:text-white/70 active:scale-90 transition-transform"
+          aria-label="Tabs"
+        >
+          1
+        </button>
 
-              <span className={`text-[10px] font-bold tracking-tight transition-colors leading-none ${isActive ? 'text-primary-500' : 'text-text-secondary'}`}>
-                {item.name}
-              </span>
-            </NavLink>
-          );
-        })}
+        {/* More */}
+        <button
+          type="button"
+          onClick={() => navigate("/settings")}
+          className="p-2 text-[#78716C] dark:text-white/70 active:scale-90 transition-transform"
+          aria-label="More"
+        >
+          <MoreHorizontal className="w-5 h-5 stroke-[2]" />
+        </button>
       </div>
     </nav>
   );
 };
+
+export default MobileNav;

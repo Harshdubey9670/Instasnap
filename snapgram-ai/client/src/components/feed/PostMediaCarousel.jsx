@@ -122,6 +122,13 @@ export const PostMediaCarousel = ({ mediaItems, onDoubleTap, showHeartOverlay })
           </>
         )}
         
+        {/* Position indicator, e.g. "1/5" */}
+        {isCarousel && (
+          <span className="absolute top-3 right-3 z-20 text-[11px] font-semibold text-white bg-black/50 rounded-full px-2 py-0.5">
+            {currentMediaIndex + 1}/{mediaItems.length}
+          </span>
+        )}
+
         {/* Double Tap Heart Overlay */}
         {showHeartOverlay && (
           <motion.div 

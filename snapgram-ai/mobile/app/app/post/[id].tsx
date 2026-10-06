@@ -511,7 +511,7 @@ function InstagramPostCard({
                   size={
                     11
                   }
-                  color="#a855f7"
+                  color="#ee7565"
                 />
 
                 <Text
@@ -936,12 +936,12 @@ function InstagramPostCard({
               }
               color={
                 saved
-                  ? "#a855f7"
+                  ? "#ee7565"
                   : "#0f172a"
               }
               fill={
                 saved
-                  ? "#a855f7"
+                  ? "#ee7565"
                   : "transparent"
               }
             />
@@ -1864,7 +1864,7 @@ export default function PostDetailScreen() {
           >
             <ActivityIndicator
               size="large"
-              color="#a855f7"
+              color="#ee7565"
             />
           </View>
         ) : targetPost ? (
@@ -1921,7 +1921,7 @@ export default function PostDetailScreen() {
               size={
                 19
               }
-              color="#a855f7"
+              color="#ee7565"
             />
 
             <Text
@@ -1998,7 +1998,7 @@ export default function PostDetailScreen() {
             >
               <ActivityIndicator
                 size="small"
-                color="#a855f7"
+                color="#ee7565"
               />
             </View>
           ) : !hasMore &&
@@ -2079,7 +2079,7 @@ export default function PostDetailScreen() {
                   size={
                     18
                   }
-                  color="#a855f7"
+                  color="#ee7565"
                 />
 
                 <Text
@@ -2384,7 +2384,7 @@ const styles =
       textAlign:
         "center",
       color:
-        "#a855f7",
+        "#ee7565",
       fontSize: 16,
       fontWeight:
         "800",
@@ -2441,7 +2441,7 @@ const styles =
 
     mainPostCard: {
       borderColor:
-        "rgba(168,85,247,0.38)",
+        "rgba(238, 117, 101,0.38)",
       borderWidth: 2,
     },
 
@@ -2471,7 +2471,7 @@ const styles =
       borderRadius: 21,
       borderWidth: 1.5,
       borderColor:
-        "#c084fc",
+        "#ffaea3",
     },
 
     authorText: {
@@ -2505,7 +2505,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#3b82f6",
+        "#ff8878",
     },
 
     locationRow: {
@@ -2843,7 +2843,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     disabledButton: {
@@ -3020,7 +3020,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     saveButtonText: {
@@ -3080,7 +3080,7 @@ const styles =
       paddingHorizontal: 15,
       borderRadius: 14,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       flexDirection:
         "row",
       alignItems:

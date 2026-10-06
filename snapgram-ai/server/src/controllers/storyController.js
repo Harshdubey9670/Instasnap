@@ -4,6 +4,9 @@ const UserSettings = require('../models/UserSettings');
 const { canDownloadStory } = require('../utils/privacyGuards');
 
 const seedMockStoriesIfNeeded = async () => {
+  // Require explicit ENABLE_DEV_MOCK_SEEDING=true; never seed in production
+  if (process.env.NODE_ENV === 'production' || process.env.ENABLE_DEV_MOCK_SEEDING !== 'true') return;
+
   const count = await Story.countDocuments();
   if (count > 0) return;
 

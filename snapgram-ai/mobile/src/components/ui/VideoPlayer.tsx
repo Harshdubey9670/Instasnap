@@ -1024,7 +1024,7 @@ const styles =
 
     activeControl: {
       backgroundColor:
-        "rgba(168,85,247,0.25)",
+        "rgba(238, 117, 101,0.25)",
     },
 
     spacer: {

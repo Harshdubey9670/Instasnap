@@ -5,11 +5,8 @@ const User = require('../models/User');
 const logger = require('../utils/logger');
 
 const seedMockConversationsIfNeeded = async (userId) => {
-  // Demo-data helper only — must never run in production. It was previously
-  // unconditional, which meant real users with an empty inbox got 5
-  // fabricated conversations and invented messages attributed to other
-  // real accounts on the platform.
-  if (process.env.NODE_ENV === 'production') return;
+  // Demo-data helper only — must never run in production. Requires explicit ENABLE_DEV_MOCK_SEEDING=true.
+  if (process.env.NODE_ENV === 'production' || process.env.ENABLE_DEV_MOCK_SEEDING !== 'true') return;
 
   const count = await Conversation.countDocuments({ participants: userId });
   if (count > 0) return;

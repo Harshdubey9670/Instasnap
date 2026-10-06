@@ -31,8 +31,8 @@ export const StoriesRow = ({ stories = [], liveStreams = [], isLoading, onStoryC
           s.viewers?.some((v) => (typeof v === 'string' ? v : v._id) === authUser?._id)
         );
         const ringClass = myStoryGroup 
-          ? (allSeen ? "bg-border-strong p-[2px]" : "bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-[3px]")
-          : "border-[3px] border-bg-base";
+          ? (allSeen ? "bg-black/15 dark:bg-border-strong p-[2px]" : "bg-gradient-to-tr from-[#FF6B35] via-[#FF8C5A] to-[#FFB347] p-[3px]")
+          : "border-[3px] border-[#F5F0EB] dark:border-bg-base";
 
         return (
           <div className="flex flex-col items-center gap-1.5 shrink-0 group snap-start relative">
@@ -41,7 +41,7 @@ export const StoriesRow = ({ stories = [], liveStreams = [], isLoading, onStoryC
                 onClick={() => myStoryGroup ? onStoryClick?.(myStoryIndex) : document.getElementById('create-story-link').click()}
                 className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full transition-transform duration-300 group-hover:scale-105 shadow-sm group-hover:shadow-md cursor-pointer ${ringClass}`}
               >
-                <div className="w-full h-full rounded-full border-[3px] border-bg-base overflow-hidden">
+                <div className="w-full h-full rounded-full border-[3px] border-[#F5F0EB] dark:border-bg-base overflow-hidden">
                   <Avatar
                     src={authUser?.profilePicture || authUser?.avatar}
                     alt="Your story"
@@ -73,7 +73,7 @@ export const StoriesRow = ({ stories = [], liveStreams = [], isLoading, onStoryC
           className="flex flex-col items-center gap-1.5 shrink-0 cursor-pointer relative group snap-start"
           aria-label={`${stream.host.username} is live`}
         >
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-pink-500 via-red-500 to-purple-500 p-[3px] animate-pulse">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-[#F43F5E] via-[#E11D48] to-[#FDA4AF] p-[3px] animate-pulse">
             <div className="w-full h-full rounded-full border-[3px] border-bg-base overflow-hidden">
               <img
                 src={stream.host.profilePicture || "https://i.pravatar.cc/150"}
@@ -98,8 +98,8 @@ export const StoriesRow = ({ stories = [], liveStreams = [], isLoading, onStoryC
           s.viewers?.some((v) => (typeof v === 'string' ? v : v._id) === authUser?._id)
         );
         const ringClass = allSeen 
-          ? "bg-border-strong p-[2px]" 
-          : "bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 p-[3px]";
+          ? "bg-black/15 dark:bg-border-strong p-[2px]" 
+          : "bg-gradient-to-tr from-[#FF6B35] via-[#FF8C5A] to-[#FFB347] p-[3px]";
 
         return (
           <motion.div
@@ -113,7 +113,7 @@ export const StoriesRow = ({ stories = [], liveStreams = [], isLoading, onStoryC
             onKeyDown={(e) => e.key === 'Enter' && onStoryClick?.(originalIndex)}
           >
             <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full ${ringClass} transition-transform duration-300 group-hover:scale-105 group-hover:rotate-[10deg] shadow-sm group-hover:shadow-md`}>
-              <div className="w-full h-full rounded-full border-[3px] border-bg-base overflow-hidden transition-transform duration-300 group-hover:-rotate-[10deg]">
+              <div className="w-full h-full rounded-full border-[3px] border-[#F5F0EB] dark:border-bg-base overflow-hidden transition-transform duration-300 group-hover:-rotate-[10deg]">
                 <Avatar
                   src={storyGroup.user.profilePicture || storyGroup.user.avatar}
                   alt={storyGroup.user.username}

@@ -37,14 +37,14 @@ const OtpPage = () => {
   const inputRefs = useRef<(TextInput | null)[]>([]);
 
   const colors = {
-    bg: dark ? "#0d0a14" : "#f8f5ff",
+    bg: dark ? "#3c0a09" : "#fff5f4",
     card: dark ? "rgba(30,17,44,0.85)" : "rgba(255,255,255,0.85)",
     cardBorder: dark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.7)",
     text: dark ? "#f8fafc" : "#0f172a",
     textSecondary: dark ? "#94a3b8" : "#64748b",
-    primary: "#a855f7",
-    otpBg: dark ? "#1e112c" : "#f1f5f9",
-    otpBorder: dark ? "#2d1b3b" : "#e2e8f0",
+    primary: "#ee7565",
+    otpBg: dark ? "#5c1210" : "#f1f5f9",
+    otpBorder: dark ? "#6e1815" : "#e2e8f0",
   };
 
   useEffect(() => {
@@ -127,7 +127,7 @@ const OtpPage = () => {
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           {/* Header */}
           <View style={styles.header}>
-            <View style={[styles.iconBox, { borderColor: "rgba(168,85,247,0.3)", backgroundColor: "rgba(168,85,247,0.1)" }]}>
+            <View style={[styles.iconBox, { borderColor: "rgba(238, 117, 101,0.3)", backgroundColor: "rgba(238, 117, 101,0.1)" }]}>
               <ShieldCheck size={40} color={colors.primary} />
             </View>
             <Text style={[styles.title, { color: colors.text }]}>Verify Account</Text>
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   blob: {
     position: "absolute", top: -60, right: -60,
     width: 260, height: 260, borderRadius: 130,
-    backgroundColor: "rgba(168,85,247,0.2)", opacity: 0.5,
+    backgroundColor: "rgba(238, 117, 101,0.2)", opacity: 0.5,
   },
   content: { flexGrow: 1, justifyContent: "center", paddingHorizontal: 20, paddingVertical: 40 },
   header: { alignItems: "center", marginBottom: 32 },
@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     width: 80, height: 80, borderRadius: 24,
     borderWidth: 1, alignItems: "center", justifyContent: "center",
     marginBottom: 20,
-    shadowColor: "#a855f7", shadowOpacity: 0.3, shadowRadius: 16, shadowOffset: { width: 0, height: 4 }, elevation: 5,
+    shadowColor: "#ee7565", shadowOpacity: 0.3, shadowRadius: 16, shadowOffset: { width: 0, height: 4 }, elevation: 5,
   },
   title: { fontSize: 28, fontWeight: "700", letterSpacing: -0.5 },
   subtitle: { fontSize: 14, marginTop: 8, textAlign: "center", lineHeight: 22 },

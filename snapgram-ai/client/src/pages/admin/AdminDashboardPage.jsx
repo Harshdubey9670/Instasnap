@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useToast } from "../../components/ui/Toast";
 import { 
   Users, 
   ShieldAlert, 
@@ -34,6 +35,7 @@ import {
 } from "../../services/adminService";
 
 export default function AdminDashboardPage() {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("overview"); // overview, users, moderation, broadcast, logs, config
   const [loading, setLoading] = useState(true);
 
@@ -111,11 +113,11 @@ export default function AdminDashboardPage() {
     setBroadcasting(true);
     try {
       const res = await broadcastNotification({ title: broadcastTitle, message: broadcastMessage });
-      alert(res.message);
+      toast.success(res.message || "Broadcast sent");
       setBroadcastTitle("");
       setBroadcastMessage("");
     } catch (err) {
-      alert("Failed to send broadcast");
+      toast.error("Failed to send broadcast");
     } finally {
       setBroadcasting(false);
     }
@@ -142,7 +144,7 @@ export default function AdminDashboardPage() {
         <div>
           <div className="flex items-center gap-2">
             <ShieldAlert className="w-8 h-8 text-rose-500 bg-rose-500/10 p-1.5 rounded-xl" />
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-rose-500 via-purple-500 to-primary-500 bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-primary-300 via-secondary-500 to-primary-700 bg-clip-text text-transparent">
               Production Admin Control Center
             </h1>
           </div>
@@ -196,7 +198,7 @@ export default function AdminDashboardPage() {
             </div>
             <div className="p-5 sm:p-6 bg-bg-surface rounded-3xl border border-border-soft space-y-2 shadow-sm">
               <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Total Feed Posts</span>
-              <p className="text-3xl font-black text-purple-500">{metrics?.totalPosts || 0}</p>
+              <p className="text-3xl font-black text-primary-400">{metrics?.totalPosts || 0}</p>
             </div>
             <div className="p-5 sm:p-6 bg-bg-surface rounded-3xl border border-border-soft space-y-2 shadow-sm">
               <span className="text-xs font-bold text-text-secondary uppercase tracking-wider">Pending Reports</span>
@@ -265,7 +267,7 @@ export default function AdminDashboardPage() {
                         <button
                           onClick={() => handleToggleVerification(u)}
                           className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-bold text-[10px] ${
-                            u.isVerified ? "bg-blue-500/10 text-blue-500 border border-blue-500/20" : "bg-bg-base text-text-secondary"
+                            u.isVerified ? "bg-primary-500/10 text-primary-400 border border-primary-500/20" : "bg-bg-base text-text-secondary"
                           }`}
                         >
                           <BadgeCheck className="w-3.5 h-3.5" />
@@ -348,7 +350,7 @@ export default function AdminDashboardPage() {
         <div className="max-w-2xl bg-bg-surface p-8 rounded-3xl border border-border-soft space-y-6 shadow-sm">
           <div>
             <h3 className="font-bold text-lg flex items-center gap-2">
-              <Bell className="w-5 h-5 text-purple-500" />
+              <Bell className="w-5 h-5 text-primary-400" />
               Platform-Wide Broadcast Notification
             </h3>
             <p className="text-xs text-text-secondary mt-1">Send announcement to all registered users.</p>
@@ -382,7 +384,7 @@ export default function AdminDashboardPage() {
             <button
               type="submit"
               disabled={broadcasting}
-              className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all"
+              className="w-full py-3 bg-primary-600 hover:bg-primary-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all"
             >
               {broadcasting ? "Publishing Broadcast..." : "Send Broadcast Notification"}
             </button>

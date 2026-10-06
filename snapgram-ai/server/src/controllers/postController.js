@@ -3,6 +3,9 @@ const User = require('../models/User');
 
 // Mock Data Generator for Development purposes
 const seedMockDataIfNeeded = async () => {
+  // Require explicit ENABLE_DEV_MOCK_SEEDING=true; never seed in production
+  if (process.env.NODE_ENV === 'production' || process.env.ENABLE_DEV_MOCK_SEEDING !== 'true') return;
+
   const count = await Post.countDocuments();
   if (count > 0) return; // Already seeded
 
@@ -54,7 +57,8 @@ exports.createPost = async (req, res, next) => {
       status = 'published',
       scheduledAt,
       location,
-      settings
+      settings,
+      audience = 'everyone'
     } = req.body;
 
     let finalMedia = [];
@@ -64,7 +68,9 @@ exports.createPost = async (req, res, next) => {
       finalMedia = [{ url: mediaUrl, public_id, type: mediaType }];
     }
 
-    if (finalMedia.length === 0) {
+    // Published posts must have media; drafts/scheduled posts can be saved
+    // as a caption-only work-in-progress and have media added later.
+    if (finalMedia.length === 0 && status === 'published') {
       return res.status(400).json({ success: false, message: 'Media is required' });
     }
 
@@ -95,7 +101,8 @@ exports.createPost = async (req, res, next) => {
       status,
       scheduledAt,
       location,
-      settings
+      settings,
+      audience
     });
 
     const populatedPost = await Post.findById(newPost._id).populate('user', 'username fullName avatar profilePicture');
@@ -127,12 +134,10 @@ exports.createPost = async (req, res, next) => {
 // @access  Private
 exports.getFeed = async (req, res, next) => {
   try {
-    // Run seeder automatically if DB is completely empty so UI testing works
-    await seedMockDataIfNeeded();
-
     const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 5;
+    const limit = parseInt(req.query.limit, 10) || 10;
     const skip = (page - 1) * limit;
+    const tab = (req.query.tab || 'forYou').toLowerCase();
 
     // Fetch current user details to get fresh arrays for blocked, muted, and hidden content
     const currentUser = await User.findById(req.user._id);
@@ -142,24 +147,72 @@ exports.getFeed = async (req, res, next) => {
     const hiddenPosts = currentUser?.hiddenPosts || [];
 
     const excludedUserIds = new Set([...blockedUsers, ...mutedUsers]);
-    const feedUserIds = [...following, req.user._id].filter(
-      id => id && !excludedUserIds.has(id.toString())
-    );
 
-    const filter = {
-      $and: [
-        { user: { $in: feedUserIds } },
-        { status: 'published' },
-        { _id: { $nin: hiddenPosts } }
-      ]
-    };
+    let userClause;
+    if (tab === 'following') {
+      const feedUserIds = [...following, req.user._id].filter(
+        id => id && !excludedUserIds.has(id.toString())
+      );
+      userClause = { user: { $in: feedUserIds } };
+    } else {
+      // For You or Trending: Show published posts from everyone, excluding blocked/muted users
+      if (excludedUserIds.size > 0) {
+        userClause = { user: { $nin: Array.from(excludedUserIds) } };
+      } else {
+        userClause = {};
+      }
+    }
 
-    // Fetch posts, populate user info
+    // Close Friends-only posts should only surface for viewers the author
+    // actually added to their Close Friends list (or the author themself).
+    const closeFriendAuthors = await User.find({
+      closeFriends: req.user._id
+    }).select('_id');
+    const allowedCloseFriendAuthorIds = [...closeFriendAuthors.map(u => u._id), req.user._id];
+
+    const filterConditions = [
+      { status: 'published' },
+      { _id: { $nin: hiddenPosts } },
+      { $or: [
+        { audience: { $ne: 'closeFriends' } },
+        { audience: 'closeFriends', user: { $in: allowedCloseFriendAuthorIds } },
+        { audience: { $exists: false } }
+      ] }
+    ];
+
+    if (Object.keys(userClause).length > 0) {
+      filterConditions.unshift(userClause);
+    }
+
+    const filter = { $and: filterConditions };
+
+    // Trending tab: sort by actual likes count using aggregation
+    if (tab === 'trending') {
+      const trendingPipeline = [
+        { $match: filter },
+        { $addFields: { likesCount: { $size: { $ifNull: ['$likes', []] } } } },
+        { $sort: { likesCount: -1, createdAt: -1 } },
+        { $skip: skip },
+        { $limit: limit }
+      ];
+
+      const posts = await Post.aggregate(trendingPipeline);
+      await Post.populate(posts, { path: 'user', select: 'username fullName avatar profilePicture isVerified' });
+
+      const total = await Post.countDocuments(filter);
+      return res.status(200).json({
+        success: true,
+        data: posts,
+        pagination: { page, limit, total, hasMore: skip + posts.length < total }
+      });
+    }
+
+    // For You / Following: standard .find() with newest-first sort
     const posts = await Post.find(filter)
-      .sort({ createdAt: -1 }) // Newest first
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate('user', 'username fullName avatar profilePicture'); // Only get needed fields
+      .populate('user', 'username fullName avatar profilePicture isVerified');
 
     const total = await Post.countDocuments(filter);
     const hasMore = skip + posts.length < total;
@@ -317,7 +370,8 @@ exports.getExploreFeed = async (req, res, next) => {
       select: 'username fullName avatar profilePicture' 
     });
 
-    const total = await Post.countDocuments();
+    // Use the same filter for total count (published only)
+    const total = await Post.countDocuments({ status: 'published' });
     const hasMore = skip + posts.length < total;
 
     let responseData = { posts };
@@ -469,6 +523,17 @@ exports.getUserPosts = async (req, res, next) => {
       : requestedStatus;
 
     const query = { user: userId, status: statusFilter };
+
+    // Hide Close Friends-only posts from viewers who aren't on that list.
+    if (!isOwnProfile) {
+      const profileOwner = await User.findById(userId).select('closeFriends');
+      const viewerIsCloseFriend = (profileOwner?.closeFriends || []).some(
+        id => id.toString() === req.user._id.toString()
+      );
+      if (!viewerIsCloseFriend) {
+        query.audience = { $ne: 'closeFriends' };
+      }
+    }
 
     const posts = await Post.find(query)
       .sort({ isPinned: -1, createdAt: -1 }) // Pinned first, then newest
@@ -647,28 +712,8 @@ exports.deletePost = async (req, res, next) => {
   }
 };
 
-// @desc    Update a post (Caption, Location, Alt-Text, Settings)
-// @route   PUT /api/posts/:id
-// @access  Private
-exports.updatePost = async (req, res, next) => {
-  try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ success: false, message: 'Post not found' });
-    if (post.user.toString() !== req.user._id.toString()) return res.status(403).json({ success: false, message: 'Not authorized' });
-
-    const { caption, location, altText, settings } = req.body;
-    if (caption !== undefined) post.caption = caption;
-    if (location !== undefined) post.location = location;
-    if (altText !== undefined && post.media?.[0]) post.media[0].altText = altText;
-    if (settings !== undefined) post.settings = { ...post.settings, ...settings };
-
-    await post.save();
-    const updated = await Post.findById(post._id).populate('user', 'username fullName avatar profilePicture');
-    res.status(200).json({ success: true, data: updated });
-  } catch (error) {
-    next(error);
-  }
-};
+// NOTE: updatePost was removed (C-7 audit fix). It duplicated editPost and was
+// never imported by postRoutes.js. Use editPost via PUT /api/posts/:id.
 
 // @desc    Archive/Unarchive a post
 // @route   PUT /api/posts/:id/archive

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
-import { ZoomIn, ZoomOut, RotateCcw, Check, X } from 'lucide-react';
+import { ZoomIn, ZoomOut, RotateCcw, Check, Loader2 } from 'lucide-react';
 
 export const AvatarCropModal = ({ isOpen, onClose, imageSrc, onCropComplete }) => {
   const [zoom, setZoom] = useState(1);
@@ -159,6 +159,13 @@ export const AvatarCropModal = ({ isOpen, onClose, imageSrc, onCropComplete }) =
           onTouchEnd={handleTouchEnd}
           onWheel={handleWheel}
         >
+          {/* Loading spinner while the target image decodes */}
+          {imageSrc && !imageLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+              <Loader2 className="w-6 h-6 text-white/70 animate-spin" />
+            </div>
+          )}
+
           {/* Target image */}
           {imageSrc && (
             <img
@@ -174,8 +181,9 @@ export const AvatarCropModal = ({ isOpen, onClose, imageSrc, onCropComplete }) =
                 maxWidth: 'none',
                 userSelect: 'none',
                 pointerEvents: 'none',
+                opacity: imageLoaded ? 1 : 0,
               }}
-              className="object-contain"
+              className="object-contain transition-opacity duration-200"
             />
           )}
 
@@ -221,7 +229,7 @@ export const AvatarCropModal = ({ isOpen, onClose, imageSrc, onCropComplete }) =
               step="0.01"
               value={zoom}
               onChange={(e) => setZoom(parseFloat(e.target.value))}
-              className="flex-1 accent-purple-500 cursor-pointer h-1.5 bg-neutral-800 rounded-lg"
+              className="flex-1 accent-primary-500 cursor-pointer h-1.5 bg-neutral-800 rounded-lg"
             />
 
             <button
@@ -255,7 +263,7 @@ export const AvatarCropModal = ({ isOpen, onClose, imageSrc, onCropComplete }) =
             variant="primary"
             onClick={handleSaveCrop}
             size="sm"
-            className="gap-2 bg-purple-600 hover:bg-purple-700 text-white"
+            className="gap-2 bg-primary-600 hover:bg-primary-700 text-white"
           >
             <Check className="w-4 h-4" />
             Set Picture

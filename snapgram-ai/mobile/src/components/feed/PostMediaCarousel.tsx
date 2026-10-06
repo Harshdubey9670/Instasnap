@@ -869,7 +869,7 @@ const styles =
 
     activeDot: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     inactiveDot: {

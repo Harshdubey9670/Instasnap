@@ -384,7 +384,7 @@ export default function ResetPasswordScreen() {
                 >
                     <KeyRound
                         size={40}
-                        color="#ec4899"
+                        color="#f43f5e"
                     />
                 </View>
 
@@ -712,7 +712,7 @@ const styles =
         screen: {
             flex: 1,
             backgroundColor:
-                "#f8fafc",
+                "#851613",
         },
 
         content: {
@@ -742,10 +742,10 @@ const styles =
             justifyContent:
                 "center",
             backgroundColor:
-                "rgba(236,72,153,0.12)",
+                "rgba(244, 63, 94,0.12)",
             borderWidth: 1,
             borderColor:
-                "rgba(236,72,153,0.30)",
+                "rgba(244, 63, 94,0.30)",
             marginBottom: 24,
         },
 
@@ -753,7 +753,7 @@ const styles =
             fontSize: 30,
             lineHeight: 38,
             fontWeight: "700",
-            color: "#a855f7",
+            color: "#ee7565",
             textAlign:
                 "center",
         },
@@ -911,7 +911,7 @@ const styles =
         },
 
         linkText: {
-            color: "#a855f7",
+            color: "#ee7565",
             fontSize: 14,
             fontWeight: "600",
         },

@@ -55,6 +55,7 @@ export const authSlice = createSlice({
       state.loading = false;
     },
     logout: (state) => {
+      localStorage.removeItem('token');
       state.user = null;
       state.isAuthenticated = false;
       state.unreadNotificationsCount = 0;
@@ -62,6 +63,11 @@ export const authSlice = createSlice({
     updateSavedPosts: (state, action) => {
       if (state.user) {
         state.user.savedPosts = action.payload;
+      }
+    },
+    updateSavedReels: (state, action) => {
+      if (state.user) {
+        state.user.savedReels = action.payload;
       }
     },
     updateFollowing: (state, action) => {
@@ -163,7 +169,8 @@ export const {
   loginStart, 
   loginSuccess, 
   logout, 
-  updateSavedPosts, 
+  updateSavedPosts,
+  updateSavedReels,
   updateFollowing,
   updateSentFollowRequests,
   updateBlockedUsers,

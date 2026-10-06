@@ -99,7 +99,7 @@ export const Dropdown = ({
 
   const menuBorder =
     dark
-      ? "rgba(168,85,247,0.15)"
+      ? "rgba(238, 117, 101,0.15)"
       : "rgba(255,255,255,0.40)";
 
   const menuText =
@@ -258,7 +258,7 @@ export const DropdownSeparator =
             backgroundColor:
               effectiveTheme ===
               "dark"
-                ? "#2d1b3b"
+                ? "#6e1815"
                 : "#e2e8f0",
           },
           style,

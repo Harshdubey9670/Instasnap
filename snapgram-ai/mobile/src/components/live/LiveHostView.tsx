@@ -1116,7 +1116,7 @@ const styles =
       borderRadius: 40,
 
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
 
       marginBottom: 20,
     },
@@ -1155,7 +1155,7 @@ const styles =
       borderRadius: 16,
 
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     goLiveText: {

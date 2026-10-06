@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import {
   ActivityIndicator,
-  FlatList,
+  Dimensions,
   Image,
   Pressable,
   ScrollView,
@@ -16,41 +16,31 @@ import {
   TextInput,
   View,
 } from "react-native";
-import {
-  router,
-  useLocalSearchParams,
-} from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import {
   ArrowLeft,
   Clock,
   Compass,
+  Flame,
   Hash,
   Heart,
-  Loader2,
   MessageCircle,
   Search,
+  Sparkles,
   TrendingUp,
-  Video,
   X,
+  Zap,
 } from "lucide-react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "../../src/contexts/ThemeContext";
 
 import api from "../../src/services/api";
-import {
-  Avatar,
-} from "../../src/components/ui/Avatar";
-import {
-  trackEvent,
-} from "../../src/utils/analytics";
-import {
-  fetchWithCache,
-  prefetch,
-} from "../../src/utils/cache";
-import {
-  cn,
-} from "../../src/utils/cn";
-import PopularCreatorsCarousel from "../../src/components/user/PopularCreatorsCarousel";
+import { Avatar } from "../../src/components/ui/Avatar";
+import { trackEvent } from "../../src/utils/analytics";
+import { fetchWithCache, prefetch } from "../../src/utils/cache";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 type User = {
   _id: string;
@@ -70,6 +60,7 @@ type ExplorePost = {
   likes?: any[];
   comments?: any[];
   user?: User;
+  isLiked?: boolean;
 };
 
 type SearchResult = {
@@ -100,284 +91,96 @@ type RecentSearch = {
   tag?: string;
 };
 
-const NewMediaCard = memo(
-  ({
-    post,
-  }: {
-    post: ExplorePost;
-  }) => {
-    const mediaUrl =
-      post.media?.[0]?.url;
-
-    if (!mediaUrl) {
-      return null;
-    }
-
-    const userId =
-      post.user?._id;
-
-    return (
-      <Pressable
-        onPress={() => {
-          if (userId) {
-            trackEvent(
-              "recommendation_click",
-              post._id,
-              {
-                source:
-                  "explore_newest",
-              },
-            );
-
-            router.push(
-              `/app/profile/${userId}` as any,
-            );
-          }
-        }}
-        onPressIn={() => {
-          if (userId) {
-            void prefetch(
-              `/api/users/${userId}`,
-              () =>
-                api.get(
-                  `/api/users/${userId}`,
-                ),
-            );
-          }
-        }}
-        style={
-          styles.newMediaCard
-        }
-      >
-        <Image
-          source={{
-            uri: mediaUrl,
-          }}
-          style={
-            styles.newMediaImage
-          }
-        />
-
-        <View
-          style={
-            styles.newMediaOverlay
-          }
-        >
-          <View
-            style={
-              styles.newMediaLikes
-            }
-          >
-            <Heart
-              size={14}
-              color="#ffffff"
-              fill="#ffffff"
-            />
-
-            <Text
-              style={
-                styles.newMediaLikesText
-              }
-            >
-              {
-                post.likes
-                  ?.length || 0
-              }
-            </Text>
-          </View>
-
-          <Avatar
-            src={
-              post.user
-                ?.profilePicture ||
-              post.user
-                ?.avatar
-            }
-            fallback={
-              post.user?.username?.charAt(
-                0,
-              )
-            }
-            size="sm"
-          />
-        </View>
-      </Pressable>
-    );
-  },
-);
-
-const ExploreGridCard = memo(
+// --- Discover 2-Column Grid Card ---
+const MobileDiscoverGridCard = memo(
   ({
     post,
     index,
+    isDark,
   }: {
     post: ExplorePost;
     index: number;
+    isDark: boolean;
   }) => {
-    const [
-      isPressed,
-      setIsPressed,
-    ] = useState(false);
+    const [isLiked, setIsLiked] = useState(Boolean(post.isLiked));
+    const [likesCount, setLikesCount] = useState(post.likes?.length || 0);
 
-    const mediaUrl =
-      post.media?.[0]?.url;
+    const mediaUrl = post.media?.[0]?.url;
+    if (!mediaUrl) return null;
 
-    if (!mediaUrl) {
-      return null;
-    }
+    const userId = post.user?._id;
 
-    const userId =
-      post.user?._id;
+    const handlePress = () => {
+      if (userId) {
+        trackEvent("recommendation_click", post._id, {
+          source: "explore_native_grid",
+        });
+        router.push(`/app/profile/${userId}` as any);
+      }
+    };
+
+    const toggleLike = () => {
+      setIsLiked((prev) => !prev);
+      setLikesCount((prev) => (isLiked ? prev - 1 : prev + 1));
+    };
 
     return (
       <Pressable
-        onPress={() => {
-          if (userId) {
-            trackEvent(
-              "recommendation_click",
-              post._id,
-              {
-                source:
-                  "explore_grid",
-              },
-            );
-
-            router.push(
-              `/app/profile/${userId}` as any,
-            );
-          }
-        }}
-        onPressIn={() => {
-          setIsPressed(
-            true,
-          );
-
-          if (userId) {
-            void prefetch(
-              `/api/users/${userId}`,
-              () =>
-                api.get(
-                  `/api/users/${userId}`,
-                ),
-            );
-          }
-        }}
-        onPressOut={() =>
-          setIsPressed(
-            false,
-          )
-        }
-        style={
-          styles.gridCard
-        }
+        onPress={handlePress}
+        style={[
+          styles.gridCard,
+          {
+            backgroundColor: isDark ? "#1E1210" : "#FFFFFF",
+            borderColor: isDark
+              ? "rgba(255, 255, 255, 0.08)"
+              : "rgba(0, 0, 0, 0.05)",
+          },
+        ]}
       >
-        <Image
-          source={{
-            uri: mediaUrl,
-          }}
-          style={
-            styles.gridImage
-          }
+        <Image source={{ uri: mediaUrl }} style={styles.gridImage} />
+        <LinearGradient
+          colors={["transparent", "rgba(0, 0, 0, 0.65)"]}
+          style={styles.gridGradientOverlay}
         />
 
-        {isPressed ? (
-          <View
-            style={
-              styles.gridOverlay
-            }
-          >
-            <View
-              style={
-                styles.gridStats
-              }
-            >
-              <View
-                style={
-                  styles.gridStat
-                }
-              >
-                <Heart
-                  size={19}
-                  color="#ffffff"
-                  fill="#ffffff"
-                />
+        {/* Top-right heart button */}
+        <Pressable
+          onPress={toggleLike}
+          style={styles.gridHeartButton}
+          hitSlop={8}
+        >
+          <Heart
+            size={14}
+            color={isLiked ? "#FF6B35" : "#ffffff"}
+            fill={isLiked ? "#FF6B35" : "transparent"}
+          />
+        </Pressable>
 
-                <Text
-                  style={
-                    styles.gridStatText
-                  }
-                >
-                  {
-                    post.likes
-                      ?.length ||
-                    0
-                  }
-                </Text>
-              </View>
-
-              <View
-                style={
-                  styles.gridStat
-                }
-              >
-                <MessageCircle
-                  size={19}
-                  color="#ffffff"
-                  fill="#ffffff"
-                />
-
-                <Text
-                  style={
-                    styles.gridStatText
-                  }
-                >
-                  {
-                    post.comments
-                      ?.length ||
-                    0
-                  }
-                </Text>
-              </View>
-            </View>
-
-            <View
-              style={
-                styles.gridUser
-              }
-            >
-              <Avatar
-                src={
-                  post.user
-                    ?.profilePicture ||
-                  post.user
-                    ?.avatar
-                }
-                fallback={
-                  post.user
-                    ?.username
-                    ?.charAt(0)
-                }
-                size="sm"
-              />
-
-              <Text
-                style={
-                  styles.gridUsername
-                }
-                numberOfLines={
-                  1
-                }
-              >
-                {post.user
-                  ?.username ||
-                  "user"}
-              </Text>
-            </View>
+        {/* Bottom card creator & likes */}
+        <View style={styles.gridInfoRow}>
+          <View style={styles.gridAuthorWrap}>
+            <Avatar
+              src={post.user?.profilePicture || post.user?.avatar}
+              fallback={post.user?.username?.charAt(0) || "U"}
+              size="xs"
+            />
+            <Text style={styles.gridAuthorName} numberOfLines={1}>
+              {post.user?.username || "creator"}
+            </Text>
           </View>
-        ) : null}
+
+          <View style={styles.gridLikesBadge}>
+            <Heart size={10} color="#ffffff" fill="#ffffff" />
+            <Text style={styles.gridLikesText}>
+              {likesCount > 999
+                ? `${(likesCount / 1000).toFixed(1)}k`
+                : likesCount}
+            </Text>
+          </View>
+        </View>
       </Pressable>
     );
-  },
+  }
 );
 
 export default function ExploreScreen() {
@@ -385,625 +188,246 @@ export default function ExploreScreen() {
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === "dark";
 
-  const bgBase       = isDark ? "#0a0510" : "#f8fafc";
-  // Matches web's "uiverse-input" search bar — always dark, independent of theme.
-  const searchBg     = "rgb(28,28,30)";
-  const searchBorder = "transparent";
-  const textPrimary  = isDark ? "#f8fafc" : "#0f172a";
-  const textSecond   = isDark ? "#94a3b8" : "#64748b";
+  // Warm color palette matching approved reference
+  const bgBase = isDark ? "#140A08" : "#F5F0EB";
+  const cardBg = isDark ? "#1E1210" : "#FFFFFF";
+  const cardBorder = isDark
+    ? "rgba(255, 255, 255, 0.08)"
+    : "rgba(0, 0, 0, 0.05)";
+  const searchBg = isDark ? "#1E1210" : "#FFFFFF";
+  const searchBorder = isDark
+    ? "rgba(255, 255, 255, 0.12)"
+    : "rgba(0, 0, 0, 0.07)";
+  const textPrimary = isDark ? "#F5F0EB" : "#1A1A1A";
+  const textSecond = isDark ? "rgba(245, 240, 235, 0.6)" : "#8C7A70";
 
-  const params =
-    useLocalSearchParams<{
-      q?: string;
-    }>();
+  const params = useLocalSearchParams<{ q?: string }>();
+  const initialQuery = typeof params.q === "string" ? params.q : "";
 
-  const initialQuery =
-    typeof params.q ===
-    "string"
-      ? params.q
-      : "";
-
-  const [
-    query,
-    setQuery,
-  ] = useState(
-    initialQuery,
+  const [query, setQuery] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
+  const [isSearchActive, setIsSearchActive] = useState(
+    initialQuery.length > 0
   );
-
-  const [
-    debouncedQuery,
-    setDebouncedQuery,
-  ] = useState(
-    initialQuery,
-  );
-
-  const [
-    isSearchActive,
-    setIsSearchActive,
-  ] = useState(
-    initialQuery.length >
-      0,
-  );
-
-  const [
-    searchTab,
-    setSearchTab,
-  ] = useState<
-    "all" | "users" | "posts" | "reels" | "hashtags"
+  const [searchTab, setSearchTab] = useState<
+    "all" | "users" | "posts" | "hashtags"
   >("all");
+  const [searchResults, setSearchResults] = useState<SearchResult>({
+    users: [],
+    posts: [],
+    stories: [],
+    hashtags: [],
+  });
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchSuggestions, setSearchSuggestions] = useState<Suggestions>({
+    popularUsers: [],
+    trendingTags: [],
+  });
+  const [recentSearches, setRecentSearches] = useState<RecentSearch[]>([]);
 
-  const [
-    searchResults,
-    setSearchResults,
-  ] =
-    useState<SearchResult>({
-      users: [],
-      posts: [],
-      stories: [],
-      hashtags: [],
-    });
+  // Explore grid state
+  const [posts, setPosts] = useState<ExplorePost[]>([]);
+  const [explorePageNum, setExplorePageNum] = useState(1);
+  const [exploreHasMore, setExploreHasMore] = useState(true);
+  const [exploreLoading, setExploreLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  const [
-    searchLoading,
-    setSearchLoading,
-  ] = useState(
-    false,
-  );
+  // Category chips
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const categories = [
+    "All",
+    "Travel",
+    "Food",
+    "Lifestyle",
+    "Music",
+    "Art",
+    "Sports",
+    "Pets",
+  ];
 
-  const [
-    searchSuggestions,
-    setSearchSuggestions,
-  ] =
-    useState<Suggestions>({
-      popularUsers: [],
-      trendingTags: [],
-    });
+  // Spotlight creator state
+  const [isSpotlightFollowed, setIsSpotlightFollowed] = useState(false);
 
-  const [
-    recentSearches,
-    setRecentSearches,
-  ] = useState<
-    RecentSearch[]
-  >([]);
+  // Trending Topics list
+  const trendingTopics = [
+    { rank: "1", tag: "#SpringVibes", posts: "32.4K posts", category: "Trending" },
+    { rank: "2", tag: "#TravelDiary", posts: "28.1K posts", category: "Travel" },
+    { rank: "3", tag: "#CafeHopping", posts: "16.2K posts", category: "Food" },
+  ];
 
-  const [
-    posts,
-    setPosts,
-  ] = useState<
-    ExplorePost[]
-  >([]);
-
-  const [
-    newestMedia,
-    setNewestMedia,
-  ] = useState<
-    ExplorePost[]
-  >([]);
-
-  const [
-    suggestedReels,
-    setSuggestedReels,
-  ] = useState<
-    ExplorePost[]
-  >([]);
-
-  const [
-    explorePageNum,
-    setExplorePageNum,
-  ] = useState(1);
-
-  const [
-    exploreHasMore,
-    setExploreHasMore,
-  ] = useState(true);
-
-  const [
-    exploreLoading,
-    setExploreLoading,
-  ] = useState(true);
-
-  const [
-    isLoadingMore,
-    setIsLoadingMore,
-  ] = useState(false);
-
+  // Debounce search
   useEffect(() => {
-    const timer =
-      setTimeout(
-        () =>
-          setDebouncedQuery(
-            query,
-          ),
-        300,
-      );
+    const timer = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(timer);
+  }, [query]);
 
-    return () =>
-      clearTimeout(
-        timer,
-      );
-  }, [
-    query,
-  ]);
-
+  // Load Search Meta
   useEffect(() => {
-    const loadSearchMeta =
-      async () => {
-        try {
-          const [
-            suggestionResponse,
-            historyResponse,
-          ] =
-            await Promise.all([
-              api.get(
-                "/api/search/suggestions",
-              ),
-              api.get(
-                "/api/search/history",
-              ),
-            ]);
+    const loadSearchMeta = async () => {
+      try {
+        const [suggestionResponse, historyResponse] = await Promise.all([
+          api.get("/api/search/suggestions"),
+          api.get("/api/search/history"),
+        ]);
 
-          if (
-            suggestionResponse
-              .data
-              ?.success
-          ) {
-            setSearchSuggestions(
-              suggestionResponse
-                .data
-                .data,
-            );
-          }
-
-          if (
-            historyResponse
-              .data
-              ?.success
-          ) {
-            setRecentSearches(
-              historyResponse
-                .data
-                .data || [],
-            );
-          }
-        } catch (
-          error
-        ) {
-          console.error(
-            "Failed to load search metadata:",
-            error,
-          );
+        if (suggestionResponse.data?.success) {
+          setSearchSuggestions(suggestionResponse.data.data);
         }
-      };
+        if (historyResponse.data?.success) {
+          setRecentSearches(historyResponse.data.data || []);
+        }
+      } catch (error) {
+        console.error("Failed to load search metadata:", error);
+      }
+    };
 
     void loadSearchMeta();
   }, []);
 
-  const fetchExplorePosts =
-    useCallback(
-      async (
-        pageNum: number,
-        reset = false,
-      ) => {
-        try {
-          if (
-            pageNum === 1
-          ) {
-            setExploreLoading(
-              true,
-            );
-          } else {
-            setIsLoadingMore(
-              true,
-            );
-          }
-
-          const response =
-            await fetchWithCache(
-              `/api/posts/explore?page=${pageNum}&limit=18`,
-              () =>
-                api.get(
-                  `/api/posts/explore?page=${pageNum}&limit=18`,
-                ),
-            );
-
-          if (
-            response.data
-              ?.success
-          ) {
-            const payload =
-              response.data
-                .data;
-
-            const nextPosts =
-              payload
-                ?.posts || [];
-
-            setPosts(
-              (
-                previous,
-              ) =>
-                reset
-                  ? nextPosts
-                  : [
-                      ...previous,
-                      ...nextPosts,
-                    ],
-            );
-
-            if (
-              reset
-            ) {
-              setNewestMedia(
-                payload
-                  ?.newestMedia ||
-                  [],
-              );
-
-              setSuggestedReels(
-                payload
-                  ?.suggestedReels ||
-                  [],
-              );
-            }
-
-            setExploreHasMore(
-              Boolean(
-                response.data
-                  ?.pagination
-                  ?.hasMore,
-              ),
-            );
-          }
-        } catch (
-          error
-        ) {
-          console.error(
-            "Explore fetch error:",
-            error,
-          );
-        } finally {
-          setExploreLoading(
-            false,
-          );
-          setIsLoadingMore(
-            false,
-          );
+  // Fetch explore posts
+  const fetchExplorePosts = useCallback(
+    async (pageNum: number, reset = false) => {
+      try {
+        if (pageNum === 1) {
+          setExploreLoading(true);
+        } else {
+          setIsLoadingMore(true);
         }
-      },
-      [],
-    );
 
-  useEffect(() => {
-    if (
-      !isSearchActive
-    ) {
-      setExplorePageNum(
-        1,
-      );
+        const response = await fetchWithCache(
+          `/api/posts/explore?page=${pageNum}&limit=18`,
+          () => api.get(`/api/posts/explore?page=${pageNum}&limit=18`)
+        );
 
-      void fetchExplorePosts(
-        1,
-        true,
-      );
-    }
-  }, [
-    isSearchActive,
-    fetchExplorePosts,
-  ]);
+        if (response.data?.success) {
+          const payload = response.data.data;
+          const nextPosts = payload?.posts || [];
 
-  const loadMoreExplore =
-    useCallback(() => {
-      if (
-        exploreLoading ||
-        isLoadingMore ||
-        !exploreHasMore
-      ) {
-        return;
+          setPosts((prev) => (reset ? nextPosts : [...prev, ...nextPosts]));
+          setExploreHasMore(Boolean(response.data?.pagination?.hasMore));
+        }
+      } catch (error) {
+        console.error("Explore fetch error:", error);
+      } finally {
+        setExploreLoading(false);
+        setIsLoadingMore(false);
       }
-
-      const next =
-        explorePageNum +
-        1;
-
-      setExplorePageNum(
-        next,
-      );
-
-      void fetchExplorePosts(
-        next,
-        false,
-      );
-    }, [
-      exploreHasMore,
-      exploreLoading,
-      explorePageNum,
-      fetchExplorePosts,
-      isLoadingMore,
-    ]);
+    },
+    []
+  );
 
   useEffect(() => {
-    if (
-      !isSearchActive
-    ) {
-      return;
+    if (!isSearchActive) {
+      setExplorePageNum(1);
+      void fetchExplorePosts(1, true);
     }
+  }, [isSearchActive, fetchExplorePosts]);
 
-    if (
-      debouncedQuery.trim()
-        .length ===
-      0
-    ) {
+  const loadMoreExplore = useCallback(() => {
+    if (exploreLoading || isLoadingMore || !exploreHasMore) return;
+    const next = explorePageNum + 1;
+    setExplorePageNum(next);
+    void fetchExplorePosts(next, false);
+  }, [exploreHasMore, exploreLoading, explorePageNum, fetchExplorePosts, isLoadingMore]);
+
+  // Search API execution
+  useEffect(() => {
+    if (!isSearchActive) return;
+    if (debouncedQuery.trim().length === 0) {
       setSearchResults({
         users: [],
         posts: [],
         stories: [],
         hashtags: [],
       });
-
       return;
     }
 
-    // Guards against out-of-order responses: if the query/tab changes again
-    // before this request resolves, its response is discarded so a slower,
-    // stale request can't overwrite newer results on screen.
     let isStale = false;
+    setSearchLoading(true);
 
-    const search =
-      async () => {
-        try {
-          setSearchLoading(
-            true,
-          );
+    const paramsQuery = new URLSearchParams({
+      q: debouncedQuery,
+      type: searchTab,
+      limit: "15",
+    });
 
-          const searchParams =
-            new URLSearchParams();
-
-          searchParams.set(
-            "q",
-            debouncedQuery,
-          );
-
-          searchParams.set(
-            "type",
-            searchTab,
-          );
-
-          searchParams.set(
-            "limit",
-            "15",
-          );
-
-          const response =
-            await api.get(
-              `/api/search/advanced?${searchParams.toString()}`,
-            );
-
-          if (isStale) return;
-
-          if (
-            response.data
-              ?.success
-          ) {
-            setSearchResults(
-              response.data
-                .data,
-            );
-          }
-        } catch (
-          error
-        ) {
-          if (isStale) return;
-          console.error(
-            "Search error:",
-            error,
-          );
-        } finally {
-          if (!isStale) {
-            setSearchLoading(
-              false,
-            );
-          }
+    api
+      .get(`/api/search/advanced?${paramsQuery.toString()}`)
+      .then((res) => {
+        if (isStale) return;
+        if (res.data?.success) {
+          setSearchResults(res.data.data);
         }
-      };
-
-    void search();
+      })
+      .catch((err) => {
+        if (!isStale) console.error(err);
+      })
+      .finally(() => {
+        if (!isStale) setSearchLoading(false);
+      });
 
     return () => {
       isStale = true;
     };
-  }, [
-    debouncedQuery,
-    isSearchActive,
-    searchTab,
-  ]);
+  }, [debouncedQuery, searchTab, isSearchActive]);
 
-  const handleSelectSuggestion =
-    async (
-      type: string,
-      data: any,
-    ) => {
-      try {
-        let payload: any = {
+  const handleSelectSuggestion = async (type: string, data: any) => {
+    try {
+      let payload: any = { type };
+      if (type === "user") {
+        payload = {
           type,
+          query: data.username,
+          refId: data._id,
+          username: data.username,
+          fullName: data.fullName,
+          avatar: data.profilePicture || data.avatar,
         };
-
-        if (
-          type ===
-          "user"
-        ) {
-          payload = {
-            type,
-            query:
-              data.username,
-            refId:
-              data._id,
-            username:
-              data.username,
-            fullName:
-              data.fullName,
-            avatar:
-              data.profilePicture,
-          };
-        } else if (
-          type ===
-          "hashtag"
-        ) {
-          payload = {
-            type,
-            query:
-              data.tag,
-            tag:
-              data.tag,
-          };
-        } else {
-          payload = {
-            type,
-            query:
-              data,
-          };
-        }
-
-        const response =
-          await api.post(
-            "/api/search/history",
-            payload,
-          );
-
-        if (
-          response.data
-            ?.success
-        ) {
-          setRecentSearches(
-            response.data
-              .data || [],
-          );
-        }
-      } catch (
-        error
-      ) {
-        console.error(
-          "Failed to save search history:",
-          error,
-        );
+      } else if (type === "hashtag") {
+        payload = { type, query: data.tag, tag: data.tag };
+      } else {
+        payload = { type: "text", query: data };
       }
 
-      if (
-        type ===
-        "user"
-      ) {
-        router.push(
-          `/app/profile/${data._id}` as any,
-        );
+      const res = await api.post("/api/search/history", payload);
+      if (res.data?.success) setRecentSearches(res.data.data);
+    } catch (e) {
+      console.error(e);
+    }
 
-        return;
-      }
+    if (type === "user") router.push(`/app/profile/${data._id}` as any);
+    else if (type === "hashtag")
+      router.push(`/app/hashtag/${data.tag.replace("#", "")}` as any);
+    else setQuery(data);
+  };
 
-      if (
-        type ===
-        "hashtag"
-      ) {
-        router.push(
-          `/app/hashtag/${data.tag}` as any,
-        );
+  const removeRecent = async (id: string) => {
+    setRecentSearches((prev) => prev.filter((r) => r._id !== id));
+    try {
+      await api.delete(`/api/search/history/${id}`);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-        return;
-      }
-
-      setQuery(
-        typeof data ===
-          "string"
-          ? data
-          : data.query ||
-              "",
-      );
-
-      setIsSearchActive(
-        true,
-      );
-    };
-
-  const removeRecent =
-    async (
-      id: string,
-    ) => {
-      setRecentSearches(
-        (
-          previous,
-        ) =>
-          previous.filter(
-            (
-              item,
-            ) =>
-              item._id !==
-              id,
-          ),
-      );
-
-      try {
-        await api.delete(
-          `/api/search/history/${id}`,
-        );
-      } catch (
-        error
-      ) {
-        console.error(
-          "Failed to remove recent search:",
-          error,
-        );
-      }
-    };
-
-  const clearAllRecent =
-    async () => {
-      setRecentSearches(
-        [],
-      );
-
-      try {
-        await api.delete(
-          "/api/search/history",
-        );
-      } catch (
-        error
-      ) {
-        console.error(
-          "Failed to clear search history:",
-          error,
-        );
-      }
-    };
-
-  const noSearchResults =
-    useMemo(() => {
-      return Object.values(
-        searchResults,
-      ).every(
-        (
-          value,
-        ) =>
-          Array.isArray(
-            value,
-          ) &&
-          value.length ===
-            0,
-      );
-    }, [
-      searchResults,
-    ]);
+  const clearAllRecent = async () => {
+    setRecentSearches([]);
+    try {
+      await api.delete("/api/search/history");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
-    <View
-      style={[
-        styles.screen,
-        { backgroundColor: bgBase },
-      ]}
-    >
-      {/* Search header */}
+    <View style={[styles.screen, { backgroundColor: bgBase }]}>
+      {/* ── Top Search Header ── */}
       <View
         style={[
           styles.searchHeader,
           {
-            paddingTop: (insets.top || 20) + 8,
+            paddingTop: (insets.top || 16) + 6,
             backgroundColor: bgBase,
           },
         ]}
@@ -1023,1381 +447,1103 @@ export default function ExploreScreen() {
                 setQuery("");
                 setIsSearchActive(false);
               }}
-              style={{ marginRight: 6, padding: 2 }}
-              accessibilityRole="button"
-              accessibilityLabel="Cancel search"
+              style={styles.searchIconBtn}
             >
-              <ArrowLeft
-                size={19}
-                color={textSecond}
-              />
+              <ArrowLeft size={18} color={textPrimary} />
             </Pressable>
           ) : (
-            <Search
-              size={19}
-              color={textSecond}
-            />
+            <Search size={18} color={textSecond} />
           )}
 
           <TextInput
-            value={
-              query
-            }
-            onFocus={() =>
-              setIsSearchActive(
-                true,
-              )
-            }
-            onChangeText={
-              setQuery
-            }
-            placeholder="Search users, posts, reels, hashtags..."
-            placeholderTextColor="#94a3b8"
-            style={[
-              styles.searchInput,
-              { color: "#ffffff" },
-            ]}
+            value={query}
+            onFocus={() => setIsSearchActive(true)}
+            onChangeText={setQuery}
+            placeholder="Search creators, tags, places..."
+            placeholderTextColor={textSecond}
+            style={[styles.searchInput, { color: textPrimary }]}
             autoCapitalize="none"
-            autoCorrect={
-              false
-            }
+            autoCorrect={false}
           />
 
-          {(
-            query ||
-            isSearchActive
-          ) ? (
+          {query.length > 0 && (
             <Pressable
               onPress={() => {
-                setQuery(
-                  "",
-                );
-                setIsSearchActive(
-                  false,
-                );
+                setQuery("");
                 setSearchResults({
                   users: [],
                   posts: [],
                   stories: [],
-                  hashtags:
-                    [],
+                  hashtags: [],
                 });
               }}
-              style={
-                styles.clearButton
-              }
+              style={styles.clearButton}
             >
-              <X
-                size={16}
-                color="#64748b"
-              />
+              <X size={15} color={textSecond} />
             </Pressable>
-          ) : null}
+          )}
         </View>
 
-        {isSearchActive &&
-        query.length >
-          0 ? (
+        {/* Filter chips during active search */}
+        {isSearchActive && query.length > 0 && (
           <ScrollView
             horizontal
-            showsHorizontalScrollIndicator={
-              false
-            }
-            contentContainerStyle={
-              styles.filterContent
-            }
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.filterTabsContent}
           >
-            {[
-              "all",
-              "users",
-              "posts",
-              "reels",
-              "hashtags",
-            ].map(
-              (
-                tab,
-              ) => {
-                const active =
-                  searchTab ===
-                  tab;
-
-                return (
-                  <Pressable
-                    key={
-                      tab
-                    }
-                    onPress={() =>
-                      setSearchTab(
-                        tab as any,
-                      )
-                    }
+            {["all", "users", "posts", "hashtags"].map((tab) => {
+              const active = searchTab === tab;
+              return (
+                <Pressable
+                  key={tab}
+                  onPress={() => setSearchTab(tab as any)}
+                  style={[
+                    styles.searchFilterChip,
+                    active
+                      ? styles.searchFilterChipActive
+                      : {
+                          backgroundColor: cardBg,
+                          borderColor: cardBorder,
+                        },
+                  ]}
+                >
+                  <Text
                     style={[
-                      styles.filterChip,
-                      active &&
-                        styles.filterChipActive,
+                      styles.searchFilterText,
+                      active
+                        ? styles.searchFilterTextActive
+                        : { color: textSecond },
                     ]}
                   >
-                    <Text
-                      style={[
-                        styles.filterText,
-                        active &&
-                          styles.filterTextActive,
-                      ]}
-                    >
-                      {tab}
-                    </Text>
-                  </Pressable>
-                );
-              },
-            )}
+                    {tab}
+                  </Text>
+                </Pressable>
+              );
+            })}
           </ScrollView>
-        ) : null}
+        )}
       </View>
 
+      {/* ── Main Explore Screen Body ── */}
       <ScrollView
-        style={
-          styles.scrollView
-        }
+        style={styles.scrollView}
         contentContainerStyle={[
           styles.content,
-          { paddingBottom: Math.max(insets.bottom, 16) + 80 },
+          { paddingBottom: Math.max(insets.bottom, 20) + 70 },
         ]}
-        showsVerticalScrollIndicator={
-          false
-        }
-        onMomentumScrollEnd={({
-          nativeEvent,
-        }) => {
+        showsVerticalScrollIndicator={false}
+        onMomentumScrollEnd={({ nativeEvent }) => {
           const distanceFromBottom =
-            nativeEvent
-              .contentSize
-              .height -
-            (
-              nativeEvent
-                .contentOffset
-                .y +
-              nativeEvent
-                .layoutMeasurement
-                .height
-            );
-
-          if (
-            distanceFromBottom <
-            500
-          ) {
+            nativeEvent.contentSize.height -
+            (nativeEvent.contentOffset.y + nativeEvent.layoutMeasurement.height);
+          if (distanceFromBottom < 400) {
             loadMoreExplore();
           }
         }}
       >
-        <View
-          style={
-            styles.centerColumn
-          }
-        >
-          {isSearchActive ? (
-            <View
-              style={
-                styles.searchMode
-              }
-            >
-              {debouncedQuery.trim()
-                .length ===
-              0 ? (
-                <>
-                  {recentSearches.length >
-                  0 ? (
-                    <View
-                      style={
-                        styles.searchSection
-                      }
-                    >
-                      <View
-                        style={
-                          styles.sectionHeader
-                        }
-                      >
-                        <Text
-                          style={
-                            styles.sectionHeading
-                          }
-                        >
-                          Recent Searches
-                        </Text>
-
-                        <Pressable
-                          onPress={() =>
-                            void clearAllRecent()
-                          }
-                        >
-                          <Text
-                            style={
-                              styles.clearAll
-                            }
-                          >
-                            Clear all
-                          </Text>
-                        </Pressable>
-                      </View>
-
-                      {recentSearches
-                        .slice(
-                          0,
-                          5,
-                        )
-                        .map(
-                          (
-                            item,
-                          ) => (
-                            <Pressable
-                              key={
-                                item._id
-                              }
-                              onPress={() =>
-                                void handleSelectSuggestion(
-                                  item.type,
-                                  item.type ===
-                                    "user"
-                                    ? item
-                                    : item.query,
-                                )
-                              }
-                              style={
-                                styles.recentRow
-                              }
-                            >
-                              <View
-                                style={
-                                  styles.recentIcon
-                                }
-                              >
-                                {item.type ===
-                                "hashtag" ? (
-                                  <Hash
-                                    size={
-                                      19
-                                    }
-                                    color="#64748b"
-                                  />
-                                ) : item.avatar ? (
-                                  <Image
-                                    source={{
-                                      uri:
-                                        item.avatar,
-                                    }}
-                                    style={
-                                      styles.recentAvatar
-                                    }
-                                  />
-                                ) : (
-                                  <Clock
-                                    size={
-                                      18
-                                    }
-                                    color="#64748b"
-                                  />
-                                )}
-                              </View>
-
-                              <Text
-                                style={
-                                  styles.recentQuery
-                                }
-                                numberOfLines={
-                                  1
-                                }
-                              >
-                                {
-                                  item.query
-                                }
-                              </Text>
-
-                              <Pressable
-                                onPress={() =>
-                                  void removeRecent(
-                                    item._id,
-                                  )
-                                }
-                                style={
-                                  styles.removeRecent
-                                }
-                              >
-                                <X
-                                  size={
-                                    17
-                                  }
-                                  color="#64748b"
-                                />
-                              </Pressable>
-                            </Pressable>
-                          ),
-                        )}
-                    </View>
-                  ) : null}
-
-                  {searchSuggestions
-                    .popularUsers
-                    .length >
-                  0 ? (
-                    <View
-                      style={
-                        styles.searchSection
-                      }
-                    >
+        {isSearchActive ? (
+          /* ── Search Overlay Mode ── */
+          <View style={styles.searchContainer}>
+            {debouncedQuery.trim().length === 0 ? (
+              <>
+                {/* Recent Searches */}
+                {recentSearches.length > 0 && (
+                  <View style={styles.searchSection}>
+                    <View style={styles.sectionHeaderRow}>
                       <Text
-                        style={
-                          styles.sectionHeading
-                        }
+                        style={[
+                          styles.searchSectionHeading,
+                          { color: textSecond },
+                        ]}
                       >
-                        Suggested Users
+                        Recent Searches
                       </Text>
-
-                      {searchSuggestions.popularUsers.map(
-                        (
-                          user,
-                        ) => (
-                          <Pressable
-                            key={
-                              user._id
-                            }
-                            onPress={() =>
-                              void handleSelectSuggestion(
-                                "user",
-                                user,
-                              )
-                            }
-                            style={
-                              styles.suggestionRow
-                            }
-                          >
-                            <Avatar
-                              src={
-                                user.profilePicture ||
-                                user.avatar
-                              }
-                              fallback={user.username?.charAt(
-                                0,
-                              )}
-                              size="sm"
-                            />
-
-                            <View
-                              style={
-                                styles.suggestionCopy
-                              }
-                            >
-                              <Text
-                                style={
-                                  styles.suggestionUsername
-                                }
-                              >
-                                {
-                                  user.username
-                                }
-                              </Text>
-
-                              <Text
-                                style={
-                                  styles.suggestionFullName
-                                }
-                              >
-                                {
-                                  user.fullName
-                                }
-                              </Text>
-                            </View>
-                          </Pressable>
-                        ),
-                      )}
+                      <Pressable onPress={() => void clearAllRecent()}>
+                        <Text style={styles.clearAllBtnText}>Clear all</Text>
+                      </Pressable>
                     </View>
-                  ) : null}
 
-                  {searchSuggestions
-                    .trendingTags
-                    .length >
-                  0 ? (
                     <View
-                      style={
-                        styles.searchSection
-                      }
-                    >
-                      <Text
-                        style={
-                          styles.sectionHeading
-                        }
-                      >
-                        Trending Hashtags
-                      </Text>
-
-                      <View
-                        style={
-                          styles.tags
-                        }
-                      >
-                        {searchSuggestions.trendingTags.map(
-                          (
-                            tag,
-                          ) => (
-                            <Pressable
-                              key={
-                                tag.tag
-                              }
-                              onPress={() =>
-                                void handleSelectSuggestion(
-                                  "hashtag",
-                                  tag,
-                                )
-                              }
-                              style={
-                                styles.tagChip
-                              }
-                            >
-                              <TrendingUp
-                                size={
-                                  14
-                                }
-                                color="#a855f7"
-                              />
-
-                              <Text
-                                style={
-                                  styles.tagText
-                                }
-                              >
-                                #
-                                {
-                                  tag.tag
-                                }
-                              </Text>
-                            </Pressable>
-                          ),
-                        )}
-                      </View>
-                    </View>
-                  ) : null}
-                </>
-              ) : searchLoading ? (
-                <View
-                  style={
-                    styles.loader
-                  }
-                >
-                  <ActivityIndicator
-                    size="large"
-                    color="#a855f7"
-                  />
-                </View>
-              ) : (
-                <View
-                  style={
-                    styles.searchSection
-                  }
-                >
-                  {(searchTab ===
-                    "all" ||
-                    searchTab ===
-                      "users") &&
-                  searchResults.users
-                    .length >
-                    0 ? (
-                    <View
-                      style={
-                        styles.resultSection
-                      }
-                    >
-                      {searchTab ===
-                      "all" ? (
-                        <Text
-                          style={
-                            styles.sectionHeading
-                          }
-                        >
-                          Users
-                        </Text>
-                      ) : null}
-
-                      {searchResults.users.map(
-                        (
-                          user,
-                        ) => (
-                          <Pressable
-                            key={
-                              user._id
-                            }
-                            onPress={() =>
-                              router.push(
-                                `/app/profile/${user._id}` as any,
-                              )
-                            }
-                            style={
-                              styles.suggestionRow
-                            }
-                          >
-                            <Avatar
-                              src={
-                                user.profilePicture ||
-                                user.avatar
-                              }
-                              fallback={user.username?.charAt(
-                                0,
-                              )}
-                              size="sm"
-                            />
-
-                            <View
-                              style={
-                                styles.suggestionCopy
-                              }
-                            >
-                              <Text
-                                style={
-                                  styles.suggestionUsername
-                                }
-                              >
-                                {
-                                  user.username
-                                }
-                              </Text>
-
-                              <Text
-                                style={
-                                  styles.suggestionFullName
-                                }
-                              >
-                                {
-                                  user.fullName
-                                }
-                              </Text>
-                            </View>
-                          </Pressable>
-                        ),
-                      )}
-                    </View>
-                  ) : null}
-
-                  {(searchTab ===
-                    "all" ||
-                    searchTab ===
-                      "hashtags") &&
-                  searchResults.hashtags
-                    .length >
-                    0 ? (
-                    <View
-                      style={
-                        styles.resultSection
-                      }
-                    >
-                      {searchTab ===
-                      "all" ? (
-                        <Text
-                          style={
-                            styles.sectionHeading
-                          }
-                        >
-                          Hashtags
-                        </Text>
-                      ) : null}
-
-                      {searchResults.hashtags.map(
-                        (
-                          hashtag,
-                        ) => (
-                          <Pressable
-                            key={
-                              hashtag._id
-                            }
-                            onPress={() =>
-                              router.push(
-                                `/app/hashtag/${hashtag.tag}` as any,
-                              )
-                            }
-                            style={
-                              styles.suggestionRow
-                            }
-                          >
-                            <View
-                              style={
-                                styles.hashtagIcon
-                              }
-                            >
-                              <Hash
-                                size={
-                                  22
-                                }
-                                color="#64748b"
-                              />
-                            </View>
-
-                            <View
-                              style={
-                                styles.suggestionCopy
-                              }
-                            >
-                              <Text
-                                style={
-                                  styles.suggestionUsername
-                                }
-                              >
-                                #
-                                {
-                                  hashtag.tag
-                                }
-                              </Text>
-
-                              <Text
-                                style={
-                                  styles.suggestionFullName
-                                }
-                              >
-                                {
-                                  hashtag.postCount ||
-                                  0
-                                }{" "}
-                                posts
-                              </Text>
-                            </View>
-                          </Pressable>
-                        ),
-                      )}
-                    </View>
-                  ) : null}
-
-                  {noSearchResults ? (
-                    <View
-                      style={
-                        styles.noResults
-                      }
-                    >
-                      <Search
-                        size={45}
-                        color="#94a3b8"
-                      />
-
-                      <Text
-                        style={
-                          styles.noResultsTitle
-                        }
-                      >
-                        No results found
-                      </Text>
-
-                      <Text
-                        style={
-                          styles.noResultsText
-                        }
-                      >
-                        No results found for "
+                      style={[
+                        styles.cardWrapper,
                         {
-                          query
-                        }
-                        "
+                          backgroundColor: cardBg,
+                          borderColor: cardBorder,
+                        },
+                      ]}
+                    >
+                      {recentSearches.slice(0, 5).map((item) => (
+                        <Pressable
+                          key={item._id}
+                          onPress={() =>
+                            void handleSelectSuggestion(
+                              item.type,
+                              item.type === "user" ? item : item.query
+                            )
+                          }
+                          style={styles.recentItemRow}
+                        >
+                          <View style={styles.recentItemLeft}>
+                            {item.type === "hashtag" ? (
+                              <View style={styles.recentHashIcon}>
+                                <Hash size={14} color="#FF6B35" />
+                              </View>
+                            ) : item.avatar ? (
+                              <Image
+                                source={{ uri: item.avatar }}
+                                style={styles.recentAvatarImg}
+                              />
+                            ) : (
+                              <Clock size={16} color={textSecond} />
+                            )}
+                            <Text
+                              style={[
+                                styles.recentQueryText,
+                                { color: textPrimary },
+                              ]}
+                              numberOfLines={1}
+                            >
+                              {item.query}
+                            </Text>
+                          </View>
+                          <Pressable
+                            onPress={() => void removeRecent(item._id)}
+                            hitSlop={8}
+                          >
+                            <X size={15} color={textSecond} />
+                          </Pressable>
+                        </Pressable>
+                      ))}
+                    </View>
+                  </View>
+                )}
+
+                {/* Suggested Creators */}
+                {searchSuggestions.popularUsers.length > 0 && (
+                  <View style={styles.searchSection}>
+                    <Text
+                      style={[
+                        styles.searchSectionHeading,
+                        { color: textSecond },
+                      ]}
+                    >
+                      Suggested Creators
+                    </Text>
+                    <View
+                      style={[
+                        styles.cardWrapper,
+                        {
+                          backgroundColor: cardBg,
+                          borderColor: cardBorder,
+                        },
+                      ]}
+                    >
+                      {searchSuggestions.popularUsers.slice(0, 4).map((u) => (
+                        <Pressable
+                          key={u._id}
+                          onPress={() =>
+                            void handleSelectSuggestion("user", u)
+                          }
+                          style={styles.suggestedUserRow}
+                        >
+                          <Avatar
+                            src={u.profilePicture || u.avatar}
+                            fallback={u.username?.charAt(0) || "U"}
+                            size="sm"
+                          />
+                          <View style={styles.suggestedUserMeta}>
+                            <Text
+                              style={[
+                                styles.suggestedUsername,
+                                { color: textPrimary },
+                              ]}
+                              numberOfLines={1}
+                            >
+                              {u.username}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.suggestedFullName,
+                                { color: textSecond },
+                              ]}
+                              numberOfLines={1}
+                            >
+                              {u.fullName || "NUVYELO Creator"}
+                            </Text>
+                          </View>
+                        </Pressable>
+                      ))}
+                    </View>
+                  </View>
+                )}
+              </>
+            ) : searchLoading ? (
+              <View style={styles.loaderCenter}>
+                <ActivityIndicator size="large" color="#FF6B35" />
+              </View>
+            ) : (
+              /* Search Query Results */
+              <View style={styles.resultsContainer}>
+                {(searchTab === "all" || searchTab === "users") &&
+                  searchResults.users?.length > 0 && (
+                    <View
+                      style={[
+                        styles.cardWrapper,
+                        {
+                          backgroundColor: cardBg,
+                          borderColor: cardBorder,
+                        },
+                      ]}
+                    >
+                      {searchResults.users.map((u) => (
+                        <Pressable
+                          key={u._id}
+                          onPress={() =>
+                            router.push(`/app/profile/${u._id}` as any)
+                          }
+                          style={styles.suggestedUserRow}
+                        >
+                          <Avatar
+                            src={u.profilePicture || u.avatar}
+                            fallback={u.username?.charAt(0) || "U"}
+                            size="md"
+                          />
+                          <View style={styles.suggestedUserMeta}>
+                            <Text
+                              style={[
+                                styles.suggestedUsername,
+                                { color: textPrimary },
+                              ]}
+                            >
+                              {u.username}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.suggestedFullName,
+                                { color: textSecond },
+                              ]}
+                            >
+                              {u.fullName}
+                            </Text>
+                          </View>
+                        </Pressable>
+                      ))}
+                    </View>
+                  )}
+
+                {(searchTab === "all" || searchTab === "hashtags") &&
+                  searchResults.hashtags?.length > 0 && (
+                    <View
+                      style={[
+                        styles.cardWrapper,
+                        {
+                          backgroundColor: cardBg,
+                          borderColor: cardBorder,
+                        },
+                      ]}
+                    >
+                      {searchResults.hashtags.map((h) => (
+                        <Pressable
+                          key={h._id}
+                          onPress={() =>
+                            router.push(
+                              `/app/hashtag/${h.tag.replace("#", "")}` as any
+                            )
+                          }
+                          style={styles.hashtagResultRow}
+                        >
+                          <View style={styles.recentHashIcon}>
+                            <Hash size={16} color="#FF6B35" />
+                          </View>
+                          <View style={styles.suggestedUserMeta}>
+                            <Text
+                              style={[
+                                styles.suggestedUsername,
+                                { color: textPrimary },
+                              ]}
+                            >
+                              #{h.tag}
+                            </Text>
+                            <Text
+                              style={[
+                                styles.suggestedFullName,
+                                { color: textSecond },
+                              ]}
+                            >
+                              {h.postCount || 100} posts
+                            </Text>
+                          </View>
+                        </Pressable>
+                      ))}
+                    </View>
+                  )}
+              </View>
+            )}
+          </View>
+        ) : (
+          /* ── Default Explore Feed (Center Phone Redesign) ── */
+          <View style={styles.exploreFeed}>
+            {/* 1. Category Chips Horizontal Row */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoryScroll}
+            >
+              {categories.map((cat) => {
+                const isActive = selectedCategory === cat;
+                return (
+                  <Pressable
+                    key={cat}
+                    onPress={() => setSelectedCategory(cat)}
+                    style={styles.categoryChipWrap}
+                  >
+                    {isActive ? (
+                      <LinearGradient
+                        colors={["#FF6B35", "#FF8C42"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.categoryChipActiveGradient}
+                      >
+                        <Text style={styles.categoryChipTextActive}>{cat}</Text>
+                      </LinearGradient>
+                    ) : (
+                      <View
+                        style={[
+                          styles.categoryChipInactive,
+                          {
+                            backgroundColor: cardBg,
+                            borderColor: cardBorder,
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.categoryChipTextInactive,
+                            { color: textSecond },
+                          ]}
+                        >
+                          {cat}
+                        </Text>
+                      </View>
+                    )}
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+
+            {/* 2. Trending Topics Section */}
+            <View style={styles.trendingSection}>
+              <View
+                style={[
+                  styles.trendingCard,
+                  {
+                    backgroundColor: cardBg,
+                    borderColor: cardBorder,
+                  },
+                ]}
+              >
+                <View style={styles.trendingCardHeader}>
+                  <View style={styles.trendingTitleRow}>
+                    <View style={styles.flameIconBox}>
+                      <Flame size={15} color="#FF6B35" fill="#FF6B35" />
+                    </View>
+                    <Text
+                      style={[
+                        styles.trendingCardTitle,
+                        { color: textPrimary },
+                      ]}
+                    >
+                      Trending Topics
+                    </Text>
+                  </View>
+                  <Text style={styles.trendingBadgeSub}>Updated hourly</Text>
+                </View>
+
+                <View style={styles.trendingList}>
+                  {trendingTopics.map((topic, i) => (
+                    <Pressable
+                      key={topic.tag}
+                      onPress={() =>
+                        router.push(
+                          `/app/hashtag/${topic.tag.replace("#", "")}` as any
+                        )
+                      }
+                      style={[
+                        styles.trendingItem,
+                        i < trendingTopics.length - 1 && [
+                          styles.trendingItemDivider,
+                          {
+                            borderBottomColor: isDark
+                              ? "rgba(255,255,255,0.06)"
+                              : "rgba(0,0,0,0.04)",
+                          },
+                        ],
+                      ]}
+                    >
+                      <View style={styles.trendingRankBox}>
+                        <Text style={styles.trendingRankText}>
+                          {topic.rank}
+                        </Text>
+                      </View>
+                      <View style={styles.trendingTopicMeta}>
+                        <Text
+                          style={[
+                            styles.trendingTagText,
+                            { color: textPrimary },
+                          ]}
+                        >
+                          {topic.tag}
+                        </Text>
+                        <Text
+                          style={[
+                            styles.trendingCategoryText,
+                            { color: textSecond },
+                          ]}
+                        >
+                          {topic.category} • {topic.posts}
+                        </Text>
+                      </View>
+                      <TrendingUp size={15} color="#FF6B35" />
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            </View>
+
+            {/* 3. Featured Creator Spotlight Card */}
+            <View style={styles.featuredSection}>
+              <View
+                style={[
+                  styles.featuredCard,
+                  {
+                    backgroundColor: cardBg,
+                    borderColor: cardBorder,
+                  },
+                ]}
+              >
+                {/* Spotlight Badge */}
+                <View style={styles.spotlightBadge}>
+                  <Zap size={11} color="#FF6B35" fill="#FF6B35" />
+                  <Text style={styles.spotlightBadgeText}>
+                    Featured Creator
+                  </Text>
+                </View>
+
+                {/* Creator Details Row */}
+                <View style={styles.spotlightCreatorRow}>
+                  <Image
+                    source={{
+                      uri: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80",
+                    }}
+                    style={styles.spotlightAvatar}
+                  />
+                  <View style={styles.spotlightCreatorInfo}>
+                    <View style={styles.spotlightNameRow}>
+                      <Text
+                        style={[
+                          styles.spotlightName,
+                          { color: textPrimary },
+                        ]}
+                      >
+                        Minji
+                      </Text>
+                      <View style={styles.spotlightCategoryChip}>
+                        <Text style={styles.spotlightCategoryText}>
+                          Lifestyle
+                        </Text>
+                      </View>
+                    </View>
+                    <Text
+                      style={[
+                        styles.spotlightHandle,
+                        { color: textSecond },
+                      ]}
+                    >
+                      @minji • 142k followers
+                    </Text>
+                    <Text
+                      style={[
+                        styles.spotlightBio,
+                        { color: textPrimary },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      Capturing daily serenity & aesthetics ✨
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Follow Button */}
+                <Pressable
+                  onPress={() =>
+                    setIsSpotlightFollowed((prev) => !prev)
+                  }
+                  style={styles.spotlightFollowBtnWrap}
+                >
+                  {isSpotlightFollowed ? (
+                    <View
+                      style={[
+                        styles.spotlightFollowedBtn,
+                        {
+                          backgroundColor: isDark
+                            ? "rgba(255,255,255,0.1)"
+                            : "#F5F0EB",
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.spotlightFollowedBtnText,
+                          { color: textPrimary },
+                        ]}
+                      >
+                        Following
                       </Text>
                     </View>
-                  ) : null}
-                </View>
-              )}
-            </View>
-          ) : (
-            <>
-              {/* Popular creators */}
-              <View
-                style={
-                  styles.popularCreators
-                }
-              >
-                <PopularCreatorsCarousel />
+                  ) : (
+                    <LinearGradient
+                      colors={["#FF6B35", "#FF8C42"]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.spotlightFollowBtnGradient}
+                    >
+                      <Text style={styles.spotlightFollowBtnText}>Follow</Text>
+                    </LinearGradient>
+                  )}
+                </Pressable>
               </View>
+            </View>
 
-              {/* Newest */}
-              {!exploreLoading &&
-              newestMedia.length >
-                0 ? (
-                <View
-                  style={
-                    styles.section
-                  }
-                >
-                  <View
-                    style={
-                      styles.headingRow
-                    }
-                  >
-                    <Clock
-                      size={19}
-                      color="#a855f7"
-                    />
-
-                    <Text
-                      style={
-                        styles.heading
-                      }
-                    >
-                      Newest Drops
-                    </Text>
-                  </View>
-
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={
-                      false
-                    }
-                    contentContainerStyle={
-                      styles.horizontalCards
-                    }
-                  >
-                    {newestMedia.map(
-                      (
-                        post,
-                      ) => (
-                        <NewMediaCard
-                          key={
-                            post._id
-                          }
-                          post={
-                            post
-                          }
-                        />
-                      ),
-                    )}
-                  </ScrollView>
-                </View>
-              ) : null}
-
-              {/* Suggested reels */}
-              {!exploreLoading &&
-              suggestedReels.length >
-                0 ? (
-                <View
-                  style={[
-                    styles.section,
-                    styles.sectionBorder,
-                  ]}
-                >
-                  <View
-                    style={
-                      styles.headingRow
-                    }
-                  >
-                    <Video
-                      size={19}
-                      color="#a855f7"
-                    />
-
-                    <Text
-                      style={
-                        styles.heading
-                      }
-                    >
-                      Suggested Reels
-                    </Text>
-                  </View>
-
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={
-                      false
-                    }
-                    contentContainerStyle={
-                      styles.horizontalCards
-                    }
-                  >
-                    {suggestedReels.map(
-                      (
-                        post,
-                      ) => (
-                        <NewMediaCard
-                          key={
-                            post._id
-                          }
-                          post={
-                            post
-                          }
-                        />
-                      ),
-                    )}
-                  </ScrollView>
-                </View>
-              ) : null}
-
-              {/* Discover */}
-              <View
-                style={
-                  styles.discoverHeader
-                }
-              >
-                <Compass
-                  size={19}
-                  color="#a855f7"
-                />
-
+            {/* 4. Discover Heading */}
+            <View style={styles.discoverHeaderRow}>
+              <View style={styles.discoverHeaderLeft}>
+                <Compass size={17} color="#FF6B35" />
                 <Text
-                  style={
-                    styles.heading
-                  }
+                  style={[
+                    styles.discoverSectionTitle,
+                    { color: textPrimary },
+                  ]}
                 >
                   Discover
                 </Text>
               </View>
-
-              {/* Native grid */}
-              <View
-                style={
-                  styles.grid
-                }
+              <Text
+                style={[
+                  styles.discoverMomentsCount,
+                  { color: textSecond },
+                ]}
               >
-                {posts.map(
-                  (
-                    post,
-                    index,
-                  ) => (
-                    <ExploreGridCard
-                      key={
-                        `${post._id}-${index}`
-                      }
-                      post={
-                        post
-                      }
-                      index={
-                        index
-                      }
-                    />
-                  ),
-                )}
+                {posts.length} moments
+              </Text>
+            </View>
+
+            {/* 5. Discover 2-Column Grid */}
+            <View style={styles.discoverGrid}>
+              {posts.map((post, idx) => (
+                <MobileDiscoverGridCard
+                  key={`${post._id || idx}`}
+                  post={post}
+                  index={idx}
+                  isDark={isDark}
+                />
+              ))}
+            </View>
+
+            {/* Loading Indicator */}
+            {exploreLoading && (
+              <View style={styles.loaderCenter}>
+                <ActivityIndicator size="large" color="#FF6B35" />
               </View>
+            )}
 
-              {exploreLoading ? (
-                <View
-                  style={
-                    styles.loader
-                  }
-                >
-                  <ActivityIndicator
-                    size="large"
-                    color="#a855f7"
-                  />
-                </View>
-              ) : null}
-
-              {isLoadingMore ? (
-                <View
-                  style={
-                    styles.loaderSmall
-                  }
-                >
-                  <ActivityIndicator
-                    size="small"
-                    color="#a855f7"
-                  />
-                </View>
-              ) : null}
-            </>
-          )}
-        </View>
+            {isLoadingMore && (
+              <View style={styles.smallLoaderWrap}>
+                <ActivityIndicator size="small" color="#FF6B35" />
+              </View>
+            )}
+          </View>
+        )}
       </ScrollView>
     </View>
   );
 }
 
-const styles =
-  StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor:
-        "#f8fafc",
-    },
-
-    searchHeader: {
-      paddingHorizontal: 16,
-      paddingTop: 8,
-      paddingBottom: 8,
-      backgroundColor:
-        "#f8fafc",
-    },
-
-    searchBar: {
-      minHeight: 46,
-      borderRadius: 15,
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      paddingHorizontal: 14,
-      backgroundColor:
-        "#ffffff",
-      borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
-    },
-
-    searchInput: {
-      flex: 1,
-      marginHorizontal: 9,
-      color:
-        "#0f172a",
-      fontSize: 13,
-    },
-
-    clearButton: {
-      width: 30,
-      height: 30,
-      borderRadius: 15,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      backgroundColor:
-        "#f1f5f9",
-    },
-
-    filterContent: {
-      gap: 8,
-      paddingTop: 10,
-      paddingBottom: 3,
-    },
-
-    filterChip: {
-      paddingHorizontal: 15,
-      paddingVertical: 8,
-      borderRadius: 18,
-      backgroundColor:
-        "#ffffff",
-      borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
-    },
-
-    filterChipActive: {
-      backgroundColor:
-        "#a855f7",
-      borderColor:
-        "#a855f7",
-    },
-
-    filterText: {
-      color:
-        "#64748b",
-      fontSize: 11,
-      fontWeight:
-        "700",
-      textTransform:
-        "capitalize",
-    },
-
-    filterTextActive: {
-      color:
-        "#ffffff",
-    },
-
-    scrollView: {
-      flex: 1,
-    },
-
-    content: {
-      paddingBottom: 35,
-    },
-
-    centerColumn: {
-      width: "100%",
-      maxWidth: 900,
-      alignSelf:
-        "center",
-      paddingHorizontal: 14,
-    },
-
-    popularCreators: {
-      marginBottom: 5,
-    },
-
-    section: {
-      marginTop: 17,
-      marginBottom: 5,
-    },
-
-    sectionBorder: {
-      borderTopWidth: 1,
-      borderTopColor:
-        "#e2e8f0",
-      paddingTop: 18,
-    },
-
-    headingRow: {
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      gap: 7,
-      marginBottom: 12,
-    },
-
-    heading: {
-      color:
-        "#0f172a",
-      fontSize: 18,
-      fontWeight:
-        "800",
-    },
-
-    horizontalCards: {
-      gap: 10,
-      paddingBottom: 8,
-    },
-
-    newMediaCard: {
-      width: 132,
-      height: 172,
-      borderRadius: 17,
-      overflow:
-        "hidden",
-      backgroundColor:
-        "#e2e8f0",
-      position:
-        "relative",
-    },
-
-    newMediaImage: {
-      width: "100%",
-      height: "100%",
-    },
-
-    newMediaOverlay: {
-      position:
-        "absolute",
-      left: 8,
-      right: 8,
-      bottom: 8,
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      justifyContent:
-        "space-between",
-    },
-
-    newMediaLikes: {
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      gap: 4,
-    },
-
-    newMediaLikesText: {
-      color:
-        "#ffffff",
-      fontSize: 10,
-      fontWeight:
-        "800",
-    },
-
-    gridCard: {
-      width: "48.5%",
-      aspectRatio: 0.78,
-      marginBottom: 8,
-      borderRadius: 12,
-      overflow:
-        "hidden",
-      backgroundColor:
-        "#e2e8f0",
-      position:
-        "relative",
-    },
-
-    gridImage: {
-      width: "100%",
-      height: "100%",
-    },
-
-    gridOverlay: {
-      ...StyleSheet.absoluteFillObject,
-      backgroundColor:
-        "rgba(0,0,0,0.50)",
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      padding: 10,
-    },
-
-    gridStats: {
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      gap: 24,
-    },
-
-    gridStat: {
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      gap: 5,
-    },
-
-    gridStatText: {
-      color:
-        "#ffffff",
-      fontSize: 12,
-      fontWeight:
-        "900",
-    },
-
-    gridUser: {
-      marginTop: 16,
-      maxWidth: "85%",
-      minHeight: 30,
-      paddingHorizontal: 9,
-      paddingVertical: 5,
-      borderRadius: 15,
-      backgroundColor:
-        "rgba(255,255,255,0.20)",
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      gap: 6,
-    },
-
-    gridUsername: {
-      flexShrink: 1,
-      color:
-        "#ffffff",
-      fontSize: 10,
-      fontWeight:
-        "700",
-    },
-
-    discoverHeader: {
-      borderTopWidth: 1,
-      borderTopColor:
-        "#e2e8f0",
-      marginTop: 18,
-      paddingTop: 18,
-      paddingBottom: 12,
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      gap: 7,
-    },
-
-    grid: {
-      flexDirection:
-        "row",
-      flexWrap:
-        "wrap",
-      justifyContent:
-        "space-between",
-    },
-
-    loader: {
-      minHeight: 150,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-    },
-
-    loaderSmall: {
-      paddingVertical: 18,
-      alignItems:
-        "center",
-    },
-
-    searchMode: {
-      paddingBottom: 20,
-    },
-
-    searchSection: {
-      marginTop: 14,
-    },
-
-    resultSection: {
-      marginBottom: 20,
-    },
-
-    sectionHeader: {
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      justifyContent:
-        "space-between",
-      marginBottom: 8,
-    },
-
-    sectionHeading: {
-      color:
-        "#64748b",
-      fontSize: 11,
-      fontWeight:
-        "900",
-      textTransform:
-        "uppercase",
-      letterSpacing:
-        0.8,
-      marginBottom: 9,
-    },
-
-    clearAll: {
-      color:
-        "#a855f7",
-      fontSize: 11,
-      fontWeight:
-        "800",
-    },
-
-    recentRow: {
-      minHeight: 54,
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      paddingHorizontal: 7,
-      borderRadius: 13,
-    },
-
-    recentIcon: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      backgroundColor:
-        "#ffffff",
-      borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
-      overflow:
-        "hidden",
-    },
-
-    recentAvatar: {
-      width: 40,
-      height: 40,
-    },
-
-    recentQuery: {
-      flex: 1,
-      marginLeft: 11,
-      color:
-        "#0f172a",
-      fontSize: 13,
-      fontWeight:
-        "700",
-    },
-
-    removeRecent: {
-      width: 36,
-      height: 36,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-    },
-
-    suggestionRow: {
-      minHeight: 62,
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      gap: 11,
-      paddingHorizontal: 7,
-      borderRadius: 13,
-    },
-
-    suggestionCopy: {
-      flex: 1,
-    },
-
-    suggestionUsername: {
-      color:
-        "#0f172a",
-      fontSize: 13,
-      fontWeight:
-        "800",
-    },
-
-    suggestionFullName: {
-      marginTop: 2,
-      color:
-        "#64748b",
-      fontSize: 11,
-    },
-
-    tags: {
-      flexDirection:
-        "row",
-      flexWrap:
-        "wrap",
-      gap: 8,
-    },
-
-    tagChip: {
-      flexDirection:
-        "row",
-      alignItems:
-        "center",
-      gap: 5,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
-      borderRadius: 18,
-      backgroundColor:
-        "#ffffff",
-      borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
-    },
-
-    tagText: {
-      color:
-        "#0f172a",
-      fontSize: 11,
-      fontWeight:
-        "700",
-    },
-
-    hashtagIcon: {
-      width: 46,
-      height: 46,
-      borderRadius: 23,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      backgroundColor:
-        "#ffffff",
-      borderWidth: 1,
-      borderColor:
-        "#e2e8f0",
-    },
-
-    noResults: {
-      minHeight: 250,
-      alignItems:
-        "center",
-      justifyContent:
-        "center",
-      paddingHorizontal: 30,
-    },
-
-    noResultsTitle: {
-      marginTop: 14,
-      color:
-        "#0f172a",
-      fontSize: 17,
-      fontWeight:
-        "800",
-    },
-
-    noResultsText: {
-      marginTop: 5,
-      color:
-        "#64748b",
-      fontSize: 12,
-      textAlign:
-        "center",
-    },
-  });
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+  },
+  searchHeader: {
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+  },
+  searchBar: {
+    height: 48,
+    borderRadius: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  searchIconBtn: {
+    marginRight: 6,
+    padding: 2,
+  },
+  searchInput: {
+    flex: 1,
+    marginHorizontal: 8,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  clearButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.05)",
+  },
+  filterTabsContent: {
+    gap: 8,
+    paddingTop: 10,
+    paddingBottom: 4,
+  },
+  searchFilterChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 18,
+    borderWidth: 1,
+  },
+  searchFilterChipActive: {
+    backgroundColor: "#FF6B35",
+    borderColor: "#FF6B35",
+  },
+  searchFilterText: {
+    fontSize: 12,
+    fontWeight: "600",
+    textTransform: "capitalize",
+  },
+  searchFilterTextActive: {
+    color: "#FFFFFF",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  content: {
+    paddingTop: 4,
+  },
+  searchContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
+  searchSection: {
+    marginBottom: 16,
+  },
+  sectionHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+    paddingHorizontal: 4,
+  },
+  searchSectionHeading: {
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 0.8,
+    textTransform: "uppercase",
+  },
+  clearAllBtnText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#FF6B35",
+  },
+  cardWrapper: {
+    borderRadius: 20,
+    padding: 8,
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 1,
+  },
+  recentItemRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+  },
+  recentItemLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    flex: 1,
+  },
+  recentHashIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "#FFEBE3",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  recentAvatarImg: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+  },
+  recentQueryText: {
+    fontSize: 13,
+    fontWeight: "600",
+    flex: 1,
+  },
+  suggestedUserRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    gap: 12,
+  },
+  hashtagResultRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    gap: 12,
+  },
+  suggestedUserMeta: {
+    flex: 1,
+  },
+  suggestedUsername: {
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  suggestedFullName: {
+    fontSize: 11,
+    marginTop: 1,
+  },
+  resultsContainer: {
+    gap: 12,
+  },
+  exploreFeed: {
+    gap: 16,
+  },
+  categoryScroll: {
+    paddingHorizontal: 16,
+    gap: 8,
+    paddingVertical: 4,
+  },
+  categoryChipWrap: {
+    borderRadius: 20,
+    overflow: "hidden",
+  },
+  categoryChipActiveGradient: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  categoryChipTextActive: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  categoryChipInactive: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+  },
+  categoryChipTextInactive: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  trendingSection: {
+    paddingHorizontal: 16,
+  },
+  trendingCard: {
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  trendingCardHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  trendingTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  flameIconBox: {
+    width: 26,
+    height: 26,
+    borderRadius: 8,
+    backgroundColor: "#FFEBE3",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  trendingCardTitle: {
+    fontSize: 13,
+    fontWeight: "800",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+  },
+  trendingBadgeSub: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#FF6B35",
+  },
+  trendingList: {
+    gap: 0,
+  },
+  trendingItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  trendingItemDivider: {
+    borderBottomWidth: 1,
+  },
+  trendingRankBox: {
+    width: 24,
+    alignItems: "center",
+  },
+  trendingRankText: {
+    fontSize: 13,
+    fontWeight: "900",
+    color: "#FF6B35",
+  },
+  trendingTopicMeta: {
+    flex: 1,
+    marginLeft: 8,
+  },
+  trendingTagText: {
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  trendingCategoryText: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  featuredSection: {
+    paddingHorizontal: 16,
+  },
+  featuredCard: {
+    borderRadius: 24,
+    padding: 16,
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  spotlightBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    alignSelf: "flex-start",
+    backgroundColor: "#FFEBE3",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginBottom: 12,
+  },
+  spotlightBadgeText: {
+    fontSize: 11,
+    fontWeight: "800",
+    color: "#FF6B35",
+  },
+  spotlightCreatorRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 14,
+  },
+  spotlightAvatar: {
+    width: 54,
+    height: 54,
+    borderRadius: 27,
+    borderWidth: 2,
+    borderColor: "#FF6B35",
+  },
+  spotlightCreatorInfo: {
+    flex: 1,
+  },
+  spotlightNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  spotlightName: {
+    fontSize: 15,
+    fontWeight: "800",
+  },
+  spotlightCategoryChip: {
+    backgroundColor: "rgba(255, 107, 53, 0.12)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  spotlightCategoryText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#FF6B35",
+  },
+  spotlightHandle: {
+    fontSize: 11,
+    marginTop: 1,
+  },
+  spotlightBio: {
+    fontSize: 12,
+    fontWeight: "500",
+    marginTop: 3,
+  },
+  spotlightFollowBtnWrap: {
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  spotlightFollowBtnGradient: {
+    paddingVertical: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 16,
+  },
+  spotlightFollowBtnText: {
+    color: "#FFFFFF",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  spotlightFollowedBtn: {
+    paddingVertical: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 16,
+  },
+  spotlightFollowedBtnText: {
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  discoverHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    marginTop: 4,
+  },
+  discoverHeaderLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  discoverSectionTitle: {
+    fontSize: 14,
+    fontWeight: "800",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+  },
+  discoverMomentsCount: {
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  discoverGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+  },
+  gridCard: {
+    width: (SCREEN_WIDTH - 44) / 2,
+    aspectRatio: 0.78,
+    borderRadius: 20,
+    overflow: "hidden",
+    marginBottom: 12,
+    borderWidth: 1,
+    position: "relative",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  gridImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  gridGradientOverlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: "50%",
+  },
+  gridHeartButton: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  gridInfoRow: {
+    position: "absolute",
+    left: 8,
+    right: 8,
+    bottom: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  gridAuthorWrap: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    flex: 1,
+    marginRight: 6,
+  },
+  gridAuthorName: {
+    color: "#FFFFFF",
+    fontSize: 11,
+    fontWeight: "700",
+    flex: 1,
+  },
+  gridLikesBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    backgroundColor: "rgba(0, 0, 0, 0.35)",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  gridLikesText: {
+    color: "#FFFFFF",
+    fontSize: 10,
+    fontWeight: "800",
+  },
+  loaderCenter: {
+    paddingVertical: 24,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  smallLoaderWrap: {
+    paddingVertical: 12,
+    alignItems: "center",
+  },
+});

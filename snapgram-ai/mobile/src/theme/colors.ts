@@ -7,65 +7,81 @@
  * Always import from this file so mobile stays in sync with the web.
  *
  * Usage:
- *   import { getColors, primary, secondary } from "../../theme/colors";
+ *   import { getColors, primary, secondary, spatial } from "../../theme/colors";
  *   const colors = getColors(isDark);
  *   // colors.bgBase, colors.textPrimary, etc.
  */
 
-// ─── Primary Palette (Electric Purple — AI Vibe) ─────────────────────────────
+// ─── Spatial Raw Tokens (Warm Cream / Orange Reference) ─────────────────────
+export const spatial = {
+  bgDeep:         "#F5F0EB",
+  bg:             "#EDE7DE",
+  surface:        "#FFFFFF",
+  accent:         "#FF6B35",
+  warm:           "#FF8C5A",
+  glassHighlight: "#FFFFFF",
+  text:           "#1A1A1A",
+  textMuted:      "rgba(26, 26, 26, 0.60)",
+  border:         "rgba(0, 0, 0, 0.08)",
+  borderStrong:   "rgba(0, 0, 0, 0.14)",
+  glass:          "rgba(255, 255, 255, 0.85)",
+  glassStrong:    "rgba(255, 255, 255, 0.95)",
+} as const;
+
+// ─── Primary Palette (Vibrant Orange) ────────────────────────────────────────
 // Web: --color-primary-*
 export const primary = {
-  50:  "#faf5ff",
-  100: "#f3e8ff",
-  200: "#e9d5ff",
-  300: "#d8b4fe",
-  400: "#c084fc",  // used in dark-mode active icon tints
-  500: "#a855f7",  // main brand purple
-  600: "#9333ea",
-  700: "#7e22ce",
-  800: "#6b21a8",
-  900: "#581c87",
+  50:  "#fff4ef",
+  100: "#ffe4d6",
+  200: "#ffc9ad",
+  300: "#ffad84",
+  400: "#ff8c5a",  // active icons, subtle orange highlights
+  500: "#FF6B35",  // main brand orange
+  600: "#e55a27",  // deep orange
+  700: "#bf4318",  // darker orange
+  800: "#963410",  // rich dark orange
+  900: "#6b230a",
 } as const;
 
-// ─── Secondary Palette (Hot Pink — Instagram Vibe) ───────────────────────────
+// ─── Secondary Palette (Rose / Warm Accent) ──────────────────────────────────
 // Web: --color-secondary-*
 export const secondary = {
-  50:  "#fdf2f8",
-  100: "#fce7f3",
-  200: "#fbcfe8",
-  300: "#f9a8d4",
-  400: "#f472b6",
-  500: "#ec4899",  // notification dots, gradients, CTA accents
-  600: "#db2777",
-  700: "#be185d",
-  800: "#9d174d",
-  900: "#831843",
+  50:  "#fff1f2",
+  100: "#ffe4e6",
+  200: "#fecdd3",
+  300: "#fda4af",
+  400: "#fb7185",
+  500: "#f43f5e",  // notification badges, secondary accents
+  600: "#e11d48",
+  700: "#be123c",
+  800: "#9f1239",
+  900: "#881337",
 } as const;
 
-// ─── Dark Mode Semantic Tokens ────────────────────────────────────────────────
+// ─── Dark Mode Semantic Tokens (OLED Spatial Red) ────────────────────────────
 // Web: .dark { ... }
 export const dark = {
-  bgBase:         "#0a0510",                    // web: --bg-base dark (OLED)
-  bgSurface:      "#130a1c",                    // web: --bg-surface dark
-  bgSurfaceHover: "#1e112c",                    // web: --bg-surface-hover dark
-  textPrimary:    "#f8fafc",                    // web: --text-primary dark
-  textSecondary:  "#94a3b8",                    // web: --text-secondary dark
-  borderSoft:     "#2d1b3b",                    // web: --border-soft dark
-  glassBg:        "rgba(19, 10, 28, 0.50)",     // web: --glass-bg dark
-  glassBorder:    "rgba(168, 85, 247, 0.15)",   // web: --glass-border dark
+  bgBase:         "#620d0b",                    // deep environmental red
+  bgSurface:      "rgba(130, 25, 22, 0.52)",    // translucent red glass
+  bgSurfaceHover: "rgba(160, 35, 30, 0.62)",
+  textPrimary:    "#fff7f5",
+  textSecondary:  "rgba(255, 247, 245, 0.72)",
+  borderSoft:     "rgba(255, 255, 255, 0.12)",
+  glassBg:        "rgba(130, 25, 22, 0.48)",
+  glassBorder:    "rgba(238, 117, 101, 0.20)",
 } as const;
 
-// ─── Light Mode Semantic Tokens ───────────────────────────────────────────────
+// ─── Light Mode Semantic Tokens (Warm Cream + White Cards) ───────────────────
 // Web: :root { ... }
 export const light = {
-  bgBase:         "#f8fafc",                    // web: --bg-base light
-  bgSurface:      "#ffffff",                    // web: --bg-surface light
-  bgSurfaceHover: "#f1f5f9",                    // web: --bg-surface-hover light
-  textPrimary:    "#0f172a",                    // web: --text-primary light
-  textSecondary:  "#64748b",                    // web: --text-secondary light
-  borderSoft:     "#e2e8f0",                    // web: --border-soft light
-  glassBg:        "rgba(255, 255, 255, 0.70)",  // web: --glass-bg light
-  glassBorder:    "rgba(255, 255, 255, 0.40)",  // web: --glass-border light
+  bgBase:         "#F5F0EB",                   // warm cream background
+  bgSurface:      "#FFFFFF",                   // pure white card surface
+  bgSurfaceHover: "#F0EBE5",                   // cream hover state
+  textPrimary:    "#1A1A1A",                   // near-black text
+  textSecondary:  "#9B9B9B",                   // medium gray secondary text
+  borderSoft:     "rgba(0, 0, 0, 0.08)",       // subtle light border
+  glassBg:        "rgba(255, 255, 255, 0.85)", // white glass
+  glassBorder:    "rgba(0, 0, 0, 0.07)",       // very subtle border
 } as const;
 
 // ─── Shared / Static Colours (same in both modes) ────────────────────────────
@@ -73,20 +89,18 @@ export const shared = {
   error:        "#ef4444",  // red-500 — validation errors, badge bg
   success:      "#22c55e",  // green-500 — online indicator
   warning:      "#f59e0b",  // amber-500
-  notificationBadge: "#ef4444",
+  notificationBadge: "#f43f5e",
   onlineIndicator:   "#22c55e",
 } as const;
 
 // ─── Gradient Colour Stops (for expo-linear-gradient) ────────────────────────
-// Web equivalents:
-//   hero-gradient  → linear-gradient(135deg, primary-500, secondary-500)
-//   ai-gradient    → linear-gradient(to right, primary-400, secondary-400, primary-500)
-//   logo-gradient  → from-yellow-400 via-rose-500 to-purple-600
-export const heroGradient   = ["#a855f7", "#ec4899"] as const;
-export const aiGradient     = ["#c084fc", "#a855f7", "#ec4899"] as const;
-export const logoGradient   = ["#facc15", "#f43f5e", "#9333ea"] as const;  // sidebar brand
-export const glowPurple     = "rgba(168, 85, 247, 0.4)";
-export const glowPink       = "rgba(236, 72, 153, 0.4)";
+export const heroGradient   = ["#FF6B35", "#E55A27"] as const;
+export const aiGradient     = ["#FF8C5A", "#FF6B35", "#E55A27"] as const;
+export const logoGradient   = ["#FFB347", "#FF8C5A", "#FF6B35"] as const;
+export const storyGradient  = ["#FF6B35", "#FF8C5A", "#FFB347"] as const;
+export const glowPurple     = "rgba(255, 107, 53, 0.40)";
+export const glowPink       = "rgba(255, 107, 53, 0.40)";
+export const glowCoral      = "rgba(255, 107, 53, 0.40)";
 
 // ─── High-Contrast Mode (matches web .high-contrast) ─────────────────────────
 export const highContrastDark = {

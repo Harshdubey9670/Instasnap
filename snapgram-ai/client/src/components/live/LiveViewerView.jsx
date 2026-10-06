@@ -132,7 +132,7 @@ export const LiveViewerView = () => {
       <div className="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center">
         <AlertTriangle className="w-16 h-16 text-yellow-500 mb-4" />
         <h2 className="text-white text-xl font-bold mb-6">{error}</h2>
-        <button onClick={handleClose} className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors">
+        <button onClick={handleClose} className="px-6 py-2.5 hero-gradient text-white font-bold rounded-full shadow-glow transition-all active:scale-95">
           Go Back
         </button>
       </div>

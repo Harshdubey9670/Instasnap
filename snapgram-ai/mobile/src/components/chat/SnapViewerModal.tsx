@@ -546,7 +546,7 @@ const styles =
       padding: 28,
 
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
     },
 
     eyeCircle: {
@@ -561,7 +561,7 @@ const styles =
       borderRadius: 40,
 
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
 
       marginBottom: 18,
     },
@@ -602,12 +602,12 @@ const styles =
 
       borderWidth: 1,
       borderColor:
-        "rgba(168,85,247,0.30)",
+        "rgba(238, 117, 101,0.30)",
     },
 
     selfDestructText: {
       color:
-        "#c084fc",
+        "#ffaea3",
       fontSize: 10,
       fontWeight:
         "700",
@@ -659,7 +659,7 @@ const styles =
 
       borderWidth: 2,
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     countdownText: {

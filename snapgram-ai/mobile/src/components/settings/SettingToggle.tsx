@@ -179,7 +179,7 @@ const styles =
 
     trackChecked: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     thumb: {

@@ -313,7 +313,7 @@ export const RelationshipActionsModal = ({
         ? "rgba(19,10,28,0.98)"
         : "rgba(255,255,255,0.98)",
       surfaceSoft: darkMode
-        ? "#1e112c"
+        ? "#5c1210"
         : "#f1f5f9",
       textPrimary: darkMode
         ? "#f8fafc"
@@ -322,7 +322,7 @@ export const RelationshipActionsModal = ({
         ? "#94a3b8"
         : "#64748b",
       border: darkMode
-        ? "#2d1b3b"
+        ? "#6e1815"
         : "#e2e8f0",
     }),
     [darkMode],
@@ -895,20 +895,20 @@ export const RelationshipActionsModal = ({
                       ? "Unrestrict User"
                       : "Restrict User"
                   }
-                  color="#c084fc"
+                  color="#ffaea3"
                   textColor={
                     relations.isRestricted
-                      ? "#c084fc"
+                      ? "#ffaea3"
                       : colors.textPrimary
                   }
                   borderColor={
                     relations.isRestricted
-                      ? "rgba(168,85,247,0.40)"
+                      ? "rgba(238, 117, 101,0.40)"
                       : colors.border
                   }
                   backgroundColor={
                     relations.isRestricted
-                      ? "rgba(168,85,247,0.15)"
+                      ? "rgba(238, 117, 101,0.15)"
                       : colors.surfaceSoft
                   }
                   active={
@@ -1012,7 +1012,7 @@ export const RelationshipActionsModal = ({
                   icon={UserX}
                   actionType="hide"
                   label="Hide User Content"
-                  color="#ec4899"
+                  color="#f43f5e"
                   textColor={
                     colors.textPrimary
                   }

@@ -85,7 +85,7 @@ export const AccountSwitcherDrawer: React.FC<AccountSwitcherDrawerProps> = ({
   const textColor = isDark ? "#ffffff" : "#0f172a";
   const subtitleColor = isDark ? "#94a3b8" : "#64748b";
   const borderColor = isDark ? "#281838" : "#f1f5f9";
-  const activeBg = isDark ? "rgba(168, 85, 247, 0.14)" : "rgba(168, 85, 247, 0.08)";
+  const activeBg = isDark ? "rgba(238, 117, 101, 0.14)" : "rgba(238, 117, 101, 0.08)";
 
   return (
     <Modal
@@ -173,7 +173,7 @@ export const AccountSwitcherDrawer: React.FC<AccountSwitcherDrawerProps> = ({
 
                   <View style={styles.actionSection}>
                     {isSwitching ? (
-                      <ActivityIndicator size="small" color="#a855f7" />
+                      <ActivityIndicator size="small" color="#ee7565" />
                     ) : isActive ? (
                       <View style={styles.checkCircle}>
                         <Check size={16} color="#ffffff" strokeWidth={3} />
@@ -201,7 +201,7 @@ export const AccountSwitcherDrawer: React.FC<AccountSwitcherDrawerProps> = ({
                 activeOpacity={0.7}
               >
                 <View style={styles.addIconCircle}>
-                  <Plus size={20} color="#a855f7" strokeWidth={2.5} />
+                  <Plus size={20} color="#ee7565" strokeWidth={2.5} />
                 </View>
                 <Text style={styles.addAccountText}>Add Instagram account</Text>
               </TouchableOpacity>
@@ -305,7 +305,7 @@ const styles = StyleSheet.create({
   },
   activeUsername: {
     fontWeight: "700",
-    color: "#a855f7",
+    color: "#ee7565",
   },
   accountFullName: {
     fontSize: 12,
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 22,
     borderWidth: 1.5,
-    borderColor: "#a855f7",
+    borderColor: "#ee7565",
     borderStyle: "dashed",
     alignItems: "center",
     justifyContent: "center",
@@ -349,7 +349,7 @@ const styles = StyleSheet.create({
     marginLeft: 14,
     fontSize: 15,
     fontWeight: "600",
-    color: "#a855f7",
+    color: "#ee7565",
   },
 });
 

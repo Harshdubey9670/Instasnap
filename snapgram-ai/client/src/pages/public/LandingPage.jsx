@@ -100,7 +100,7 @@ export const LandingPage = () => {
             opacity: [0.3, 0.5, 0.3]
           }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -bottom-[20%] left-[20%] h-[60vh] w-[60vw] rounded-full bg-purple-500/20 mix-blend-multiply blur-[120px] dark:bg-purple-900/30" 
+          className="absolute -bottom-[20%] left-[20%] h-[60vh] w-[60vw] rounded-full bg-secondary-500/20 mix-blend-multiply blur-[120px] dark:bg-secondary-900/30" 
         />
       </div>
 
@@ -250,3 +250,5 @@ export const LandingPage = () => {
     </div>
   );
 };
+
+export default LandingPage;

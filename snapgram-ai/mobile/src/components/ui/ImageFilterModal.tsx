@@ -305,11 +305,11 @@ img {
               modalHeight,
             backgroundColor:
               dark
-                ? "#130a1c"
+                ? "#4a0f0d"
                 : "#ffffff",
             borderColor:
               dark
-                ? "rgba(168,85,247,0.15)"
+                ? "rgba(238, 117, 101,0.15)"
                 : "rgba(255,255,255,0.40)",
           },
         ]}
@@ -326,7 +326,7 @@ img {
           >
             <Wand2
               size={20}
-              color="#a855f7"
+              color="#ee7565"
             />
 
             <Text
@@ -430,11 +430,11 @@ img {
                   {
                     backgroundColor:
                       dark
-                        ? "#1e112c"
+                        ? "#5c1210"
                         : "#f1f5f9",
                     borderColor:
                       dark
-                        ? "#2d1b3b"
+                        ? "#6e1815"
                         : "#e2e8f0",
                   },
                 ]}
@@ -573,13 +573,13 @@ img{width:100%;height:100%;object-fit:cover;filter:${preset.css}}
                             {
                               borderColor:
                                 selected
-                                  ? "#a855f7"
+                                  ? "#ee7565"
                                   : dark
-                                    ? "#2d1b3b"
+                                    ? "#6e1815"
                                     : "#e2e8f0",
                               backgroundColor:
                                 selected
-                                  ? "rgba(168,85,247,0.10)"
+                                  ? "rgba(238, 117, 101,0.10)"
                                   : "transparent",
                             },
                           ]}
@@ -738,7 +738,7 @@ img{width:100%;height:100%;object-fit:cover;filter:${preset.css}}
                   {
                     borderTopColor:
                       dark
-                        ? "#2d1b3b"
+                        ? "#6e1815"
                         : "#e2e8f0",
                   },
                 ]}
@@ -1004,7 +1004,7 @@ const styles =
       padding: 16,
       borderBottomWidth: 1,
       borderBottomColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     headerLeft: {
@@ -1090,9 +1090,9 @@ const styles =
 
     activeTab: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       shadowColor:
-        "#a855f7",
+        "#ee7565",
       shadowOffset: {
         width: 0,
         height: 0,
@@ -1186,7 +1186,7 @@ const styles =
     sliderFill: {
       height: "100%",
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderRadius: 999,
     },
 
@@ -1199,11 +1199,11 @@ const styles =
         "center",
       borderRadius: 16,
       backgroundColor:
-        "rgba(168,85,247,0.12)",
+        "rgba(238, 117, 101,0.12)",
     },
 
     sliderButtonText: {
-      color: "#a855f7",
+      color: "#ee7565",
       fontSize: 20,
       lineHeight: 22,
     },

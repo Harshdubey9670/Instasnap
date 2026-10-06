@@ -419,7 +419,7 @@ export const PostOptionsModal =
               last
                 ? "transparent"
                 : dark
-                  ? "#2d1b3b"
+                  ? "#6e1815"
                   : "#e2e8f0",
           },
           pressed &&
@@ -478,7 +478,7 @@ export const PostOptionsModal =
                 {
                   backgroundColor:
                     dark
-                      ? "#130a1c"
+                      ? "#4a0f0d"
                       : "#ffffff",
                 },
               ]}

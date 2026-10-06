@@ -39,13 +39,13 @@ export default function FollowersScreen() {
   const isDark = effectiveTheme === "dark";
 
   // Dynamic tokens
-  const bgBase       = isDark ? "#0a0510" : "#f8fafc";
+  const bgBase       = isDark ? "#620d0b" : "#F5F0EB";
   const bgCard       = isDark ? "#18122b" : "#ffffff";
-  const bgCardBorder = isDark ? "#2d1f4a" : "#e2e8f0";
-  const textPrimary  = isDark ? "#f8fafc" : "#0f172a";
-  const textSecond   = isDark ? "#94a3b8" : "#64748b";
+  const bgCardBorder = isDark ? "#6e1815" : "rgba(0, 0, 0, 0.08)";
+  const textPrimary  = isDark ? "#f8fafc" : "#1A1A1A";
+  const textSecond   = isDark ? "#94a3b8" : "#9B9B9B";
   const searchBg     = isDark ? "#1e1235" : "#ffffff";
-  const divider      = isDark ? "#2d1f4a" : "#e2e8f0";
+  const divider      = isDark ? "#6e1815" : "rgba(0, 0, 0, 0.08)";
 
   const targetUserId = typeof id === "string" ? id : typeof userId === "string" ? userId : authUser?._id;
   const isOwner =
@@ -352,7 +352,7 @@ export default function FollowersScreen() {
         <View style={styles.loadingContainer}>
           <ActivityIndicator
             size="large"
-            color="#a855f7"
+            color="#ee7565"
           />
         </View>
       ) : followers.length === 0 ? (
@@ -393,7 +393,7 @@ export default function FollowersScreen() {
               <View style={styles.footerLoader}>
                 <ActivityIndicator
                   size="small"
-                  color="#a855f7"
+                  color="#ee7565"
                 />
               </View>
             ) : null
@@ -496,7 +496,7 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 26,
     padding: 2,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     marginRight: 12,
   },
 

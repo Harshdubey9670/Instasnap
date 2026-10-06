@@ -1,30 +1,27 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { Bell, Loader2, AtSign, Heart, UserPlus, MessageCircle, CheckCheck, Send, Trash2 } from "lucide-react";
+import { Bell, Loader2, AtSign, Heart, UserPlus, MessageCircle, CheckCheck, Trash2, Megaphone } from "lucide-react";
 import { Avatar } from "../../components/ui/Avatar";
 import { FollowButton } from "../../components/profile/FollowButton";
+import { ProfileSummaryCard } from "../../components/notifications/ProfileSummaryCard";
+import { ActivityInsightsCard } from "../../components/notifications/ActivityInsightsCard";
+import { NotificationSettingsCard } from "../../components/notifications/NotificationSettingsCard";
 import { clearUnreadCount } from "../../store/authSlice";
 import api from "../../services/api";
+import { cn } from "../../utils/cn";
+import { notificationTypeIcon, notificationActionText } from "../../utils/notificationText";
 
-const notificationIcon = (type) => {
-  switch (type) {
-    case "mention":  return <AtSign className="w-3 h-3 text-sky-400" />;
-    case "tag":      return <AtSign className="w-3 h-3 text-sky-400" />;
-    case "like":     return <Heart className="w-3 h-3 text-red-500 fill-red-500" />;
-    case "follow":   
-    case "accept_request":
-    case "follow_request": return <UserPlus className="w-3 h-3 text-emerald-400" />;
-    case "comment":  
-    case "reply":    return <MessageCircle className="w-3 h-3 text-primary-400" />;
-    case "story_reply": 
-    case "story":
-    case "reel":     return <Send className="w-3 h-3 text-primary-400" />;
-    case "save":     return <Heart className="w-3 h-3 text-amber-400 fill-amber-400" />;
-    case "system":   return <Bell className="w-3 h-3 text-primary-400" />;
-    default:         return <Bell className="w-3 h-3 text-text-secondary" />;
-  }
-};
+// Filter chips — each maps to the real Notification `type` enum values so the
+// filter is a genuine server-side query, not a client-side pretend-filter.
+const FILTERS = [
+  { id: "all", label: "All", icon: Bell, types: null },
+  { id: "likes", label: "Likes", icon: Heart, types: ["like", "story_like", "save"] },
+  { id: "comments", label: "Comments", icon: MessageCircle, types: ["comment", "reply", "story_reply"] },
+  { id: "follows", label: "Follows", icon: UserPlus, types: ["follow", "follow_request", "accept_request", "follow_accepted"] },
+  { id: "mentions", label: "Mentions", icon: AtSign, types: ["mention", "tag"] },
+  { id: "system", label: "System", icon: Megaphone, types: ["system", "story", "reel", "story_downloaded", "reel_downloaded"] },
+];
 
 const timeAgo = (date) => {
   const diff = Date.now() - new Date(date).getTime();
@@ -40,10 +37,10 @@ const timeAgo = (date) => {
 // Group notifications of the same type on the same post
 const groupNotifications = (notifications) => {
   const grouped = [];
-  
+
   notifications.forEach(notif => {
     const canGroup = notif.post?._id && ["like", "comment", "mention"].includes(notif.type);
-    
+
     if (!canGroup) {
       grouped.push({ ...notif, senders: [notif.sender], _id: notif._id });
       return;
@@ -66,11 +63,17 @@ const groupNotifications = (notifications) => {
 };
 
 // Format grouped text
-const formatGroupedText = (senders, type) => {
+const formatGroupedText = (group) => {
+  const { senders, type, message } = group;
   const count = senders.length;
   const s1 = senders[0];
   const s2 = senders[1];
-  
+
+  // Downloads and system posts already carry a fully-formed server message.
+  if (["story_downloaded", "reel_downloaded", "system"].includes(type) && message) {
+    return <span>{message}</span>;
+  }
+
   let names = null;
   if (count === 1) {
     names = <Link to={`/app/profile/${s1?._id}`} className="font-semibold text-text-primary hover:opacity-80">{s1?.username}</Link>;
@@ -93,25 +96,7 @@ const formatGroupedText = (senders, type) => {
     );
   }
 
-  let action = "";
-  switch (type) {
-    case "mention": action = "mentioned you in a post."; break;
-    case "tag": action = "tagged you in a post."; break;
-    case "like": action = "liked your post."; break;
-    case "follow": action = "started following you."; break;
-    case "follow_request": action = "requested to follow you."; break;
-    case "accept_request": action = "accepted your follow request."; break;
-    case "comment": action = "commented on your post."; break;
-    case "reply": action = "replied to your comment."; break;
-    case "story_reply": action = "replied to your story."; break;
-    case "story": action = "mentioned you in their story."; break;
-    case "reel": action = "shared a reel with you."; break;
-    case "save": action = "saved your post."; break;
-    case "system": action = "sent a system update."; break;
-    default: action = "sent you a notification."; break;
-  }
-
-  return <span>{names} {action}</span>;
+  return <span>{names} {notificationActionText(type)}</span>;
 };
 
 // Categorize notifications into Today, This Week, Earlier
@@ -148,6 +133,7 @@ const NotificationItem = ({
 }) => {
   const senders = group.senders || [group.sender];
   const primarySender = senders[0] || group.sender;
+  const canFollowBack = ["follow", "accept_request", "follow_accepted"].includes(group.type);
 
   return (
     <div
@@ -181,15 +167,15 @@ const NotificationItem = ({
         )}
 
         {/* Badge Icon */}
-        <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-neutral-900 border-2 border-bg-base flex items-center justify-center shadow-sm z-20">
-          {notificationIcon(group.type)}
+        <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-bg-surface border-2 border-bg-base flex items-center justify-center shadow-sm z-20">
+          {notificationTypeIcon(group.type)}
         </div>
       </div>
 
       {/* Center: Text Body */}
       <div className="flex-1 min-w-0 text-sm text-text-primary leading-snug">
         <span>
-          {formatGroupedText(senders, group.type)}
+          {formatGroupedText(group)}
         </span>
         <span className="text-text-secondary text-xs ml-1.5 font-normal whitespace-nowrap">
           {timeAgo(group.createdAt)}
@@ -204,8 +190,8 @@ const NotificationItem = ({
 
       {/* Right Action: Follow Button or Post Thumbnail or Actions */}
       <div className="flex items-center gap-2 shrink-0 ml-1" onClick={(e) => e.stopPropagation()}>
-        {/* If follow notification, show Instagram style FollowButton */}
-        {(group.type === 'follow' || group.type === 'accept_request') && primarySender?._id && (
+        {/* If follow notification, show Follow Back button */}
+        {canFollowBack && primarySender?._id && (
           <FollowButton userId={primarySender._id} targetUser={primarySender} />
         )}
 
@@ -228,7 +214,7 @@ const NotificationItem = ({
         {/* Delete notification */}
         <button
           onClick={(e) => handleDelete(e, group._id)}
-          className="p-1.5 text-text-secondary hover:text-red-400 hover:bg-white/10 rounded-full transition-colors opacity-0 group-hover:opacity-100"
+          className="p-1.5 text-text-secondary hover:text-red-400 hover:bg-bg-surface-hover rounded-full transition-colors opacity-0 group-hover:opacity-100"
           title="Delete"
         >
           <Trash2 className="w-4 h-4" />
@@ -244,14 +230,19 @@ const NotificationsPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [followRequests, setFollowRequests] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  
+  const [activeFilter, setActiveFilter] = useState("all");
+  // Total count for the "All" chip specifically — tracked separately from
+  // whichever filter is currently active so switching filters and back
+  // doesn't leave a stale/wrong number on the All badge.
+  const [allTotal, setAllTotal] = useState(0);
+
   // Pagination / Infinite Scroll
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(true);
   const [fetchingMore, setFetchingMore] = useState(false);
   const [markingRead, setMarkingRead] = useState(false);
-  
+
   const observer = useRef();
   const lastNotificationRef = useCallback(node => {
     if (loading || fetchingMore) return;
@@ -263,21 +254,6 @@ const NotificationsPage = () => {
     });
     if (node) observer.current.observe(node);
   }, [loading, fetchingMore, hasMore]);
-
-  // Initial fetch
-  useEffect(() => {
-    dispatch(clearUnreadCount());
-    fetchNotifications(1);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Fetch more when page changes
-  useEffect(() => {
-    if (page > 1) {
-      fetchNotifications(page);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
 
   const fetchFollowRequests = async () => {
     try {
@@ -308,13 +284,15 @@ const NotificationsPage = () => {
     }
   };
 
-  const fetchNotifications = async (pageNum) => {
-    pageNum === 1 ? setLoading(true) : setFetchingMore(true);
+  const fetchNotifications = useCallback(async (pageNum, filterId) => {
+    if (pageNum === 1) setLoading(true); else setFetchingMore(true);
     try {
       if (pageNum === 1) {
         fetchFollowRequests();
       }
-      const res = await api.get(`/api/notifications?page=${pageNum}&limit=15`);
+      const filter = FILTERS.find(f => f.id === filterId);
+      const typeParam = filter?.types ? `&type=${filter.types.join(',')}` : '';
+      const res = await api.get(`/api/notifications?page=${pageNum}&limit=15${typeParam}`);
       if (res.data.success) {
         if (pageNum === 1) {
           setNotifications(res.data.data);
@@ -323,6 +301,7 @@ const NotificationsPage = () => {
         }
         setUnreadCount(res.data.unreadCount);
         setHasMore(res.data.pagination.hasMore);
+        if (filterId === 'all') setAllTotal(res.data.pagination.total);
       }
     } catch (e) {
       console.error("Failed to fetch notifications", e);
@@ -330,6 +309,29 @@ const NotificationsPage = () => {
       setLoading(false);
       setFetchingMore(false);
     }
+  }, []);
+
+  // Initial fetch
+  useEffect(() => {
+    dispatch(clearUnreadCount());
+    fetchNotifications(1, 'all');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Fetch more when page changes (not on filter-driven resets, those go through handleFilterChange)
+  useEffect(() => {
+    if (page > 1) {
+      fetchNotifications(page, activeFilter);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page]);
+
+  const handleFilterChange = (filterId) => {
+    if (filterId === activeFilter) return;
+    setActiveFilter(filterId);
+    setPage(1);
+    setHasMore(true);
+    fetchNotifications(1, filterId);
   };
 
   const handleMarkAllRead = async () => {
@@ -369,14 +371,19 @@ const NotificationsPage = () => {
 
   const handleNotificationClick = async (notif) => {
     const idsToMark = notif.ids || [notif._id];
-    
+
     if (!notif.read) {
       setNotifications(prev => prev.map(n => idsToMark.includes(n._id) ? { ...n, read: true } : n));
       Promise.all(idsToMark.map(id => api.put(`/api/notifications/${id}/read`))).catch(()=>console.error('Failed to mark read'));
     }
 
-    if (notif.post) {
-      navigate(`/app/profile/${notif.sender?._id || notif.sender}`); 
+    const reelId = notif.reel?._id || notif.reel || (notif.contentType === 'reel' ? notif.contentId : null);
+    const postId = notif.post?._id || notif.post || (notif.contentType === 'post' ? notif.contentId : null);
+
+    if (reelId) {
+      navigate(`/app/reels?id=${reelId}`);
+    } else if (postId) {
+      navigate(`/app/post/${postId}`);
     } else if (notif.sender) {
       navigate(`/app/profile/${notif.sender?._id || notif.sender}`);
     }
@@ -386,121 +393,161 @@ const NotificationsPage = () => {
   const categorized = categorizeNotifications(groupedNotifications);
 
   return (
-    <div className="w-full max-w-xl mx-auto pb-safe-20 lg:pb-8 bg-bg-base min-h-screen">
-      {/* Sticky Instagram Header */}
-      <div className="sticky top-0 z-30 bg-bg-base/95 backdrop-blur-xl border-b border-border-soft/50 px-4 py-3.5 flex items-center justify-between shadow-sm">
-        <div className="flex items-center gap-3">
-          <h1 className="text-xl font-extrabold text-text-primary tracking-tight">Notifications</h1>
-          {unreadCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-bold bg-primary-500/20 text-primary-500 rounded-full">
-              {unreadCount} new
-            </span>
-          )}
-        </div>
+    <div className="w-full max-w-[1400px] mx-auto pb-safe-20 lg:pb-8">
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_340px] lg:gap-6 lg:items-start lg:px-4 lg:pt-4">
+        {/* Center: notifications feed */}
+        <div className="min-w-0 bg-bg-base lg:bg-bg-surface lg:border lg:border-border-soft lg:rounded-[28px] lg:overflow-hidden">
+          {/* Header */}
+          <div className="sticky top-0 z-30 bg-bg-base/95 lg:bg-bg-surface/95 backdrop-blur-xl border-b border-border-soft/50 px-4 py-3.5 lg:px-6 lg:py-5 shadow-sm lg:shadow-none">
+            <div className="flex items-center justify-between">
+              <div className="min-w-0">
+                <h1 className="text-xl lg:text-2xl font-extrabold text-text-primary tracking-tight">Notifications</h1>
+                <p className="text-xs lg:text-sm text-text-secondary mt-0.5 hidden sm:block">Stay updated with your community.</p>
+              </div>
 
-        {unreadCount > 0 && (
-          <button
-            onClick={handleMarkAllRead}
-            disabled={markingRead}
-            className="flex items-center gap-1.5 text-xs font-semibold text-primary-500 hover:text-primary-400 bg-primary-500/10 hover:bg-primary-500/20 px-3 py-1.5 rounded-full transition-all disabled:opacity-50"
-          >
-            <CheckCheck className="w-3.5 h-3.5" />
-            <span>Mark all read</span>
-          </button>
-        )}
-      </div>
+              {unreadCount > 0 && (
+                <button
+                  onClick={handleMarkAllRead}
+                  disabled={markingRead}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-primary-500 hover:text-primary-400 bg-primary-500/10 hover:bg-primary-500/20 px-3 py-1.5 rounded-full transition-all disabled:opacity-50 shrink-0"
+                >
+                  <CheckCheck className="w-3.5 h-3.5" />
+                  <span>Mark all read</span>
+                </button>
+              )}
+            </div>
 
-      {/* Content */}
-      {loading && page === 1 ? (
-        <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
-        </div>
-      ) : groupedNotifications.length === 0 && followRequests.length === 0 ? (
-        <div className="text-center py-24 px-4">
-          <div className="w-16 h-16 rounded-full bg-bg-surface border border-border-soft flex items-center justify-center mx-auto mb-4">
-            <Bell className="w-8 h-8 text-text-secondary" />
+            {/* Filter Chips */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar mt-3.5 -mx-1 px-1">
+              {FILTERS.map((f) => {
+                const active = activeFilter === f.id;
+                return (
+                  <button
+                    key={f.id}
+                    onClick={() => handleFilterChange(f.id)}
+                    className={cn(
+                      "flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-semibold whitespace-nowrap transition-all shrink-0",
+                      active ? "bg-primary-500 text-white shadow-soft" : "bg-bg-surface-hover text-text-secondary hover:text-text-primary border border-border-soft"
+                    )}
+                  >
+                    <f.icon className="w-3.5 h-3.5" />
+                    {f.label}
+                    {f.id === "all" && allTotal > 0 && (
+                      <span className={cn(
+                        "text-[10px] font-bold rounded-full px-1.5 min-w-[16px] leading-[16px] text-center",
+                        active ? "bg-white/25 text-white" : "bg-primary-500 text-white"
+                      )}>
+                        {allTotal}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-          <p className="font-bold text-text-primary text-base">No notifications yet</p>
-          <p className="text-xs text-text-secondary mt-1 max-w-xs mx-auto">
-            When someone follows you, likes your posts, or mentions you, you'll see it here.
-          </p>
-        </div>
-      ) : (
-        <div className="divide-y divide-border-soft/30">
-          {/* Follow Requests */}
-          {followRequests.length > 0 && (
-            <div className="py-2">
-              <h2 className="text-xs font-bold text-text-secondary uppercase tracking-wider px-4 py-2">
-                Follow Requests ({followRequests.length})
-              </h2>
-              <div className="divide-y divide-border-soft/20">
-                {followRequests.map((req) => (
-                  <div key={req._id} className="flex items-center justify-between px-4 py-3 hover:bg-bg-surface-hover/60 transition-colors">
-                    <Link to={`/app/profile/${req._id}`} className="flex items-center gap-3 min-w-0 flex-1">
-                      <Avatar src={req.profilePicture || req.avatar} fallback={req.username?.charAt(0)} className="w-11 h-11 rounded-full object-cover shrink-0" />
-                      <div className="min-w-0 flex-1">
-                        <p className="font-semibold text-text-primary text-sm truncate">@{req.username}</p>
-                        <p className="text-xs text-text-secondary truncate">{req.fullName || 'Requested to follow you'}</p>
+
+          {/* Content */}
+          {loading && page === 1 ? (
+            <div className="flex justify-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-primary-500" />
+            </div>
+          ) : groupedNotifications.length === 0 && !(activeFilter === 'all' && followRequests.length > 0) ? (
+            <div className="text-center py-24 px-4">
+              <div className="w-16 h-16 rounded-full bg-bg-surface lg:bg-bg-surface-hover border border-border-soft flex items-center justify-center mx-auto mb-4">
+                <Bell className="w-8 h-8 text-text-secondary" />
+              </div>
+              <p className="font-bold text-text-primary text-base">
+                {activeFilter === 'all' ? 'No notifications yet' : `No ${FILTERS.find(f => f.id === activeFilter)?.label.toLowerCase()} notifications`}
+              </p>
+              <p className="text-xs text-text-secondary mt-1 max-w-xs mx-auto">
+                When someone follows you, likes your posts, or mentions you, you'll see it here.
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-border-soft/30">
+              {/* Follow Requests */}
+              {activeFilter === 'all' && followRequests.length > 0 && (
+                <div className="py-2">
+                  <h2 className="text-xs font-bold text-text-secondary uppercase tracking-wider px-4 lg:px-6 py-2">
+                    Follow Requests ({followRequests.length})
+                  </h2>
+                  <div className="divide-y divide-border-soft/20">
+                    {followRequests.map((req) => (
+                      <div key={req._id} className="flex items-center justify-between px-4 lg:px-6 py-3 hover:bg-bg-surface-hover/60 transition-colors">
+                        <Link to={`/app/profile/${req._id}`} className="flex items-center gap-3 min-w-0 flex-1">
+                          <Avatar src={req.profilePicture || req.avatar} fallback={req.username?.charAt(0)} className="w-11 h-11 rounded-full object-cover shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-text-primary text-sm truncate">@{req.username}</p>
+                            <p className="text-xs text-text-secondary truncate">{req.fullName || 'Requested to follow you'}</p>
+                          </div>
+                        </Link>
+                        <div className="flex items-center gap-2 shrink-0 ml-3">
+                          <button
+                            onClick={() => handleAcceptRequest(req._id)}
+                            className="px-4 py-1.5 bg-primary-600 hover:bg-primary-500 text-white text-xs font-bold rounded-lg shadow-sm transition-all"
+                          >
+                            Confirm
+                          </button>
+                          <button
+                            onClick={() => handleDeclineRequest(req._id)}
+                            className="px-3 py-1.5 bg-bg-surface border border-border-soft text-text-primary text-xs font-bold rounded-lg hover:bg-bg-surface-hover transition-all"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
-                    </Link>
-                    <div className="flex items-center gap-2 shrink-0 ml-3">
-                      <button
-                        onClick={() => handleAcceptRequest(req._id)}
-                        className="px-4 py-1.5 bg-primary-600 hover:bg-primary-500 text-white text-xs font-bold rounded-lg shadow-sm transition-all"
-                      >
-                        Confirm
-                      </button>
-                      <button
-                        onClick={() => handleDeclineRequest(req._id)}
-                        className="px-3 py-1.5 bg-bg-surface border border-border-soft text-text-primary text-xs font-bold rounded-lg hover:bg-bg-surface-hover transition-all"
-                      >
-                        Delete
-                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Categorized Sections: Today, This Week, Earlier */}
+              {['Today', 'This Week', 'Earlier'].map((sectionTitle) => {
+                let sectionItems = [];
+                if (sectionTitle === 'Today') sectionItems = categorized.today;
+                if (sectionTitle === 'This Week') sectionItems = categorized.thisWeek;
+                if (sectionTitle === 'Earlier') sectionItems = categorized.earlier;
+
+                if (sectionItems.length === 0) return null;
+
+                return (
+                  <div key={sectionTitle} className="py-2">
+                    <h2 className="text-xs font-bold text-text-secondary uppercase tracking-wider px-4 lg:px-6 py-2">
+                      {sectionTitle}
+                    </h2>
+                    <div className="divide-y divide-border-soft/20">
+                      {sectionItems.map((group, idx) => (
+                        <NotificationItem
+                          key={group._id}
+                          group={group}
+                          isLast={sectionTitle === 'Earlier' && idx === sectionItems.length - 1}
+                          lastNotificationRef={lastNotificationRef}
+                          handleNotificationClick={handleNotificationClick}
+                          handleMarkOneRead={handleMarkOneRead}
+                          handleDelete={handleDelete}
+                        />
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
+                );
+              })}
 
-          {/* Categorized Sections: Today, This Week, Earlier */}
-          {['Today', 'This Week', 'Earlier'].map((sectionTitle) => {
-            let sectionItems = [];
-            if (sectionTitle === 'Today') sectionItems = categorized.today;
-            if (sectionTitle === 'This Week') sectionItems = categorized.thisWeek;
-            if (sectionTitle === 'Earlier') sectionItems = categorized.earlier;
-
-            if (sectionItems.length === 0) return null;
-
-            return (
-              <div key={sectionTitle} className="py-2">
-                <h2 className="text-xs font-bold text-text-secondary uppercase tracking-wider px-4 py-2">
-                  {sectionTitle}
-                </h2>
-                <div className="divide-y divide-border-soft/20">
-                  {sectionItems.map((group, idx) => (
-                    <NotificationItem
-                      key={group._id}
-                      group={group}
-                      isLast={sectionTitle === 'Earlier' && idx === sectionItems.length - 1}
-                      lastNotificationRef={lastNotificationRef}
-                      handleNotificationClick={handleNotificationClick}
-                      handleMarkOneRead={handleMarkOneRead}
-                      handleDelete={handleDelete}
-                    />
-                  ))}
+              {fetchingMore && (
+                <div className="py-4 flex justify-center">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary-500" />
                 </div>
-              </div>
-            );
-          })}
-
-          {fetchingMore && (
-            <div className="py-4 flex justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-primary-500" />
+              )}
             </div>
           )}
         </div>
-      )}
+
+        {/* Right sidebar — desktop only */}
+        <div className="hidden lg:flex flex-col gap-4">
+          <ProfileSummaryCard />
+          <ActivityInsightsCard />
+          <NotificationSettingsCard />
+        </div>
+      </div>
     </div>
   );
 };

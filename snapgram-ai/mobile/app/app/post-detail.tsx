@@ -842,7 +842,7 @@ export default function PostDetailScreen() {
       >
         <ActivityIndicator
           size="large"
-          color="#a855f7"
+          color="#ee7565"
         />
       </View>
     );
@@ -928,7 +928,7 @@ export default function PostDetailScreen() {
                 >
                   <Sparkles
                     size={19}
-                    color="#a855f7"
+                    color="#ee7565"
                   />
 
                   <Text
@@ -1041,7 +1041,7 @@ export default function PostDetailScreen() {
             >
               <ActivityIndicator
                 size="small"
-                color="#a855f7"
+                color="#ee7565"
               />
             </View>
           ) : !hasMore &&
@@ -1463,7 +1463,7 @@ function PostCard({
               {user?.isVerified ? (
                 <BadgeCheck
                   size={15}
-                  color="#3b82f6"
+                  color="#ff8878"
                   fill="#dbeafe"
                 />
               ) : null}
@@ -1477,7 +1477,7 @@ function PostCard({
               >
                 <MapPin
                   size={12}
-                  color="#a855f7"
+                  color="#ee7565"
                 />
 
                 <Text
@@ -1823,12 +1823,12 @@ function PostCard({
             size={25}
             color={
               saved
-                ? "#a855f7"
+                ? "#ee7565"
                 : "#0f172a"
             }
             fill={
               saved
-                ? "#a855f7"
+                ? "#ee7565"
                 : "transparent"
             }
           />
@@ -2182,7 +2182,7 @@ function EditPostModal({
           >
             <Edit3
               size={19}
-              color="#a855f7"
+              color="#ee7565"
             />
 
             <Text
@@ -2595,7 +2595,7 @@ const styles =
       lineHeight: 24,
       fontWeight:
         "900",
-      color: "#a855f7",
+      color: "#ee7565",
     },
 
     moreHeader: {
@@ -2658,7 +2658,7 @@ const styles =
 
     mainPostCard: {
       borderColor:
-        "rgba(168,85,247,0.38)",
+        "rgba(238, 117, 101,0.38)",
       borderWidth: 1.5,
     },
 
@@ -2693,7 +2693,7 @@ const styles =
       borderRadius: 20,
       borderWidth: 1.5,
       borderColor:
-        "#c084fc",
+        "#ffaea3",
     },
 
     authorText: {
@@ -3066,7 +3066,7 @@ const styles =
       fontSize: 12,
       fontWeight:
         "800",
-      color: "#a855f7",
+      color: "#ee7565",
     },
 
     emojiPicker: {
@@ -3306,12 +3306,12 @@ const styles =
 
     nativeShareButton: {
       backgroundColor:
-        "#7c3aed",
+        "#ca4840",
     },
 
     chatShareButton: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     shareButtonText: {

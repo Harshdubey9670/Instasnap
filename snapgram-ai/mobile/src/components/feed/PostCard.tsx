@@ -496,8 +496,8 @@ export const PostCard = ({
       style={[
         styles.card,
         {
-          backgroundColor: isDark ? "#0a0510" : "#ffffff",
-          borderBottomColor: isDark ? "#1a0f26" : "rgba(226,232,240,0.60)",
+          backgroundColor: isDark ? "#620d0b" : "#FFFFFF",
+          borderBottomColor: isDark ? "#1a0f26" : "rgba(0, 0, 0, 0.06)",
         },
       ]}
     >

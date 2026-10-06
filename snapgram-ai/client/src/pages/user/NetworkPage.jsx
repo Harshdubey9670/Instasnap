@@ -163,7 +163,7 @@ export default function NetworkPage() {
                   <Avatar src={usr.profilePicture} className="w-12 h-12 border border-primary-500" />
                   <div>
                     <h4 className="font-bold text-sm text-text-primary">@{usr.username}</h4>
-                    <p className="text-xs text-text-secondary">{usr.fullName || 'InstaSnap User'}</p>
+                    <p className="text-xs text-text-secondary">{usr.fullName || 'NUVYELO User'}</p>
                   </div>
                 </Link>
                 <button 

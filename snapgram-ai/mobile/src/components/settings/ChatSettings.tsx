@@ -205,10 +205,10 @@ const SettingsCard = ({
       styles.card,
       {
         backgroundColor: dark
-          ? "#130a1c"
+          ? "#4a0f0d"
           : "#ffffff",
         borderColor: dark
-          ? "#2d1b3b"
+          ? "#6e1815"
           : "#e2e8f0",
       },
     ]}
@@ -221,7 +221,7 @@ const SettingsCard = ({
             ? "#f8fafc"
             : "#0f172a",
           borderBottomColor: dark
-            ? "#2d1b3b"
+            ? "#6e1815"
             : "#e2e8f0",
         },
       ]}

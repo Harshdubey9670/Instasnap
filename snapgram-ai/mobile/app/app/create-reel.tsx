@@ -718,7 +718,7 @@ export default function CreateReelScreen() {
           >
             <Film
               size={23}
-              color="#a855f7"
+              color="#ee7565"
             />
 
             <Text
@@ -774,7 +774,7 @@ export default function CreateReelScreen() {
             >
               <UploadCloud
                 size={42}
-                color="#a855f7"
+                color="#ee7565"
               />
             </View>
 
@@ -853,7 +853,7 @@ export default function CreateReelScreen() {
                 >
                   <Video
                     size={52}
-                    color="#a855f7"
+                    color="#ee7565"
                   />
 
                   <Text
@@ -950,7 +950,7 @@ export default function CreateReelScreen() {
                   >
                     <Music2
                       size={18}
-                      color="#a855f7"
+                      color="#ee7565"
                     />
 
                     <Text
@@ -994,7 +994,7 @@ export default function CreateReelScreen() {
                     >
                       <Music2
                         size={17}
-                        color="#a855f7"
+                        color="#ee7565"
                       />
                     </View>
 
@@ -1220,7 +1220,7 @@ export default function CreateReelScreen() {
                   >
                     <Sparkles
                       size={18}
-                      color="#3b82f6"
+                      color="#ff8878"
                     />
 
                     <Text
@@ -1470,7 +1470,7 @@ export default function CreateReelScreen() {
                       color={
                         publishStatus ===
                         "published"
-                          ? "#a855f7"
+                          ? "#ee7565"
                           : "#64748b"
                       }
                     />
@@ -1505,7 +1505,7 @@ export default function CreateReelScreen() {
                       color={
                         publishStatus ===
                         "draft"
-                          ? "#a855f7"
+                          ? "#ee7565"
                           : "#64748b"
                       }
                     />
@@ -1540,7 +1540,7 @@ export default function CreateReelScreen() {
                       color={
                         publishStatus ===
                         "scheduled"
-                          ? "#a855f7"
+                          ? "#ee7565"
                           : "#64748b"
                       }
                     />
@@ -1747,7 +1747,7 @@ export default function CreateReelScreen() {
               >
                 <Music2
                   size={19}
-                  color="#a855f7"
+                  color="#ee7565"
                 />
 
                 <Text
@@ -1832,7 +1832,7 @@ export default function CreateReelScreen() {
                       >
                         <Music2
                           size={16}
-                          color="#a855f7"
+                          color="#ee7565"
                         />
                       </View>
 
@@ -1894,7 +1894,7 @@ const styles =
     screen: {
       flex: 1,
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
     },
 
     scroll: {
@@ -1917,7 +1917,7 @@ const styles =
         "space-between",
       borderBottomWidth: 1,
       borderBottomColor:
-        "#2d1b3b",
+        "#6e1815",
       marginBottom: 16,
     },
 
@@ -1958,7 +1958,7 @@ const styles =
 
     headerTitle: {
       color:
-        "#a855f7",
+        "#ee7565",
       fontSize: 16,
       fontWeight:
         "900",
@@ -1970,7 +1970,7 @@ const styles =
       paddingVertical: 8,
       borderRadius: 10,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       alignItems:
         "center",
     },
@@ -1999,9 +1999,9 @@ const styles =
       borderStyle:
         "dashed",
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
     },
 
     uploadIcon: {
@@ -2013,7 +2013,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "rgba(168,85,247,0.12)",
+        "rgba(238, 117, 101,0.12)",
       marginBottom: 18,
     },
 
@@ -2050,7 +2050,7 @@ const styles =
       paddingHorizontal: 22,
       borderRadius: 15,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     chooseButtonText: {
@@ -2117,15 +2117,15 @@ const styles =
       paddingVertical: 8,
       borderRadius: 999,
       backgroundColor:
-        "rgba(168,85,247,0.18)",
+        "rgba(238, 117, 101,0.18)",
       borderWidth: 1,
       borderColor:
-        "rgba(168,85,247,0.35)",
+        "rgba(238, 117, 101,0.35)",
     },
 
     playButtonText: {
       color:
-        "#c084fc",
+        "#ffaea3",
       fontSize: 10,
       fontWeight:
         "800",
@@ -2178,10 +2178,10 @@ const styles =
       padding: 15,
       borderRadius: 18,
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     controlHeader: {
@@ -2212,7 +2212,7 @@ const styles =
 
     actionLink: {
       color:
-        "#a855f7",
+        "#ee7565",
       fontSize: 10,
       fontWeight:
         "800",
@@ -2223,7 +2223,7 @@ const styles =
       padding: 10,
       borderRadius: 12,
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
       flexDirection:
         "row",
       alignItems:
@@ -2240,7 +2240,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "rgba(168,85,247,0.12)",
+        "rgba(238, 117, 101,0.12)",
     },
 
     trackCopy: {
@@ -2287,12 +2287,12 @@ const styles =
         "center",
       borderRadius: 10,
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
     },
 
     speedOptionActive: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     speedOptionText: {
@@ -2318,7 +2318,7 @@ const styles =
       paddingVertical: 8,
       borderRadius: 10,
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
     },
 
     filterButtonActive: {
@@ -2384,7 +2384,7 @@ const styles =
       paddingVertical: 8,
       borderRadius: 10,
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
     },
 
     voiceButtonActive: {
@@ -2416,10 +2416,10 @@ const styles =
       padding: 17,
       borderRadius: 22,
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     detailsTitle: {
@@ -2457,10 +2457,10 @@ const styles =
       paddingVertical: 12,
       borderRadius: 14,
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
       color:
         "#f8fafc",
       fontSize: 12,
@@ -2477,10 +2477,10 @@ const styles =
       paddingHorizontal: 12,
       borderRadius: 13,
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     collabInput: {
@@ -2507,18 +2507,18 @@ const styles =
       gap: 7,
       borderRadius: 13,
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
       paddingHorizontal: 4,
     },
 
     statusOptionActive: {
       borderColor:
-        "#a855f7",
+        "#ee7565",
       backgroundColor:
-        "rgba(168,85,247,0.10)",
+        "rgba(238, 117, 101,0.10)",
     },
 
     statusText: {
@@ -2533,7 +2533,7 @@ const styles =
 
     statusTextActive: {
       color:
-        "#a855f7",
+        "#ee7565",
     },
 
     dateButton: {
@@ -2546,10 +2546,10 @@ const styles =
       paddingHorizontal: 12,
       borderRadius: 13,
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     dateText: {
@@ -2576,10 +2576,10 @@ const styles =
       marginBottom: 17,
       borderRadius: 15,
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     drmCopy: {
@@ -2623,7 +2623,7 @@ const styles =
 
     switchActive: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     switchKnob: {
@@ -2650,7 +2650,7 @@ const styles =
       gap: 8,
       borderRadius: 15,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     submitButtonDisabled: {
@@ -2679,10 +2679,10 @@ const styles =
       borderTopLeftRadius: 24,
       borderTopRightRadius: 24,
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     modalHeader: {
@@ -2713,10 +2713,10 @@ const styles =
       paddingHorizontal: 10,
       borderRadius: 13,
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
       flexDirection:
         "row",
       alignItems:
@@ -2726,7 +2726,7 @@ const styles =
 
     trackDuration: {
       color:
-        "#a855f7",
+        "#ee7565",
       fontSize: 9,
       fontWeight:
         "800",

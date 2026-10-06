@@ -195,19 +195,19 @@ const SettingsPage = () => {
   const [showList, setShowList] = useState(true);
 
   // ── Dynamic tokens ──────────────────────────────────────────────────────────
-  const bgBase      = isDark ? "#0a0510" : "#f8fafc";
+  const bgBase      = isDark ? "#620d0b" : "#f8fafc";
   const bgCard      = isDark ? "#18122b" : "#ffffff";
-  const bgCardBorder= isDark ? "#2d1f4a" : "#e2e8f0";
+  const bgCardBorder= isDark ? "#6e1815" : "#e2e8f0";
   const bgHeader    = isDark ? "rgba(10,5,16,0.98)" : "rgba(248,250,252,0.98)";
   const textPrimary = isDark ? "#f8fafc" : "#0f172a";
   const textSecond  = isDark ? "#94a3b8" : "#64748b";
   const textMuted   = isDark ? "#64748b" : "#94a3b8";
   const iconBg      = isDark ? "#1e1235" : "#f1f5f9";
   const searchBg    = isDark ? "#1e1235" : "#ffffff";
-  const searchBorder= isDark ? "#2d1f4a" : "#e2e8f0";
-  const divider     = isDark ? "#2d1f4a" : "#e2e8f0";
-  const activeRowBg = isDark ? "rgba(168,85,247,0.15)" : "rgba(168,85,247,0.08)";
-  const activeRowBorder = isDark ? "rgba(168,85,247,0.35)" : "rgba(168,85,247,0.22)";
+  const searchBorder= isDark ? "#6e1815" : "#e2e8f0";
+  const divider     = isDark ? "#6e1815" : "#e2e8f0";
+  const activeRowBg = isDark ? "rgba(238, 117, 101,0.15)" : "rgba(238, 117, 101,0.08)";
+  const activeRowBorder = isDark ? "rgba(238, 117, 101,0.35)" : "rgba(238, 117, 101,0.22)";
   const detailHeaderBg = isDark ? "#18122b" : "#ffffff";
 
   const filteredCategories = useMemo(() => {
@@ -360,8 +360,8 @@ const SettingsPage = () => {
                           style={[
                             styles.categoryIconWrapper,
                             {
-                              backgroundColor: isActive ? "#a855f7" : iconBg,
-                              shadowColor: isActive ? "#a855f7" : "transparent",
+                              backgroundColor: isActive ? "#ee7565" : iconBg,
+                              shadowColor: isActive ? "#ee7565" : "transparent",
                             },
                           ]}
                         >
@@ -376,7 +376,7 @@ const SettingsPage = () => {
                           <Text
                             style={[
                               styles.categoryLabel,
-                              { color: isActive ? "#a855f7" : textPrimary },
+                              { color: isActive ? "#ee7565" : textPrimary },
                             ]}
                           >
                             {category.label}
@@ -391,7 +391,7 @@ const SettingsPage = () => {
 
                         <ChevronRight
                           size={20}
-                          color={isActive ? "#a855f7" : textMuted}
+                          color={isActive ? "#ee7565" : textMuted}
                         />
                       </Pressable>
                     );

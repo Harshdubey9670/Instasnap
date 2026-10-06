@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const aiController = require('../controllers/aiController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, requireVerified } = require('../middleware/authMiddleware');
 const rateLimit = require('express-rate-limit');
 
 const aiLimiter = rateLimit({
@@ -14,6 +14,7 @@ const aiLimiter = rateLimit({
 });
 
 router.use(protect);
+router.use(requireVerified);
 
 router.post('/assistant', aiLimiter, aiController.chatAssistant);
 router.post('/generate-image', aiLimiter, aiController.generateImage);

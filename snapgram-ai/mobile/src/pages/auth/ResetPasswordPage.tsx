@@ -48,17 +48,17 @@ const ResetPasswordPage = () => {
   const inputRefs = useRef<(TextInput | null)[]>([]);
 
   const colors = {
-    bg: dark ? "#0d0a14" : "#f8f5ff",
+    bg: dark ? "#3c0a09" : "#fff5f4",
     card: dark ? "rgba(30,17,44,0.85)" : "rgba(255,255,255,0.85)",
     cardBorder: dark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.7)",
     text: dark ? "#f8fafc" : "#0f172a",
     textSecondary: dark ? "#94a3b8" : "#64748b",
-    primary: "#a855f7",
-    secondary: "#ec4899",
-    otpBg: dark ? "#1e112c" : "#f1f5f9",
-    otpBorder: dark ? "#2d1b3b" : "#e2e8f0",
+    primary: "#ee7565",
+    secondary: "#f43f5e",
+    otpBg: dark ? "#5c1210" : "#f1f5f9",
+    otpBorder: dark ? "#6e1815" : "#e2e8f0",
     divider: dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)",
-    surface: dark ? "#1e112c" : "#f1f5f9",
+    surface: dark ? "#5c1210" : "#f1f5f9",
   };
 
   const strength = calculateStrength(formData.password);
@@ -125,12 +125,12 @@ const ResetPasswordPage = () => {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.bg }]}>
-      <View style={[styles.blob, { backgroundColor: "rgba(236,72,153,0.15)" }]} pointerEvents="none" />
+      <View style={[styles.blob, { backgroundColor: "rgba(244, 63, 94,0.15)" }]} pointerEvents="none" />
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           {/* Header */}
           <View style={styles.header}>
-            <View style={[styles.iconBox, { borderColor: "rgba(236,72,153,0.3)", backgroundColor: "rgba(236,72,153,0.1)" }]}>
+            <View style={[styles.iconBox, { borderColor: "rgba(244, 63, 94,0.3)", backgroundColor: "rgba(244, 63, 94,0.1)" }]}>
               <KeyRound size={40} color={colors.secondary} />
             </View>
             <Text style={[styles.title, { color: colors.text }]}>Create New Password</Text>
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   iconBox: {
     width: 80, height: 80, borderRadius: 24, borderWidth: 1,
     alignItems: "center", justifyContent: "center", marginBottom: 16,
-    shadowColor: "#ec4899", shadowOpacity: 0.3, shadowRadius: 16, shadowOffset: { width: 0, height: 4 }, elevation: 5,
+    shadowColor: "#f43f5e", shadowOpacity: 0.3, shadowRadius: 16, shadowOffset: { width: 0, height: 4 }, elevation: 5,
   },
   title: { fontSize: 26, fontWeight: "700", letterSpacing: -0.5 },
   subtitle: { fontSize: 13, marginTop: 8, textAlign: "center", lineHeight: 21, paddingHorizontal: 10 },

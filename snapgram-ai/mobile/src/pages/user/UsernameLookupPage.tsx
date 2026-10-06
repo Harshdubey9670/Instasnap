@@ -21,10 +21,10 @@ const UsernameLookupPage = () => {
   const dark = effectiveTheme === "dark";
 
   const colors = {
-    bg: dark ? "#0d0a14" : "#f8f5ff",
+    bg: dark ? "#3c0a09" : "#fff5f4",
     text: dark ? "#f8fafc" : "#0f172a",
     textSecondary: dark ? "#94a3b8" : "#64748b",
-    primary: "#a855f7",
+    primary: "#ee7565",
   };
 
   useEffect(() => {

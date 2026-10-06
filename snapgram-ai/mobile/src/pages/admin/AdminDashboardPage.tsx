@@ -191,7 +191,7 @@ export default function AdminDashboardPage() {
             </View>
             <View style={styles.metricCard}>
               <Text style={styles.metricLabel}>TOTAL FEED POSTS</Text>
-              <Text style={[styles.metricValue, { color: "#a855f7" }]}>{metrics.totalPosts || 0}</Text>
+              <Text style={[styles.metricValue, { color: "#ee7565" }]}>{metrics.totalPosts || 0}</Text>
             </View>
             <View style={styles.metricCard}>
               <Text style={styles.metricLabel}>PENDING REPORTS</Text>
@@ -233,7 +233,7 @@ export default function AdminDashboardPage() {
                   onPress={() => handleToggleVerification(u)}
                   style={[styles.smallBtn, u.isVerified && { backgroundColor: "rgba(59, 130, 246, 0.2)" }]}
                 >
-                  <BadgeCheck size={14} color={u.isVerified ? "#3b82f6" : colors.textSecondary} />
+                  <BadgeCheck size={14} color={u.isVerified ? "#ff8878" : colors.textSecondary} />
                 </Pressable>
                 <Pressable
                   onPress={() => handleToggleBan(u)}
@@ -430,7 +430,7 @@ const createStyles = (colors: ReturnType<typeof getColors>, isDark: boolean) =>
     formCard: { backgroundColor: colors.bgSurface, borderRadius: 16, padding: 16 },
     formTitle: { color: colors.textPrimary, fontSize: 15, fontWeight: "700", marginBottom: 14 },
     formInput: { backgroundColor: colors.bgBase, borderRadius: 10, padding: 12, color: colors.textPrimary, fontSize: 13, marginBottom: 10, borderWidth: 1, borderColor: colors.borderSoft },
-    broadcastSubmitBtn: { backgroundColor: "#7c3aed", borderRadius: 10, paddingVertical: 12, alignItems: "center" },
+    broadcastSubmitBtn: { backgroundColor: "#ca4840", borderRadius: 10, paddingVertical: 12, alignItems: "center" },
     broadcastSubmitText: { color: "#fff", fontSize: 13, fontWeight: "700" },
     flagRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: colors.borderSoft },
     flagKey: { color: colors.textPrimary, fontSize: 13, fontWeight: "600" },

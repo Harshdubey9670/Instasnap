@@ -126,7 +126,7 @@ export default function ForgotPasswordScreen() {
                 >
                     <KeyRound
                         size={40}
-                        color="#a855f7"
+                        color="#ee7565"
                     />
                 </View>
 
@@ -242,7 +242,7 @@ const styles =
         screen: {
             flex: 1,
             backgroundColor:
-                "#f8fafc",
+                "#851613",
         },
 
         content: {
@@ -272,10 +272,10 @@ const styles =
             justifyContent:
                 "center",
             backgroundColor:
-                "rgba(168,85,247,0.14)",
+                "rgba(238, 117, 101,0.14)",
             borderWidth: 1,
             borderColor:
-                "rgba(168,85,247,0.30)",
+                "rgba(238, 117, 101,0.30)",
             marginBottom: 24,
         },
 
@@ -283,7 +283,7 @@ const styles =
             fontSize: 30,
             lineHeight: 38,
             fontWeight: "700",
-            color: "#a855f7",
+            color: "#ee7565",
             textAlign:
                 "center",
         },
@@ -342,6 +342,6 @@ const styles =
         linkText: {
             fontSize: 14,
             fontWeight: "600",
-            color: "#a855f7",
+            color: "#ee7565",
         },
     });

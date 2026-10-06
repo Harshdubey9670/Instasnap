@@ -451,7 +451,7 @@ export const AiAssistantDrawer =
               >
                 <Bot
                   size={16}
-                  color="#a855f7"
+                  color="#ee7565"
                 />
               </View>
             ) : null}
@@ -642,7 +642,7 @@ export const AiAssistantDrawer =
           accessibilityLabel="AI Copilot Assistant"
         >
           <LinearGradient
-            colors={["#a855f7", "#ec4899"]}
+            colors={["#ee7565", "#f43f5e"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.floatingGradient}
@@ -776,7 +776,7 @@ export const AiAssistantDrawer =
                       >
                         <RefreshCw
                           size={14}
-                          color="#a855f7"
+                          color="#ee7565"
                         />
 
                         <Text
@@ -875,7 +875,7 @@ const styles =
       elevation: 12,
 
       shadowColor:
-        "#ec4899",
+        "#f43f5e",
       shadowOffset: {
         width: 0,
         height: 4,
@@ -930,11 +930,11 @@ const styles =
       borderTopRightRadius: 28,
 
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     header: {
@@ -951,7 +951,7 @@ const styles =
         15,
 
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     headerLeft: {
@@ -985,7 +985,7 @@ const styles =
     messages: {
       flex: 1,
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
     },
 
     messagesContent: {
@@ -1015,7 +1015,7 @@ const styles =
       borderRadius: 14,
 
       backgroundColor:
-        "rgba(168,85,247,0.18)",
+        "rgba(238, 117, 101,0.18)",
 
       marginTop: 3,
     },
@@ -1032,16 +1032,16 @@ const styles =
 
     userBubble: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderTopRightRadius: 4,
     },
 
     botBubble: {
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
       borderTopLeftRadius: 4,
     },
 
@@ -1073,11 +1073,11 @@ const styles =
       borderRadius: 17,
 
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     generatedImage: {
@@ -1133,7 +1133,7 @@ const styles =
       flex: 1,
       minWidth: "46%",
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     actionSecondary: {
@@ -1141,11 +1141,11 @@ const styles =
       minWidth: "46%",
 
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     saveButton: {
@@ -1208,11 +1208,11 @@ const styles =
           : 9,
 
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
 
       borderTopWidth: 1,
       borderTopColor:
-        "#2d1b3b",
+        "#6e1815",
     },
 
     input: {
@@ -1225,11 +1225,11 @@ const styles =
       borderRadius: 12,
 
       backgroundColor:
-        "#0a0510",
+        "#620d0b",
 
       borderWidth: 1,
       borderColor:
-        "#2d1b3b",
+        "#6e1815",
 
       color:
         "#f8fafc",
@@ -1249,7 +1249,7 @@ const styles =
       borderRadius: 12,
 
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     sendButtonDisabled: {

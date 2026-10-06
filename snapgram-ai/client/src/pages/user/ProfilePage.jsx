@@ -2,51 +2,61 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Heart, 
-  MessageCircle, 
-  Grid, 
-  Bookmark, 
-  PlaySquare, 
-  Settings, 
-  Link as LinkIcon, 
-  Lock, 
-  Archive, 
-  Pin, 
+import {
+  Heart,
+  MessageCircle,
+  Grid,
+  Bookmark,
+  PlaySquare,
+  Settings,
+  Link as LinkIcon,
+  Lock,
+  Archive,
+  Pin,
   MoreHorizontal,
   Tag,
   Music2,
-  Send,
   ChevronDown,
+  BadgeCheck,
+  MapPin,
+  Briefcase,
 } from 'lucide-react';
 import api from '../../services/api';
 import { useToast } from '../../components/ui/Toast';
-import { Avatar } from '../../components/ui/Avatar';
 import { EditProfileModal } from '../../components/profile/EditProfileModal';
 import { FollowButton } from '../../components/profile/FollowButton';
 import { UserOptionsModal } from '../../components/profile/UserOptionsModal';
 import { StoryHighlightsRow } from '../../components/profile/StoryHighlightsRow';
 import { AccountSwitcherModal } from '../../components/profile/AccountSwitcherModal';
+import { ProfileAboutCard } from '../../components/profile/ProfileAboutCard';
+import { InterestsCard } from '../../components/profile/InterestsCard';
+import { RecentActivityCard } from '../../components/profile/RecentActivityCard';
+import { StoryViewer } from '../../components/feed/StoryViewer';
 import { trackEvent } from '../../utils/analytics';
 import { cn } from '../../utils/cn';
 
 const ProfilePage = () => {
   const { id } = useParams();
   const { user: authUser } = useSelector((state) => state.auth);
-  
+
   const targetUserId = id || authUser?._id;
-  
+
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingPosts, setLoadingPosts] = useState(false);
-  const [activeTab, setActiveTab] = useState('posts'); 
+  const [activeTab, setActiveTab] = useState('posts');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
   const [isAccountSwitcherOpen, setIsAccountSwitcherOpen] = useState(false);
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [isNavigatingToChat, setIsNavigatingToChat] = useState(false);
+
+  // Story ring — real "has an active story" state, reusing the same feed
+  // endpoint and StoryViewer the rest of the app uses (not a fake decoration).
+  const [activeStories, setActiveStories] = useState([]);
+  const [viewingStoryIndex, setViewingStoryIndex] = useState(null);
 
   const handleChat = async () => {
     if (!profile) return;
@@ -118,10 +128,18 @@ const ProfilePage = () => {
     const handlePostCreated = () => {
       fetchPosts();
     };
-    
+
     window.addEventListener('postCreated', handlePostCreated);
     return () => window.removeEventListener('postCreated', handlePostCreated);
   }, [targetUserId, authUser, activeTab, showToast]);
+
+  // Fetch the real active-story feed once to know whether to show a gradient
+  // "story ring" around the avatar (and to let clicking it open the story).
+  useEffect(() => {
+    api.get('/api/stories')
+      .then((res) => { if (res.data.success) setActiveStories(res.data.data || []); })
+      .catch(() => {});
+  }, []);
 
   // Live-sync follower count when any FollowButton changes state
   useEffect(() => {
@@ -159,16 +177,16 @@ const ProfilePage = () => {
   if (loading) {
     return (
       <div className="w-full max-w-4xl mx-auto pt-8 animate-pulse px-4 space-y-8">
-        <div className="flex gap-12 items-center">
-          <div className="w-36 h-36 rounded-full bg-neutral-800 shrink-0" />
+        <div className="warm-card p-6 flex gap-8 items-center">
+          <div className="w-32 h-32 rounded-full bg-bg-surface-hover shrink-0" />
           <div className="flex-1 space-y-4">
-            <div className="h-8 bg-neutral-800 rounded w-1/3" />
+            <div className="h-8 bg-bg-surface-hover rounded w-1/3" />
             <div className="flex gap-8">
-              <div className="h-4 bg-neutral-800 rounded w-16" />
-              <div className="h-4 bg-neutral-800 rounded w-16" />
-              <div className="h-4 bg-neutral-800 rounded w-16" />
+              <div className="h-4 bg-bg-surface-hover rounded w-16" />
+              <div className="h-4 bg-bg-surface-hover rounded w-16" />
+              <div className="h-4 bg-bg-surface-hover rounded w-16" />
             </div>
-            <div className="h-4 bg-neutral-800 rounded w-2/3" />
+            <div className="h-4 bg-bg-surface-hover rounded w-2/3" />
           </div>
         </div>
       </div>
@@ -176,7 +194,7 @@ const ProfilePage = () => {
   }
 
   if (!profile) {
-    return <div className="text-center mt-20 text-neutral-400">Profile not found.</div>;
+    return <div className="text-center mt-20 text-text-secondary">Profile not found.</div>;
   }
 
   const isOwner = String(profile._id) === String(authUser?._id);
@@ -185,141 +203,170 @@ const ProfilePage = () => {
   );
   const isLocked = profile.isPrivate && !isOwner && !isFollowing;
 
+  const storyGroupIndex = activeStories.findIndex(
+    g => (g.user?._id || g.user)?.toString() === profile._id?.toString()
+  );
+  const hasStory = storyGroupIndex !== -1;
+  const storySeen = hasStory && activeStories[storyGroupIndex].stories.every(
+    s => s.viewers?.some(v => (typeof v === 'string' ? v : v._id) === authUser?._id)
+  );
+
   const tabs = [
-    { id: 'posts', label: 'POSTS', icon: Grid },
-    { id: 'reels', label: 'REELS', icon: PlaySquare },
-    { id: 'tagged', label: 'TAGGED', icon: Tag },
+    { id: 'posts', label: 'Posts', icon: Grid },
+    { id: 'reels', label: 'Reels', icon: PlaySquare },
+    { id: 'tagged', label: 'Tagged', icon: Tag },
   ];
 
   if (isOwner) {
-    tabs.push({ id: 'saved', label: 'SAVED', icon: Bookmark });
-    tabs.push({ id: 'archive', label: 'ARCHIVE', icon: Archive });
+    tabs.push({ id: 'saved', label: 'Saved', icon: Bookmark });
+    tabs.push({ id: 'archive', label: 'Archive', icon: Archive });
   }
 
   const displayedPosts = posts.filter(post => {
     if (activeTab === 'reels') return post.media?.[0]?.type === 'video';
-    return true; 
+    return true;
   });
+
+  const infoLine = [profile.location, profile.category].filter(Boolean);
 
   // ── Shared sub-sections ────────────────────────────────────────────────────
 
-  const AvatarSection = ({ size = 'default' }) => (
-    <div
-      className={cn(
-        "relative group cursor-pointer",
-        size === 'default' ? "mb-4" : "mb-3"
-      )}
-      onClick={() => isOwner && setIsEditModalOpen(true)}
-    >
-      <div className={cn(
-        "rounded-full border-2 border-neutral-300 dark:border-neutral-700 overflow-hidden bg-neutral-900 shadow-xl flex items-center justify-center",
-        size === 'default' ? "w-32 h-32 md:w-36 md:h-36" : "w-28 h-28"
-      )}>
-        {profile.avatar || profile.profilePicture ? (
-          <img
-            src={profile.avatar || profile.profilePicture}
-            alt={profile.username}
-            className="w-full h-full object-cover rounded-full"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-primary-100 text-primary-700 dark:bg-primary-900/50 dark:text-primary-300 font-bold text-3xl">
-            {profile.username?.charAt(0).toUpperCase() || 'U'}
+  const AvatarSection = ({ size = 'default' }) => {
+    const ringClass = hasStory
+      ? (storySeen ? 'bg-black/15 dark:bg-border-strong p-[2px]' : 'bg-gradient-to-tr from-[#FF6B35] via-[#FF8C5A] to-[#FFB347] p-[3px]')
+      : 'border-2 border-border-soft p-0';
+
+    return (
+      <div className="relative shrink-0">
+        <button
+          type="button"
+          onClick={() => (hasStory ? setViewingStoryIndex(storyGroupIndex) : isOwner && setIsEditModalOpen(true))}
+          className={cn(
+            'rounded-full overflow-hidden bg-bg-surface-hover shadow-xl flex items-center justify-center transition-transform hover:scale-[1.02]',
+            size === 'default' ? 'w-32 h-32 md:w-36 md:h-36' : 'w-28 h-28',
+            ringClass
+          )}
+          aria-label={hasStory ? "View story" : isOwner ? "Edit profile photo" : "Profile photo"}
+        >
+          <div className="w-full h-full rounded-full overflow-hidden border-2 border-bg-base bg-bg-surface-hover flex items-center justify-center">
+            {profile.avatar || profile.profilePicture ? (
+              <img
+                src={profile.avatar || profile.profilePicture}
+                alt={profile.username}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-text-secondary font-bold text-3xl">
+                {profile.username?.charAt(0).toUpperCase() || 'U'}
+              </span>
+            )}
           </div>
+        </button>
+        {isOwner && (
+          <button
+            type="button"
+            onClick={() => setIsEditModalOpen(true)}
+            className="absolute bottom-1 right-1 w-8 h-8 rounded-full bg-primary-500 text-white flex items-center justify-center border-2 border-bg-surface shadow-md hover:scale-110 transition-transform"
+            aria-label="Edit profile photo"
+          >
+            <Settings className="w-3.5 h-3.5" />
+          </button>
         )}
       </div>
-    </div>
-  );
+    );
+  };
 
-  const UsernameBadges = () => (
-    <div className="flex items-center gap-2 mb-2">
-      <h1 className="text-xl md:text-2xl font-bold text-text-primary text-center">
+  const UsernameBadges = ({ align = 'center' }) => (
+    <div className={cn('flex items-center gap-2', align === 'center' ? 'justify-center' : 'justify-start')}>
+      <h1 className="text-xl md:text-2xl font-bold text-text-primary">
         {profile.username}
       </h1>
       {profile.isVerified && (
-        <img src="/verified-badge.png" className="w-5 h-5 inline-block" alt="Verified" />
+        <BadgeCheck className="w-5 h-5 text-primary-500 fill-primary-500/20 shrink-0" />
       )}
       {profile.isPrivate && (
-        <Lock className="w-4 h-4 text-text-secondary inline-block" />
+        <Lock className="w-4 h-4 text-text-secondary shrink-0" />
       )}
     </div>
   );
 
-  const BioDetails = () => (
-    <div className="text-center w-full space-y-1 mb-4">
+  const BioDetails = ({ align = 'center' }) => (
+    <div className={cn('w-full space-y-1.5', align === 'center' ? 'text-center' : 'text-left')}>
       <h2 className="font-bold text-text-primary text-base md:text-lg">
         {profile.fullName || profile.username}
         {profile.pronouns && (
           <span className="text-text-secondary font-normal text-sm ml-2">{profile.pronouns}</span>
         )}
       </h2>
-      {profile.category && (
-        <p className="text-text-secondary text-xs font-semibold uppercase tracking-wider">
-          {profile.category}
-        </p>
-      )}
       {profile.bio && (
-        <p className="text-text-primary text-sm whitespace-pre-wrap leading-relaxed max-w-md mx-auto">
+        <p className={cn('text-text-primary text-sm whitespace-pre-wrap leading-relaxed max-w-md', align === 'center' && 'mx-auto')}>
           {profile.bio}
         </p>
       )}
-      {profile.website && (
-        <a
-          href={profile.website}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-sky-400 font-semibold hover:underline text-sm mt-1"
-        >
-          <LinkIcon className="w-3.5 h-3.5" />
-          <span>@{profile.website.replace(/^https?:\/\//, '')}</span>
-        </a>
+      {(infoLine.length > 0 || profile.website) && (
+        <div className={cn('flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-text-secondary', align === 'center' && 'justify-center')}>
+          {profile.location && (
+            <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-primary-400" /> {profile.location}</span>
+          )}
+          {profile.category && (
+            <>
+              {profile.location && <span>·</span>}
+              <span className="flex items-center gap-1"><Briefcase className="w-3 h-3 text-primary-400" /> {profile.category}</span>
+            </>
+          )}
+          {profile.website && (
+            <>
+              {infoLine.length > 0 && <span>·</span>}
+              <a
+                href={profile.website}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-primary-500 font-semibold hover:underline"
+              >
+                <LinkIcon className="w-3 h-3" />
+                <span>{profile.website.replace(/^https?:\/\//, '')}</span>
+              </a>
+            </>
+          )}
+        </div>
       )}
     </div>
   );
 
-  const StatsBar = () => (
-    <div className="flex items-center justify-around w-full py-3.5 border-y border-border-soft mb-4">
+  const StatsBar = ({ align = 'center' }) => (
+    <div className={cn('flex items-center gap-6 py-3.5', align === 'center' ? 'justify-around w-full border-y border-border-soft' : 'justify-start')}>
       <div className="text-center text-sm">
         <span className="font-bold text-text-primary mr-1.5">{posts.length}</span>
-        <span className="text-text-secondary">posts</span>
+        <span className="text-text-secondary">Posts</span>
       </div>
       <Link
         to={`/app/profile/${profile._id}/followers`}
         className="text-center text-sm hover:opacity-80 transition-opacity"
       >
         <span className="font-bold text-text-primary mr-1.5">{profile.followers?.length || 0}</span>
-        <span className="text-text-secondary">followers</span>
+        <span className="text-text-secondary">Followers</span>
       </Link>
       <Link
         to={`/app/profile/${profile._id}/following`}
         className="text-center text-sm hover:opacity-80 transition-opacity"
       >
         <span className="font-bold text-text-primary mr-1.5">{profile.following?.length || 0}</span>
-        <span className="text-text-secondary">following</span>
+        <span className="text-text-secondary">Following</span>
       </Link>
     </div>
   );
 
-  const ActionButtons = () => (
-    <div className="flex items-center gap-2.5 mb-5 flex-wrap justify-center w-full">
+  const pillBtn = "px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-full transition-colors shadow-sm";
+  const iconBtn = "p-2 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary rounded-full transition-colors shadow-sm";
+
+  const ActionButtons = ({ justify = 'center' }) => (
+    <div className={cn('flex items-center gap-2.5 flex-wrap', justify === 'center' ? 'justify-center w-full' : 'justify-start')}>
       {isOwner ? (
         <>
-          <button
-            onClick={() => setIsEditModalOpen(true)}
-            className="px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors shadow-sm"
-          >
-            Edit profile
+          <button onClick={() => setIsEditModalOpen(true)} className={pillBtn}>
+            Edit Profile
           </button>
-          <button
-            onClick={() => navigate('/app/archive')}
-            className="px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors shadow-sm"
-          >
-            View archive
-          </button>
-          <button
-            onClick={() => navigate('/app/settings')}
-            className="p-2 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary rounded-lg transition-colors shadow-sm"
-            aria-label="Settings"
-          >
+          <button onClick={() => navigate('/app/settings')} className={iconBtn} aria-label="Settings">
             <Settings className="w-4 h-4" />
           </button>
         </>
@@ -351,13 +398,13 @@ const ProfilePage = () => {
           <button
             onClick={handleChat}
             disabled={isNavigatingToChat}
-            className="px-5 py-1.5 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 shadow-sm"
+            className={cn(pillBtn, 'disabled:opacity-50')}
           >
             Message
           </button>
           <button
             onClick={() => setIsOptionsModalOpen(true)}
-            className="p-2 bg-bg-surface border border-border-soft hover:bg-bg-surface-hover text-text-primary rounded-lg transition-colors shadow-sm"
+            className={iconBtn}
             aria-label="More options"
           >
             <MoreHorizontal className="w-4 h-4" />
@@ -371,200 +418,168 @@ const ProfilePage = () => {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-4xl mx-auto pt-6 md:pt-10 pb-24 px-4 text-text-primary"
+      className="w-full max-w-[1400px] mx-auto pt-4 md:pt-6 pb-24 px-3 sm:px-4 text-text-primary"
     >
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-6 lg:items-start">
+        <div className="min-w-0">
 
-      {/* ──────────────────────────────────────────────────────────────────────
-          MOBILE LAYOUT (< md):
-          Account Header → Avatar → Username → Bio → Stats → Buttons → Highlights → Tabs
-          ────────────────────────────────────────────────────────────────────── */}
-      <div className="flex flex-col items-center w-full max-w-lg mx-auto md:hidden">
-
-        {/* Mobile Top Header (own profile only) — username + account switcher */}
-        {isOwner && (
-          <div className="flex items-center justify-between w-full mb-4 px-1">
-            {/* Username + chevron (account switcher trigger) */}
-            <button
-              onClick={() => setIsAccountSwitcherOpen(true)}
-              className="flex items-center gap-1.5 text-text-primary font-bold text-lg hover:opacity-75 transition-opacity"
-              aria-label="Switch account"
-            >
-              <span>{profile.username}</span>
-              <ChevronDown className="w-5 h-5" />
-            </button>
-
-            {/* Settings icon on top-right */}
-            <button
-              onClick={() => navigate('/app/settings')}
-              className="p-2 hover:bg-bg-surface-hover rounded-lg transition-colors"
-              aria-label="Settings"
-            >
-              <Settings className="w-5 h-5 text-text-primary" />
-            </button>
-          </div>
-        )}
-
-        {/* Music badge */}
-        {profile.music && (
-          <div className="mb-3 px-3 py-1 bg-neutral-800/90 backdrop-blur-md rounded-full border border-neutral-700 text-[11px] font-semibold text-neutral-200 flex items-center gap-1.5 shadow-md">
-            <Music2 className="w-3.5 h-3.5 text-sky-400" />
-            <span className="truncate max-w-[120px]">{profile.music.title || 'Let Me Love You'}</span>
-          </div>
-        )}
-
-        {/* 1. Avatar */}
-        <AvatarSection />
-
-        {/* 2. Username + badges (non-owner mobile — owner has it in top header) */}
-        {!isOwner && <UsernameBadges />}
-
-        {/* 3. Full Name + Bio Details */}
-        <BioDetails />
-
-        {/* 4. Stats Bar */}
-        <StatsBar />
-
-        {/* 5. Action Buttons */}
-        <ActionButtons />
-      </div>
-
-      {/* ──────────────────────────────────────────────────────────────────────
-          DESKTOP LAYOUT (≥ md): keep original Instagram desktop layout
-          Avatar left + Info right on same row
-          ────────────────────────────────────────────────────────────────────── */}
-      <div className="hidden md:flex flex-col items-center mb-6 w-full max-w-lg mx-auto">
-
-        {/* Music badge */}
-        {profile.music && (
-          <div className="mb-3 px-3 py-1 bg-neutral-800/90 backdrop-blur-md rounded-full border border-neutral-700 text-[11px] font-semibold text-neutral-200 flex items-center gap-1.5 shadow-md">
-            <Music2 className="w-3.5 h-3.5 text-sky-400" />
-            <span className="truncate max-w-[120px]">{profile.music.title || 'Let Me Love You'}</span>
-          </div>
-        )}
-
-        {/* Avatar */}
-        <AvatarSection />
-
-        {/* Username + badges */}
-        <UsernameBadges />
-
-        {/* Action buttons (desktop: before stats, as original) */}
-        <ActionButtons />
-
-        {/* Stats Bar */}
-        <StatsBar />
-
-        {/* Bio Details */}
-        <BioDetails />
-      </div>
-
-      {/* Story Highlights — shared between both layouts */}
-      <div className="mb-8 px-2">
-        <StoryHighlightsRow userId={profile._id} isOwnProfile={isOwner} />
-      </div>
-
-      {/* Profile Tabs (Instagram Top Border Active Indicator) */}
-      {!isLocked && (
-        <div className="border-t border-border-soft">
-          <div className="flex justify-center gap-12">
-            {tabs.map(tab => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
+          {/* ── Profile header card ── */}
+          <div className="warm-card p-5 sm:p-6 mb-6">
+            {/* Mobile top bar (own profile) */}
+            {isOwner && (
+              <div className="flex items-center justify-between w-full mb-4 md:hidden">
                 <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={cn(
-                    "flex items-center gap-2 py-4 text-xs font-bold tracking-widest uppercase transition-all relative border-t-2 -mt-[1px]",
-                    isActive 
-                      ? 'border-text-primary text-text-primary' 
-                      : 'border-transparent text-text-secondary hover:text-text-primary'
-                  )}
+                  onClick={() => setIsAccountSwitcherOpen(true)}
+                  className="flex items-center gap-1.5 text-text-primary font-bold text-lg hover:opacity-75 transition-opacity"
+                  aria-label="Switch account"
                 >
-                  <Icon className="w-4 h-4" />
-                  <span>{tab.label}</span>
+                  <span>{profile.username}</span>
+                  <ChevronDown className="w-5 h-5" />
                 </button>
-              );
-            })}
-          </div>
-
-          {/* Posts Grid */}
-          <div className="mt-4">
-            {loadingPosts ? (
-              <div className="grid grid-cols-3 gap-1 md:gap-4">
-                {[1, 2, 3, 4, 5, 6].map(i => (
-                  <div key={i} className="aspect-square bg-neutral-900 animate-pulse rounded" />
-                ))}
-              </div>
-            ) : displayedPosts.length > 0 ? (
-              <div className="grid grid-cols-3 gap-1 md:gap-4">
-                {displayedPosts.map(post => (
-                  <Link
-                    key={post._id}
-                    to={`/app/post/${post._id}`}
-                    state={{ source: 'profile', userId: targetUserId }}
-                    onClick={() => sessionStorage.setItem('profile_scroll_pos', window.scrollY.toString())}
-                    className="aspect-square bg-neutral-900 relative overflow-hidden group cursor-pointer block"
-                  >
-                    {post.media && post.media.length > 0 && post.media[0].type === 'image' ? (
-                      <img src={post.media[0].url} alt="Post" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                    ) : post.media && post.media.length > 0 && post.media[0].type === 'video' ? (
-                      <video src={post.media[0].url} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                    ) : (
-                      <div className="w-full h-full bg-neutral-800 flex items-center justify-center text-neutral-400">No media</div>
-                    )}
-                    
-                    {post.isPinned && (
-                      <div className="absolute top-2 right-2 text-white bg-black/50 p-1 rounded-full backdrop-blur-sm z-10">
-                        <Pin className="w-3.5 h-3.5 fill-white" />
-                      </div>
-                    )}
-                    
-                    {post.media && post.media.length > 1 && !post.isPinned && (
-                      <div className="absolute top-2 right-2 text-white bg-black/50 p-1 rounded-full backdrop-blur-sm z-10">
-                        <Grid className="w-3.5 h-3.5 fill-white" />
-                      </div>
-                    )}
-
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-6 z-20">
-                      <div className="flex items-center gap-2 text-white font-bold">
-                        <Heart className="w-5 h-5 fill-white" />
-                        <span>{post.settings?.hideLikes ? '-' : (post.likes?.length || 0)}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-white font-bold">
-                        <MessageCircle className="w-5 h-5 fill-white" />
-                        <span>{post.comments?.length || 0}</span>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className="py-20 text-center text-neutral-400">
-                <Grid className="w-12 h-12 mx-auto mb-3 opacity-40" />
-                <p className="font-semibold text-white">No posts yet</p>
+                <button
+                  onClick={() => navigate('/app/settings')}
+                  className="p-2 hover:bg-bg-surface-hover rounded-lg transition-colors"
+                  aria-label="Settings"
+                >
+                  <Settings className="w-5 h-5 text-text-primary" />
+                </button>
               </div>
             )}
-          </div>
-        </div>
-      )}
 
-      {/* Floating Messages Pill Button */}
-      <button
-        onClick={() => navigate('/app/chat')}
-        className="fixed bottom-6 right-6 z-40 bg-bg-surface hover:bg-bg-surface-hover border border-border-soft text-text-primary px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-3 transition-transform hover:scale-105"
-      >
-        <Send className="w-4 h-4 text-sky-400" />
-        <span className="font-semibold text-sm">Messages</span>
-        <div className="flex -space-x-2">
-          <div className="w-6 h-6 rounded-full border-2 border-black bg-rose-500 flex items-center justify-center text-[10px] font-bold">
-            S
+            {profile.music && (
+              <div className="mb-3 mx-auto md:mx-0 w-fit px-3 py-1 bg-bg-surface-hover border border-border-soft rounded-full text-[11px] font-semibold text-text-primary flex items-center gap-1.5">
+                <Music2 className="w-3.5 h-3.5 text-primary-500" />
+                <span className="truncate max-w-[140px]">{profile.music.title || 'Let Me Love You'}</span>
+              </div>
+            )}
+
+            {/* Mobile: stacked & centered */}
+            <div className="flex flex-col items-center md:hidden">
+              <AvatarSection />
+              {!isOwner && <div className="mt-4 mb-1"><UsernameBadges /></div>}
+              <div className="mt-3"><BioDetails /></div>
+              <div className="mt-4 w-full"><StatsBar /></div>
+              <div className="mt-4"><ActionButtons /></div>
+            </div>
+
+            {/* Desktop: avatar left, info right */}
+            <div className="hidden md:flex items-start gap-8">
+              <AvatarSection />
+              <div className="flex-1 min-w-0 pt-1">
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                  <UsernameBadges align="left" />
+                  <ActionButtons justify="start" />
+                </div>
+                <div className="mt-3"><BioDetails align="left" /></div>
+                <div className="mt-4"><StatsBar align="start" /></div>
+              </div>
+            </div>
           </div>
-          <div className="w-6 h-6 rounded-full border-2 border-black bg-purple-500 flex items-center justify-center text-[10px] font-bold">
-            A
+
+          {/* Story Highlights */}
+          <div className="mb-6">
+            <StoryHighlightsRow userId={profile._id} isOwnProfile={isOwner} />
           </div>
+
+          {/* Tabs + Content */}
+          {isLocked ? (
+            <div className="warm-card p-10 text-center">
+              <Lock className="w-10 h-10 mx-auto mb-3 text-text-secondary" />
+              <p className="font-bold text-text-primary">This account is private</p>
+              <p className="text-sm text-text-secondary mt-1">Follow @{profile.username} to see their posts and reels.</p>
+            </div>
+          ) : (
+            <div className="warm-card overflow-hidden">
+              <div className="flex justify-center gap-1.5 p-2 flex-wrap">
+                {tabs.map(tab => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={cn(
+                        'flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wide transition-all',
+                        isActive
+                          ? 'bg-primary-500 text-white shadow-soft'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-bg-surface-hover'
+                      )}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="p-1.5 sm:p-3">
+                {loadingPosts ? (
+                  <div className="grid grid-cols-3 gap-1 sm:gap-2">
+                    {[1, 2, 3, 4, 5, 6].map(i => (
+                      <div key={i} className="aspect-square bg-bg-surface-hover animate-pulse rounded-lg" />
+                    ))}
+                  </div>
+                ) : displayedPosts.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-1 sm:gap-2">
+                    {displayedPosts.map(post => (
+                      <Link
+                        key={post._id}
+                        to={`/app/post/${post._id}`}
+                        state={{ source: 'profile', userId: targetUserId }}
+                        onClick={() => sessionStorage.setItem('profile_scroll_pos', window.scrollY.toString())}
+                        className="aspect-square bg-bg-surface-hover relative overflow-hidden group cursor-pointer block rounded-lg"
+                      >
+                        {post.media && post.media.length > 0 && post.media[0].type === 'image' ? (
+                          <img src={post.media[0].url} alt="Post" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                        ) : post.media && post.media.length > 0 && post.media[0].type === 'video' ? (
+                          <video src={post.media[0].url} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-text-secondary">No media</div>
+                        )}
+
+                        {post.isPinned && (
+                          <div className="absolute top-2 right-2 text-white bg-black/50 p-1 rounded-full backdrop-blur-sm z-10">
+                            <Pin className="w-3.5 h-3.5 fill-white" />
+                          </div>
+                        )}
+
+                        {post.media && post.media.length > 1 && !post.isPinned && (
+                          <div className="absolute top-2 right-2 text-white bg-black/50 p-1 rounded-full backdrop-blur-sm z-10">
+                            <Grid className="w-3.5 h-3.5 fill-white" />
+                          </div>
+                        )}
+
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-6 z-20">
+                          <div className="flex items-center gap-2 text-white font-bold">
+                            <Heart className="w-5 h-5 fill-white" />
+                            <span>{post.settings?.hideLikes ? '-' : (post.likes?.length || 0)}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-white font-bold">
+                            <MessageCircle className="w-5 h-5 fill-white" />
+                            <span>{post.comments?.length || 0}</span>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="py-20 text-center text-text-secondary">
+                    <Grid className="w-12 h-12 mx-auto mb-3 opacity-40" />
+                    <p className="font-semibold text-text-primary">No {activeTab} yet</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
-      </button>
+
+        {/* Right sidebar — desktop only */}
+        <div className="hidden lg:flex flex-col gap-4">
+          <ProfileAboutCard profile={profile} />
+          <InterestsCard interests={profile.interests} />
+          {isOwner && <RecentActivityCard />}
+        </div>
+      </div>
 
       <EditProfileModal
         isOpen={isEditModalOpen}
@@ -572,7 +587,7 @@ const ProfilePage = () => {
         user={profile}
         onProfileUpdated={handleProfileUpdated}
       />
-      
+
       {profile && (
         <UserOptionsModal
           isOpen={isOptionsModalOpen}
@@ -582,11 +597,18 @@ const ProfilePage = () => {
         />
       )}
 
-      {/* Account Switcher Modal (own profile on mobile) */}
       <AccountSwitcherModal
         isOpen={isAccountSwitcherOpen}
         onClose={() => setIsAccountSwitcherOpen(false)}
       />
+
+      {viewingStoryIndex !== null && (
+        <StoryViewer
+          stories={activeStories}
+          initialUserIndex={viewingStoryIndex}
+          onClose={() => setViewingStoryIndex(null)}
+        />
+      )}
     </motion.div>
   );
 };

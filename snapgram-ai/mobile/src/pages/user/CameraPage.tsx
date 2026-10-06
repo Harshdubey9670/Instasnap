@@ -36,7 +36,7 @@ const AR_LENSES = [
   { id: "cyberpunk", name: "Cyberpunk", color: "#06b6d4" },
   { id: "bw", name: "B&W", color: "#64748b" },
   { id: "warm", name: "Summer", color: "#f59e0b" },
-  { id: "neon", name: "Neon", color: "#ec4899" },
+  { id: "neon", name: "Neon", color: "#f43f5e" },
 ];
 
 export default function CameraPage() {

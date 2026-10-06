@@ -392,10 +392,10 @@ const styles =
 
       borderWidth: 2,
       borderColor:
-        "rgba(168,85,247,0.50)",
+        "rgba(238, 117, 101,0.50)",
 
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
 
       shadowColor:
         "#000000",
@@ -453,7 +453,7 @@ const styles =
       height: 5,
       borderRadius: 2.5,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
   });
 

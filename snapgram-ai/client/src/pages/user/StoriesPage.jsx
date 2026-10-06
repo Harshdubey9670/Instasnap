@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import api from "../../services/api";
 import { useToast } from "../../components/ui/Toast";
+import { ImageViewerModal } from "../../components/chat/ImageViewerModal";
 
 export default function StoriesPage() {
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ export default function StoriesPage() {
   // Interactive Story Reply & Viewers Modal
   const [replyText, setReplyText] = useState("");
   const [showViewersModal, setShowViewersModal] = useState(false);
+  const [previewArchiveSrc, setPreviewArchiveSrc] = useState(null);
   const [activeTab, setActiveTab] = useState("feed"); // 'feed', 'editor', 'archive'
   
   // Module 7: Camera Editor / Lenses & Filters State
@@ -176,10 +178,10 @@ export default function StoriesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-bg-base text-text-primary p-4 md:p-8 max-w-7xl mx-auto space-y-8">
-      
+    <div className="min-h-screen text-text-primary p-4 md:p-8 max-w-7xl mx-auto space-y-8">
+
       {/* Top Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-soft pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 bg-[rgba(var(--glass-1),0.4)] backdrop-blur-xl border border-white/14 rounded-[24px] shadow-[0_12px_32px_rgba(var(--glass-shadow),0.3)]">
         <div>
           <div className="flex items-center gap-2">
             <Sparkles className="w-8 h-8 text-primary-500 bg-primary-500/10 p-1.5 rounded-xl animate-pulse" />
@@ -376,6 +378,40 @@ export default function StoriesPage() {
         </div>
       )}
 
+      {/* TAB 3: ARCHIVE — past stories, view-only */}
+      {activeTab === 'archive' && (
+        archivedStories.length === 0 ? (
+          <div className="py-20 text-center text-text-secondary">
+            <Archive className="w-10 h-10 mx-auto mb-3 opacity-40" />
+            <p className="font-semibold text-text-primary">No archived stories yet</p>
+            <p className="text-xs mt-1">Stories move here automatically after they expire.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {archivedStories.map((story) => (
+              <button
+                key={story._id}
+                onClick={() => setPreviewArchiveSrc(story.media?.[0]?.url)}
+                className="group relative aspect-[9/16] rounded-2xl overflow-hidden glass-card border border-white/10 shadow-lg text-left"
+              >
+                {story.media?.[0]?.type === 'video' ? (
+                  <video src={story.media[0].url} className="w-full h-full object-cover" muted />
+                ) : (
+                  <img src={story.media?.[0]?.url} alt="Archived story" className="w-full h-full object-cover" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                <span className="absolute bottom-2 left-2 right-2 text-[10px] font-semibold text-white/90">
+                  {new Date(story.createdAt).toLocaleDateString()}
+                </span>
+              </button>
+            ))}
+          </div>
+        )
+      )}
+
+      {/* Archived Story Preview */}
+      <ImageViewerModal src={previewArchiveSrc} onClose={() => setPreviewArchiveSrc(null)} />
+
       {/* FULL-SCREEN STORY VIEWER MODAL */}
       {activeGroupIndex !== null && storyGroups[activeGroupIndex] && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
@@ -398,10 +434,12 @@ export default function StoriesPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <button onClick={() => setShowViewersModal(true)} className="p-2 rounded-full glass text-white text-xs font-bold flex items-center gap-1">
-                    <Eye className="w-4 h-4" /> Viewers
-                  </button>
-                  <button onClick={() => setActiveGroupIndex(null)} className="p-2 rounded-full glass text-white">
+                  {storyGroups[activeGroupIndex].user?._id === authUser?._id && (
+                    <button onClick={() => setShowViewersModal(true)} className="p-2 rounded-full glass text-white text-xs font-bold flex items-center gap-1">
+                      <Eye className="w-4 h-4" /> {storyGroups[activeGroupIndex].stories[activeStoryIndex]?.viewers?.length || 0}
+                    </button>
+                  )}
+                  <button onClick={() => { setActiveGroupIndex(null); setShowViewersModal(false); }} className="p-2 rounded-full glass text-white">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
@@ -436,6 +474,38 @@ export default function StoriesPage() {
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* Story Viewers Modal (owner only) */}
+      {showViewersModal && activeGroupIndex !== null && storyGroups[activeGroupIndex] && (
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-sm" onClick={() => setShowViewersModal(false)}>
+          <div
+            className="w-full sm:max-w-sm bg-bg-base rounded-t-3xl sm:rounded-3xl max-h-[70vh] flex flex-col overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-4 border-b border-border-soft flex items-center justify-between shrink-0">
+              <h3 className="font-bold text-text-primary flex items-center gap-2">
+                <Eye className="w-4 h-4 text-primary-500" />
+                Viewers ({storyGroups[activeGroupIndex].stories[activeStoryIndex]?.viewers?.length || 0})
+              </h3>
+              <button onClick={() => setShowViewersModal(false)} className="text-text-secondary hover:text-text-primary">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-2">
+              {(storyGroups[activeGroupIndex].stories[activeStoryIndex]?.viewers || []).length === 0 ? (
+                <p className="text-center text-sm text-text-secondary py-8">No views yet.</p>
+              ) : (
+                storyGroups[activeGroupIndex].stories[activeStoryIndex].viewers.map((v) => (
+                  <div key={v._id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-bg-surface-hover transition-colors">
+                    <img src={v.profilePicture || v.avatar || "https://i.pravatar.cc/150"} alt={v.username} className="w-10 h-10 rounded-full object-cover" />
+                    <span className="text-sm font-semibold text-text-primary">@{v.username}</span>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       )}

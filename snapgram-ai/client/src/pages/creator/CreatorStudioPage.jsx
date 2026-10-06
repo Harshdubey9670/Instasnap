@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useToast } from '../../components/ui/Toast';
 import { 
   BarChart3, 
   Eye, 
@@ -33,6 +34,7 @@ import {
 } from '../../services/creatorService';
 
 export default function CreatorStudioPage() {
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview'); // overview, content, audience, manager
   const [timeframe, setTimeframe] = useState('30d');
   const [loading, setLoading] = useState(true);
@@ -103,8 +105,9 @@ export default function CreatorStudioPage() {
       await bulkContentAction({ action, ids: selectedIds, contentType: 'post' });
       setSelectedIds([]);
       fetchData();
+      toast.success(`${action === 'delete' ? 'Deleted' : action === 'archive' ? 'Archived' : 'Updated'} ${selectedIds.length} item${selectedIds.length > 1 ? 's' : ''}`);
     } catch (err) {
-      alert('Bulk action failed');
+      toast.error('Bulk action failed');
     }
   };
 
@@ -200,19 +203,19 @@ export default function CreatorStudioPage() {
                 <div className="p-5 bg-bg-surface rounded-2xl border border-border-soft shadow-sm space-y-2 hover:border-primary-500/50 transition-all">
                   <div className="flex items-center justify-between text-text-secondary">
                     <span className="text-xs font-semibold uppercase tracking-wider">Impressions</span>
-                    <Eye className="w-5 h-5 text-blue-500" />
+                    <Eye className="w-5 h-5 text-primary-400" />
                   </div>
                   <div className="text-3xl font-extrabold">{overview.impressions.toLocaleString()}</div>
-                  <p className="text-xs text-blue-500 font-medium">+18.6% vs previous {timeframe}</p>
+                  <p className="text-xs text-primary-400 font-medium">+18.6% vs previous {timeframe}</p>
                 </div>
 
                 <div className="p-5 bg-bg-surface rounded-2xl border border-border-soft shadow-sm space-y-2 hover:border-primary-500/50 transition-all">
                   <div className="flex items-center justify-between text-text-secondary">
                     <span className="text-xs font-semibold uppercase tracking-wider">Watch Time</span>
-                    <Clock className="w-5 h-5 text-purple-500" />
+                    <Clock className="w-5 h-5 text-secondary-400" />
                   </div>
                   <div className="text-3xl font-extrabold">{overview.watchTimeHours} hrs</div>
-                  <p className="text-xs text-purple-500 font-medium">+9.4% video retention</p>
+                  <p className="text-xs text-secondary-400 font-medium">+9.4% video retention</p>
                 </div>
 
                 <div className="p-5 bg-bg-surface rounded-2xl border border-border-soft shadow-sm space-y-2 hover:border-primary-500/50 transition-all">
@@ -302,7 +305,7 @@ export default function CreatorStudioPage() {
                           <span className="font-bold">{item.likesCount ?? item.viewersCount ?? 0}</span>
                         </div>
                         <div>
-                          <MessageCircle className="w-3.5 h-3.5 mx-auto text-blue-500 mb-1" />
+                          <MessageCircle className="w-3.5 h-3.5 mx-auto text-primary-400 mb-1" />
                           <span className="font-bold">{item.commentsCount ?? 0}</span>
                         </div>
                         <div>
@@ -410,7 +413,21 @@ export default function CreatorStudioPage() {
             <div className="space-y-6">
               {/* Bulk action toolbar */}
               <div className="p-4 bg-bg-surface rounded-2xl border border-border-soft flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
+                  {(() => {
+                    const allManagerItems = [...draftsAndScheduled.drafts, ...draftsAndScheduled.scheduled];
+                    const allSelected = allManagerItems.length > 0 && selectedIds.length === allManagerItems.length;
+                    return (
+                      <button
+                        onClick={() => handleSelectAll(allManagerItems)}
+                        disabled={allManagerItems.length === 0}
+                        className="flex items-center gap-1.5 text-xs font-semibold text-text-secondary hover:text-text-primary disabled:opacity-50 transition-colors"
+                      >
+                        {allSelected ? <CheckSquare className="w-4 h-4 text-primary-500" /> : <Square className="w-4 h-4" />}
+                        Select All
+                      </button>
+                    );
+                  })()}
                   <span className="text-sm font-semibold">
                     {selectedIds.length} items selected
                   </span>

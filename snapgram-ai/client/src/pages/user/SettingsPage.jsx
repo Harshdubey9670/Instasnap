@@ -113,10 +113,10 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto h-[calc(100dvh-3.5rem)] sm:h-[calc(100dvh-4rem)] flex flex-col md:flex-row bg-bg-surface border-0 sm:border border-border-soft sm:rounded-2xl overflow-hidden shadow-none sm:shadow-lg sm:mt-4">
-      
+    <div className="w-full max-w-6xl mx-auto h-[calc(100dvh-3.5rem)] sm:h-[calc(100dvh-4rem)] flex flex-col md:flex-row bg-[rgba(var(--glass-2),0.4)] backdrop-blur-2xl border-0 sm:border border-white/14 sm:rounded-[28px] overflow-hidden shadow-none sm:shadow-[0_24px_60px_rgba(var(--glass-shadow),0.4)] sm:mt-4">
+
       {/* Sidebar Navigation */}
-      <div className={`w-full md:w-80 flex-shrink-0 border-r border-border-soft flex flex-col h-full bg-bg-base/50 ${isMobileMenuOpen ? 'flex' : 'hidden md:flex'}`}>
+      <div className={`w-full md:w-80 flex-shrink-0 border-r border-white/12 flex flex-col h-full bg-black/10 ${isMobileMenuOpen ? 'flex' : 'hidden md:flex'}`}>
         <div className="p-4 md:p-6 border-b border-border-soft">
           <div className="flex items-center gap-2 mb-4">
             <button 
@@ -135,7 +135,7 @@ const SettingsPage = () => {
               placeholder={t("settings.searchPlaceholder")} 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-bg-surface border-border-soft focus:ring-primary-500 rounded-xl"
+              className="pl-10 bg-white/10 border-white/15 focus:ring-primary-500 rounded-xl"
             />
           </div>
         </div>
@@ -206,9 +206,9 @@ const SettingsPage = () => {
       </div>
 
       {/* Content Area */}
-      <div className={`flex-1 flex flex-col h-full bg-bg-base relative ${!isMobileMenuOpen ? 'flex' : 'hidden md:flex'}`}>
+      <div className={`flex-1 flex flex-col h-full bg-transparent relative ${!isMobileMenuOpen ? 'flex' : 'hidden md:flex'}`}>
         {/* Mobile Header Back Button */}
-        <div className="md:hidden p-4 border-b border-border-soft flex items-center gap-3 bg-bg-surface">
+        <div className="md:hidden p-4 border-b border-white/12 flex items-center gap-3 bg-white/5">
           <button 
             onClick={() => setIsMobileMenuOpen(true)}
             className="p-2 rounded-full hover:bg-bg-base transition-colors"

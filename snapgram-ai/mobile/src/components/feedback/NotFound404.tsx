@@ -272,7 +272,7 @@ const styles =
         "900",
 
       color:
-        "#a855f7",
+        "#ee7565",
 
       opacity: 0.12,
     },

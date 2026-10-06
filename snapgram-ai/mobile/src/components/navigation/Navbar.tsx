@@ -13,10 +13,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import type { RootState } from "../../store/store";
-import { useTheme } from "../../contexts/ThemeContext";
 import { CreateMenuModal } from "./CreateMenuModal";
 import { CreatePostModal } from "../post/CreatePostModal";
-import { getColors, heroGradient, secondary } from "../../theme/colors";
+import { heroGradient, secondary } from "../../theme/colors";
 import { fonts } from "../../theme/fonts";
 
 interface NavbarProps {
@@ -34,9 +33,6 @@ export const Navbar = ({
 }: NavbarProps) => {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
-  const { effectiveTheme } = useTheme();
-  const isDark = effectiveTheme === "dark";
-  const colors = getColors(isDark);
 
   const { unreadNotificationsCount } = useSelector(
     (state: RootState) => state.auth,
@@ -105,11 +101,9 @@ export const Navbar = ({
   const isFeed = pathname === "/app" || pathname === "/app/";
   if (!isFeed) return null;
 
-  // ── Derived colours from token system ────────────────────────────────────────
-  const bgBase      = colors.bgBase;           // dark: #0a0510  light: #f8fafc
-  const borderColor = colors.borderSoft;       // dark: #2d1b3b  light: #e2e8f0
-  const textColor   = colors.textPrimary;
-  const dotBorder   = colors.bgBase;           // creates the "cut-out" ring effect
+  // ── Derived colours — Warm Cream theme ──────────────────────────────────────
+  const textColor   = "#1A1A1A";
+  const dotBorder   = "#F5F0EB";
 
   return (
     <>
@@ -118,14 +112,13 @@ export const Navbar = ({
         style={[
           styles.container,
           {
-            backgroundColor: bgBase,
-            borderBottomColor: borderColor,
             paddingTop: insets.top,
             height: NAVBAR_HEIGHT,
             transform: [{ translateY }],
           },
         ]}
       >
+        <View style={styles.floatingCapsule}>
         <View style={styles.content}>
 
           {/* ── Left: Create Button with Gradient Squircle ────────────────── */}
@@ -152,7 +145,7 @@ export const Navbar = ({
           {/* ── Centre: Brand Title ───────────────────────────────────────── */}
           <View pointerEvents="none" style={styles.brandContainer}>
             <Text style={[styles.brand, { color: textColor }]}>
-              InstaSnap
+              NUVYELO
             </Text>
           </View>
 
@@ -200,6 +193,7 @@ export const Navbar = ({
             </Pressable>
           </View>
         </View>
+        </View>
       </Animated.View>
 
       <CreateMenuModal
@@ -226,13 +220,22 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     zIndex: 400,
-    elevation: 10,
-    borderBottomWidth: 1,
+    paddingHorizontal: 12,
+    // paddingTop, height — set dynamically
+  },
+  floatingCapsule: {
+    flex: 1,
+    borderRadius: 28,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "rgba(0, 0, 0, 0.07)",
     shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.08,
-    shadowRadius: 10,
-    // backgroundColor, borderBottomColor, paddingTop, height — set dynamically
+    shadowRadius: 16,
+    elevation: 8,
+    overflow: "hidden",
+    marginBottom: 6,
   },
   content: {
     height: 56,
@@ -253,9 +256,9 @@ const styles = StyleSheet.create({
     borderRadius: 13,
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#a855f7",
+    shadowColor: "#EE7565",
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.35,
+    shadowOpacity: 0.45,
     shadowRadius: 8,
     elevation: 4,
   },
@@ -295,14 +298,14 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: "#ec4899",   // secondary-500 — matches web
+    backgroundColor: secondary[500],   // secondary-500 — matches web
     borderWidth: 1.5,
     position: "absolute",
     top: 0,
     left: 0,
   },
   notificationPing: {
-    backgroundColor: "rgba(236, 72, 153, 0.75)",  // secondary-500 at 75% opacity
+    backgroundColor: "rgba(244, 63, 94, 0.75)",  // secondary-500 at 75% opacity
   },
   pressed: {
     transform: [{ scale: 0.94 }],

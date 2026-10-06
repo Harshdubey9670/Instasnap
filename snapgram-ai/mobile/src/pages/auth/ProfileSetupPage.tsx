@@ -16,10 +16,10 @@ const ProfileSetupPage = () => {
   const { effectiveTheme } = useTheme();
   const dark = effectiveTheme === "dark";
   const colors = {
-    bg: dark ? "#0d0a14" : "#f8f5ff",
+    bg: dark ? "#3c0a09" : "#fff5f4",
     text: dark ? "#f8fafc" : "#0f172a",
     textSecondary: dark ? "#94a3b8" : "#64748b",
-    primary: "#a855f7",
+    primary: "#ee7565",
     card: dark ? "rgba(30,17,44,0.85)" : "rgba(255,255,255,0.85)",
     cardBorder: dark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.7)",
   };
@@ -27,7 +27,7 @@ const ProfileSetupPage = () => {
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.bg }]}>
       <View style={styles.container}>
-        <View style={[styles.iconBox, { backgroundColor: "rgba(168,85,247,0.1)", borderColor: "rgba(168,85,247,0.3)" }]}>
+        <View style={[styles.iconBox, { backgroundColor: "rgba(238, 117, 101,0.1)", borderColor: "rgba(238, 117, 101,0.3)" }]}>
           <UserCircle2 size={48} color={colors.primary} />
         </View>
         <Text style={[styles.title, { color: colors.text }]}>Profile Setup</Text>
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   iconBox: {
     width: 90, height: 90, borderRadius: 28, borderWidth: 1,
     alignItems: "center", justifyContent: "center", marginBottom: 20,
-    shadowColor: "#a855f7", shadowOpacity: 0.3, shadowRadius: 20, shadowOffset: { width: 0, height: 4 }, elevation: 6,
+    shadowColor: "#ee7565", shadowOpacity: 0.3, shadowRadius: 20, shadowOffset: { width: 0, height: 4 }, elevation: 6,
   },
   title: { fontSize: 28, fontWeight: "700", letterSpacing: -0.5, marginBottom: 8 },
   subtitle: { fontSize: 14, textAlign: "center", lineHeight: 22, marginBottom: 24, paddingHorizontal: 16 },

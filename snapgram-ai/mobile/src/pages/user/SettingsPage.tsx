@@ -64,14 +64,14 @@ const SettingsPage = () => {
   const [showDetail, setShowDetail] = useState(false); // false = list, true = detail panel
 
   const colors = {
-    bg: dark ? "#0d0a14" : "#f8f5ff",
+    bg: dark ? "#3c0a09" : "#fff5f4",
     text: dark ? "#f8fafc" : "#0f172a",
     textSecondary: dark ? "#94a3b8" : "#64748b",
-    primary: "#a855f7",
-    card: dark ? "#1a0d27" : "#ffffff",
+    primary: "#ee7565",
+    card: dark ? "#551210" : "#ffffff",
     cardBorder: dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
-    itemHover: dark ? "rgba(168,85,247,0.08)" : "rgba(168,85,247,0.05)",
-    activeItem: dark ? "rgba(168,85,247,0.15)" : "rgba(168,85,247,0.1)",
+    itemHover: dark ? "rgba(238, 117, 101,0.08)" : "rgba(238, 117, 101,0.05)",
+    activeItem: dark ? "rgba(238, 117, 101,0.15)" : "rgba(238, 117, 101,0.1)",
   };
 
   const filteredCategories = SETTINGS_CATEGORIES.filter((c) =>
@@ -146,7 +146,7 @@ const SettingsPage = () => {
                 ]}
                 onPress={() => handleCategoryPress(cat.id)}
               >
-                <View style={[styles.categoryIconBox, { backgroundColor: isActive ? "rgba(168,85,247,0.15)" : colors.itemHover }]}>
+                <View style={[styles.categoryIconBox, { backgroundColor: isActive ? "rgba(238, 117, 101,0.15)" : colors.itemHover }]}>
                   <CatIcon size={18} color={isActive ? colors.primary : colors.textSecondary} />
                 </View>
                 <Text style={[styles.categoryLabel, { color: isActive ? colors.primary : colors.text }]}>

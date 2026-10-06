@@ -18,7 +18,7 @@ const HelpSettings = () => {
   const dark = effectiveTheme === "dark";
 
   const surface = dark
-    ? "#130a1c"
+    ? "#4a0f0d"
     : "#ffffff";
 
   const text = dark
@@ -30,7 +30,7 @@ const HelpSettings = () => {
     : "#64748b";
 
   const border = dark
-    ? "#2d1b3b"
+    ? "#6e1815"
     : "#e2e8f0";
 
   return (
@@ -81,12 +81,12 @@ const HelpSettings = () => {
           icon={
             <HelpCircle
               size={20}
-              color="#a855f7"
+              color="#ee7565"
             />
           }
           title="Help Center"
           description="Find articles and answers"
-          iconBackground="rgba(168,85,247,0.10)"
+          iconBackground="rgba(238, 117, 101,0.10)"
           secondary={secondary}
         />
 
@@ -94,12 +94,12 @@ const HelpSettings = () => {
           icon={
             <MessageSquare
               size={20}
-              color="#a855f7"
+              color="#ee7565"
             />
           }
           title="Support Inbox"
           description="Check replies from our team"
-          iconBackground="rgba(168,85,247,0.10)"
+          iconBackground="rgba(238, 117, 101,0.10)"
           secondary={secondary}
         />
       </View>

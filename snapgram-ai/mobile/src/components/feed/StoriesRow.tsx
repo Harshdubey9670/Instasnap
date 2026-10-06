@@ -122,7 +122,7 @@ export const StoriesRow = ({
   );
 
   return (
-    <View style={[styles.wrapper, { backgroundColor: isDark ? "#0a0510" : "#ffffff" }]}>
+    <View style={[styles.wrapper, { backgroundColor: isDark ? "#620d0b" : "#F5F0EB" }]}>
       <FlatList
         data={storyCards}
         keyExtractor={(item) => item.key}
@@ -245,7 +245,7 @@ const StoryCard = ({
 
   const textColor = isDark ? "#ffffff" : "#0f172a";
   const myTextColor = isDark ? "#94a3b8" : "#64748b";
-  const gapColor = isDark ? "#0a0510" : "#ffffff";
+  const gapColor = isDark ? "#620d0b" : "#F5F0EB";
 
   // 1. Live stream item
   if (data.type === "live") {
@@ -335,9 +335,9 @@ const StoryCard = ({
                 </Pressable>
               </View>
             ) : (
-              // Active / unread story with vibrant gradient ring
+              // Active / unread story with vibrant orange gradient ring
               <LinearGradient
-                colors={["#f97316", "#ec4899", "#a855f7"]}
+                colors={["#FF6B35", "#FF8C5A", "#FFB347"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.gradientRing}
@@ -447,9 +447,9 @@ const StoryCard = ({
             </View>
           </View>
         ) : (
-          // Unseen story has vibrant gradient ring
+          // Unseen story has vibrant orange gradient ring
           <LinearGradient
-            colors={["#a855f7", "#ec4899", "#f43f5e"]}
+            colors={["#FF6B35", "#FF8C5A", "#FFB347"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.gradientRing}
@@ -476,7 +476,7 @@ const StoryCard = ({
 const StoriesSkeleton = ({ isDark }: { isDark: boolean }) => {
   const data = [1, 2, 3, 4, 5];
   return (
-    <View style={[styles.wrapper, { backgroundColor: isDark ? "#0a0510" : "#ffffff" }]}>
+    <View style={[styles.wrapper, { backgroundColor: isDark ? "#620d0b" : "#F5F0EB" }]}>
       <FlatList
         data={data}
         keyExtractor={(item) => String(item)}
@@ -601,7 +601,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#a855f7",
+    backgroundColor: "#FF6B35",
     borderWidth: 2.5,
     zIndex: 10,
   },

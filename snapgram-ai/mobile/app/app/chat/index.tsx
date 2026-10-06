@@ -703,7 +703,7 @@ export default function ChatPage() {
                     {note.songTitle ? (
                       <Music2
                         size={10}
-                        color="#38bdf8"
+                        color="#ff8878"
                       />
                     ) : null}
 

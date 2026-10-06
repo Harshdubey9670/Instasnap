@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Image as ImageIcon, Video, Camera, Radio } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-export const CreateMenuModal = ({ isOpen, onClose, onOpenCreatePost }) => {
+export const CreateMenuModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
 
   if (!isOpen) return null;
@@ -11,11 +11,11 @@ export const CreateMenuModal = ({ isOpen, onClose, onOpenCreatePost }) => {
     {
       label: 'Create Post',
       icon: ImageIcon,
-      color: 'text-blue-500',
-      bg: 'bg-blue-500/10',
+      color: 'text-primary-400',
+      bg: 'bg-primary-400/10',
       action: () => {
         onClose();
-        onOpenCreatePost();
+        navigate('/app/create/post');
       }
     },
     {
@@ -31,8 +31,8 @@ export const CreateMenuModal = ({ isOpen, onClose, onOpenCreatePost }) => {
     {
       label: 'Create Story',
       icon: Camera,
-      color: 'text-pink-500',
-      bg: 'bg-pink-500/10',
+      color: 'text-secondary-400',
+      bg: 'bg-secondary-400/10',
       action: () => {
         onClose();
         navigate('/app/story/create');
@@ -41,8 +41,8 @@ export const CreateMenuModal = ({ isOpen, onClose, onOpenCreatePost }) => {
     {
       label: 'Go Live',
       icon: Radio,
-      color: 'text-purple-500',
-      bg: 'bg-purple-500/10',
+      color: 'text-primary-500',
+      bg: 'bg-primary-500/10',
       action: () => {
         onClose();
         navigate('/app/live/new');

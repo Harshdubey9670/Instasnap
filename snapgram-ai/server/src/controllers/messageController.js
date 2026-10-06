@@ -75,10 +75,11 @@ exports.getMessages = async (req, res, next) => {
 exports.sendMessage = async (req, res, next) => {
   try {
     const { conversationId } = req.params;
-    const { 
-      text, 
-      messageType = 'text', 
+    const {
+      text,
+      messageType = 'text',
       mediaUrl,
+      duration,
       isSnap = false,
       snapTimer = 10,
       viewMode = 'view_once',
@@ -119,6 +120,7 @@ exports.sendMessage = async (req, res, next) => {
       text,
       messageType: isSnap ? 'snap' : messageType,
       mediaUrl,
+      duration,
       isSnap,
       snapTimer: Number(snapTimer) || 10,
       viewMode,

@@ -39,7 +39,7 @@ const FeedPage = () => {
   const colors = getColors(dark);
 
   const feedColors = {
-    bg: colors.bgBase,                                         // dark: #0a0510  light: #f8fafc
+    bg: colors.bgBase,                                         // dark: #620d0b  light: #f8fafc
     text: colors.textPrimary,
     textSecondary: colors.textSecondary,
     primary: primary[500],
@@ -139,7 +139,7 @@ const FeedPage = () => {
     if (isLoading) return <FeedSkeleton />;
     return (
       <View style={styles.emptyContainer}>
-        <Text style={[styles.emptyTitle, { color: feedColors.text }]}>Welcome to InstaSnap AI</Text>
+        <Text style={[styles.emptyTitle, { color: feedColors.text }]}>Welcome to NUVYELO AI</Text>
         <Text style={[styles.emptySubtext, { color: feedColors.textSecondary }]}>
           When you follow people, you'll see their photos and videos here.
         </Text>

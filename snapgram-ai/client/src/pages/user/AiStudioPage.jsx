@@ -175,7 +175,7 @@ export default function AiStudioPage() {
         <div>
           <div className="flex items-center gap-2">
             <Sparkles className="w-8 h-8 text-primary-500 bg-primary-500/10 p-1.5 rounded-xl" />
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-primary-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-primary-300 via-primary-500 to-secondary-500 bg-clip-text text-transparent">
               SnapGram AI Creator Suite
             </h1>
           </div>
@@ -247,7 +247,7 @@ export default function AiStudioPage() {
               <button
                 type="submit"
                 disabled={loadingStates.caption}
-                className="w-full py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-bold text-sm rounded-xl shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 bg-gradient-to-r from-primary-500 to-secondary-600 text-white font-bold text-sm rounded-xl shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
               >
                 {loadingStates.caption ? <Loader2 className="w-5 h-5 animate-spin" /> : "Generate Caption & Hashtags"}
               </button>
@@ -277,10 +277,10 @@ export default function AiStudioPage() {
 
             {hashtags.length > 0 && (
               <div className="p-6 bg-bg-surface rounded-3xl border border-border-soft space-y-3 shadow-md">
-                <span className="text-xs font-bold text-purple-500 uppercase tracking-wider">Recommended Hashtags</span>
+                <span className="text-xs font-bold text-primary-400 uppercase tracking-wider">Recommended Hashtags</span>
                 <div className="flex flex-wrap gap-2 pt-2">
                   {hashtags.map((h, i) => (
-                    <span key={i} className="px-3 py-1.5 bg-purple-500/10 text-purple-400 font-semibold text-xs rounded-xl border border-purple-500/20">
+                    <span key={i} className="px-3 py-1.5 bg-primary-500/10 text-primary-300 font-semibold text-xs rounded-xl border border-primary-500/20">
                       {h}
                     </span>
                   ))}
@@ -322,7 +322,7 @@ export default function AiStudioPage() {
               <button
                 type="submit"
                 disabled={loadingStates.bio}
-                className="w-full py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-bold text-sm rounded-xl shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 bg-gradient-to-r from-primary-500 to-secondary-600 text-white font-bold text-sm rounded-xl shadow-lg hover:scale-[1.01] transition-all flex items-center justify-center gap-2"
               >
                 {loadingStates.bio ? <Loader2 className="w-5 h-5 animate-spin" /> : "Generate Bio & Usernames"}
               </button>
@@ -397,7 +397,7 @@ export default function AiStudioPage() {
           {/* AI Translator */}
           <div className="p-6 bg-bg-surface rounded-3xl border border-border-soft space-y-4 shadow-md">
             <h3 className="font-bold text-lg flex items-center gap-2">
-              <Languages className="w-5 h-5 text-blue-500" />
+              <Languages className="w-5 h-5 text-primary-400" />
               AI Multilingual Translator
             </h3>
             <form onSubmit={handleTranslate} className="space-y-4">
@@ -419,7 +419,7 @@ export default function AiStudioPage() {
                 <option value="German">German</option>
                 <option value="Arabic">Arabic</option>
               </select>
-              <button type="submit" className="w-full py-2.5 bg-blue-600 text-white font-bold text-sm rounded-xl">
+              <button type="submit" className="w-full py-2.5 bg-primary-600 text-white font-bold text-sm rounded-xl">
                 Translate Text
               </button>
             </form>

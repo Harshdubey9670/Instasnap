@@ -726,11 +726,11 @@ export const CreatePostModal =
               {
                 backgroundColor:
                   dark
-                    ? "#130a1c"
+                    ? "#4a0f0d"
                     : "#f8fafc",
                 borderColor:
                   dark
-                    ? "#2d1b3b"
+                    ? "#6e1815"
                     : "#e2e8f0",
               },
             ]}
@@ -741,7 +741,7 @@ export const CreatePostModal =
                 {
                   borderBottomColor:
                     dark
-                      ? "#2d1b3b"
+                      ? "#6e1815"
                       : "#e2e8f0",
                 },
               ]}
@@ -863,11 +863,11 @@ export const CreatePostModal =
                       {
                         backgroundColor:
                           dark
-                            ? "#1e112c"
+                            ? "#5c1210"
                             : "#ffffff",
                         borderColor:
                           dark
-                            ? "#2d1b3b"
+                            ? "#6e1815"
                             : "#e2e8f0",
                       },
                     ]}
@@ -1172,7 +1172,7 @@ export const CreatePostModal =
                   >
                     <ActivityIndicator
                       size="large"
-                      color="#a855f7"
+                      color="#ee7565"
                     />
 
                     <View
@@ -1362,11 +1362,11 @@ export const CreatePostModal =
                         {
                           backgroundColor:
                             dark
-                              ? "#1e112c"
+                              ? "#5c1210"
                               : "#ffffff",
                           borderColor:
                             dark
-                              ? "#2d1b3b"
+                              ? "#6e1815"
                               : "#e2e8f0",
                           color:
                             dark
@@ -1518,7 +1518,7 @@ export const CreatePostModal =
                             false:
                               "#cbd5e1",
                             true:
-                              "#a855f7",
+                              "#ee7565",
                           }}
                           thumbColor="#ffffff"
                         />
@@ -1579,7 +1579,7 @@ export const CreatePostModal =
                             false:
                               "#cbd5e1",
                             true:
-                              "#a855f7",
+                              "#ee7565",
                           }}
                           thumbColor="#ffffff"
                         />
@@ -1684,7 +1684,7 @@ const styles =
     },
 
     draftText: {
-      color: "#a855f7",
+      color: "#ee7565",
       fontSize: 12,
       fontWeight: "600",
     },
@@ -1702,7 +1702,7 @@ const styles =
 
       borderRadius: 999,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     shareText: {
@@ -1786,7 +1786,7 @@ const styles =
       paddingHorizontal: 20,
 
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
 
       borderRadius: 999,
     },
@@ -1895,7 +1895,7 @@ const styles =
 
     thumbnailActive: {
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     thumbnailMedia: {
@@ -1952,7 +1952,7 @@ const styles =
       height: "100%",
       borderRadius: 999,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     progressText: {

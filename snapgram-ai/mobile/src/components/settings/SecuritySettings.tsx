@@ -196,11 +196,11 @@ const ChangePasswordModal = ({
             {
               backgroundColor:
                 dark
-                  ? "#130a1c"
+                  ? "#4a0f0d"
                   : "#ffffff",
               borderColor:
                 dark
-                  ? "#2d1b3b"
+                  ? "#6e1815"
                   : "#e2e8f0",
             },
           ]}
@@ -211,7 +211,7 @@ const ChangePasswordModal = ({
               {
                 borderBottomColor:
                   dark
-                    ? "#2d1b3b"
+                    ? "#6e1815"
                     : "#e2e8f0",
               },
             ]}
@@ -401,11 +401,11 @@ const PasswordField = ({
         {
           backgroundColor:
             dark
-              ? "#0a0510"
+              ? "#620d0b"
               : "#f8fafc",
           borderColor:
             dark
-              ? "#2d1b3b"
+              ? "#6e1815"
               : "#e2e8f0",
           color:
             dark
@@ -618,7 +618,7 @@ export const SecuritySettings =
             {
               backgroundColor:
                 dark
-                  ? "#0a0510"
+                  ? "#620d0b"
                   : "#f8fafc",
             },
           ]}
@@ -671,11 +671,11 @@ export const SecuritySettings =
               {
                 backgroundColor:
                   dark
-                    ? "#130a1c"
+                    ? "#4a0f0d"
                     : "#ffffff",
                 borderColor:
                   dark
-                    ? "#2d1b3b"
+                    ? "#6e1815"
                     : "#e2e8f0",
               },
             ]}
@@ -690,7 +690,7 @@ export const SecuritySettings =
                       : "#0f172a",
                   borderBottomColor:
                     dark
-                      ? "#2d1b3b"
+                      ? "#6e1815"
                       : "#e2e8f0",
                 },
               ]}
@@ -721,14 +721,14 @@ export const SecuritySettings =
                     {
                       backgroundColor:
                         dark
-                          ? "rgba(168,85,247,0.12)"
-                          : "rgba(168,85,247,0.10)",
+                          ? "rgba(238, 117, 101,0.12)"
+                          : "rgba(238, 117, 101,0.10)",
                     },
                   ]}
                 >
                   <Key
                     size={20}
-                    color="#a855f7"
+                    color="#ee7565"
                   />
                 </View>
 
@@ -848,11 +848,11 @@ export const SecuritySettings =
                     : {
                         backgroundColor:
                           dark
-                            ? "#0a0510"
+                            ? "#620d0b"
                             : "#f8fafc",
                         borderColor:
                           dark
-                            ? "#2d1b3b"
+                            ? "#6e1815"
                             : "#e2e8f0",
                         borderWidth: 1,
                       },
@@ -878,11 +878,11 @@ export const SecuritySettings =
               {
                 backgroundColor:
                   dark
-                    ? "#130a1c"
+                    ? "#4a0f0d"
                     : "#ffffff",
                 borderColor:
                   dark
-                    ? "#2d1b3b"
+                    ? "#6e1815"
                     : "#e2e8f0",
               },
             ]}
@@ -937,7 +937,7 @@ export const SecuritySettings =
               >
                 <ActivityIndicator
                   size="small"
-                  color="#a855f7"
+                  color="#ee7565"
                 />
 
                 <Text
@@ -1019,12 +1019,12 @@ export const SecuritySettings =
                             backgroundColor:
                               isCurrent
                                 ? dark
-                                  ? "#1e112c"
+                                  ? "#5c1210"
                                   : "#f1f5f9"
                                 : "transparent",
                             borderColor:
                               isCurrent
-                                ? "rgba(168,85,247,0.30)"
+                                ? "rgba(238, 117, 101,0.30)"
                                 : "transparent",
                           },
                         ]}
@@ -1040,7 +1040,7 @@ export const SecuritySettings =
                               {
                                 backgroundColor:
                                   dark
-                                    ? "#0a0510"
+                                    ? "#620d0b"
                                     : "#f8fafc",
                               },
                             ]}
@@ -1305,7 +1305,7 @@ const styles =
 
     switchOn: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     switchThumb: {
@@ -1391,7 +1391,7 @@ const styles =
 
     currentSession: {
       borderColor:
-        "rgba(168,85,247,0.30)",
+        "rgba(238, 117, 101,0.30)",
     },
 
     sessionLeft: {
@@ -1566,7 +1566,7 @@ const styles =
 
       borderRadius: 12,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
 
       marginTop: 4,
     },

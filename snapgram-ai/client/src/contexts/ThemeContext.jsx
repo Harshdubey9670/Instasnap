@@ -17,9 +17,12 @@ export function ThemeProvider({ children }) {
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
     
-    let effectiveTheme = activeThemePreference;
+    const searchParams = new URLSearchParams(window.location.search);
+    const queryTheme = searchParams.get('theme');
+
+    let effectiveTheme = queryTheme || activeThemePreference;
     
-    if (activeThemePreference === "system") {
+    if (!queryTheme && activeThemePreference === "system") {
       effectiveTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     }
     

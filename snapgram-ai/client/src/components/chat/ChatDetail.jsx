@@ -38,7 +38,7 @@ export default function ChatDetail() {
   const navigate = useNavigate();
   const { user: authUser } = useSelector(state => state.auth);
   const { socket, onlineUsers } = useSocketContext();
-  const { showToast } = useToast();
+  const { showToast, toast } = useToast();
   
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -514,8 +514,24 @@ export default function ChatDetail() {
         </div>
 
         {/* Action Header Icons */}
-        <div className="flex items-center gap-2">
-          <button 
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => toast.info('Voice calls coming soon', 'Real-time calling is on our roadmap.')}
+            className="p-2.5 rounded-full hover:bg-bg-surface text-text-secondary hover:text-text-primary transition-colors"
+            title="Voice call"
+            aria-label="Voice call"
+          >
+            <Phone className="w-[18px] h-[18px]" />
+          </button>
+          <button
+            onClick={() => toast.info('Video calls coming soon', 'Real-time calling is on our roadmap.')}
+            className="p-2.5 rounded-full hover:bg-bg-surface text-text-secondary hover:text-text-primary transition-colors"
+            title="Video call"
+            aria-label="Video call"
+          >
+            <Video className="w-[18px] h-[18px]" />
+          </button>
+          <button
             onClick={() => setShowDisappearingSettings(!showDisappearingSettings)}
             className={`p-2.5 rounded-full glass text-xs font-bold transition-colors flex items-center gap-1 ${disappearingMode !== 'off' ? 'text-primary-400 border border-primary-500/40' : 'text-text-secondary'}`}
             title="Disappearing Messages"

@@ -97,7 +97,7 @@ export const LandingPage = () => {
 
             <View style={styles.featureCard}>
               <View style={styles.featureIconWrap}>
-                <ImageIcon size={24} color="#3b82f6" />
+                <ImageIcon size={24} color="#ff8878" />
               </View>
               <Text style={styles.featureTitle}>Memories Vault</Text>
               <Text style={styles.featureDesc}>
@@ -107,7 +107,7 @@ export const LandingPage = () => {
 
             <View style={styles.featureCard}>
               <View style={styles.featureIconWrap}>
-                <PenTool size={24} color="#a855f7" />
+                <PenTool size={24} color="#ee7565" />
               </View>
               <Text style={styles.featureTitle}>Creator Tools</Text>
               <Text style={styles.featureDesc}>

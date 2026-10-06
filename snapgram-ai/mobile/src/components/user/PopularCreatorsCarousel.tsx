@@ -139,7 +139,7 @@ export const PopularCreatorsCarousel =
         >
           <ActivityIndicator
             size="large"
-            color="#a855f7"
+            color="#ee7565"
           />
         </View>
       );
@@ -304,7 +304,7 @@ export const PopularCreatorsCarousel =
                       >
                         <BadgeCheck
                           size={22}
-                          color="#3b82f6"
+                          color="#ff8878"
                           fill="rgba(59,130,246,0.10)"
                         />
                       </View>

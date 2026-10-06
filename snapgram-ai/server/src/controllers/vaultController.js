@@ -218,7 +218,7 @@ exports.generateShareLink = async (req, res, next) => {
   try {
     const { memoryId } = req.body;
     const token = crypto.randomBytes(16).toString('hex');
-    const shareUrl = `http://localhost:5173/app/vault/share?token=${token}`;
+    const shareUrl = `${process.env.CLIENT_URL}/app/vault/share?token=${token}`;
 
     res.status(200).json({
       success: true,

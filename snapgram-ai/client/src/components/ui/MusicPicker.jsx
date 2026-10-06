@@ -61,7 +61,7 @@ const MusicPicker = ({ onSelect, onClose }) => {
       
       <div className="flex items-center justify-between p-4 border-b border-neutral-800">
         <h3 className="text-white font-semibold flex items-center gap-2">
-          <Music className="w-4 h-4 text-sky-400" /> Choose Music
+          <Music className="w-4 h-4 text-primary-400" /> Choose Music
         </h3>
         <button onClick={onClose} className="text-neutral-400 hover:text-white transition-colors">
           <X className="w-5 h-5" />

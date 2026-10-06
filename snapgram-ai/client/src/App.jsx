@@ -15,11 +15,10 @@ import { GuestRoute } from "./components/routing/GuestRoute";
 import { GlobalLoadingOverlay } from "./components/ui/GlobalLoadingOverlay";
 import { NetworkBanner } from "./components/ui/NetworkBanner";
 import { AccessibilityEnforcer } from "./components/ui/AccessibilityEnforcer";
-import { AiAssistantDrawer } from "./components/ai/AiAssistantDrawer";
 
 // Lazy-loaded Pages
 // Public
-
+const LandingPage = lazy(() => import("./pages/public/LandingPage"));
 import { NotFound404 } from "./components/feedback/NotFound404";
 import { SplashScreen } from "./components/ui/SplashScreen";
 
@@ -35,6 +34,7 @@ const ProfileSetupPage = lazy(() => import("./pages/auth/ProfileSetupPage"));
 const FeedPage = lazy(() => import("./pages/user/FeedPage"));
 const ReelsPage = lazy(() => import("./pages/user/ReelsPage"));
 const CreateReelPage = lazy(() => import("./pages/user/CreateReelPage"));
+const CreatePostPage = lazy(() => import("./pages/user/CreatePostPage"));
 const StoriesPage = lazy(() => import("./pages/user/StoriesPage"));
 const CreateStoryPage = lazy(() => import("./pages/user/CreateStoryPage"));
 const CameraPage = lazy(() => import("./pages/user/CameraPage"));
@@ -53,13 +53,14 @@ const CreatorStudioPage = lazy(() => import("./pages/creator/CreatorStudioPage")
 const MonetizationDashboardPage = lazy(() => import("./pages/creator/MonetizationDashboardPage"));
 const AiStudioPage = lazy(() => import("./pages/user/AiStudioPage"));
 const PostDetailPage = lazy(() => import("./pages/user/PostDetailPage"));
+const DesktopFeedPage = lazy(() => import("./pages/desktop/DesktopFeedPage"));
 
 // Live Streaming (Not part of layout for full screen)
 import { LiveHostView } from "./components/live/LiveHostView";
 import { LiveViewerView } from "./components/live/LiveViewerView";
 
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loadUser } from "./store/authSlice";
 
 // Admin
@@ -67,6 +68,7 @@ const AdminDashboardPage = lazy(() => import("./pages/admin/AdminDashboardPage")
 
 function App() {
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   useEffect(() => {
     const checkUser = () => {
@@ -101,10 +103,10 @@ function App() {
         {/* --- Splash Screen --- */}
         <Route path="/splash" element={<SplashScreen />} />
 
-        {/* --- Public Routes --- */}
-        <Route element={<PublicLayout />}>
-          <Route path="/" element={<Navigate to="/auth/login" replace />} />
-        </Route>
+        {/* --- Public & Homepage Routes --- */}
+        <Route path="/" element={isAuthenticated ? <Navigate to="/app" replace /> : <LandingPage />} />
+        <Route path="/desktop" element={isAuthenticated ? <Navigate to="/app/desktop" replace /> : <LandingPage />} />
+        <Route path="/explore" element={isAuthenticated ? <Navigate to="/app/explore" replace /> : <LandingPage />} />
 
         {/* --- Auth Routes (Guests Only) --- */}
         <Route element={<GuestRoute />}>
@@ -125,6 +127,7 @@ function App() {
             <Route path="reels" element={<ReelsPage />} />
             <Route path="spotlight" element={<ReelsPage />} />
             <Route path="reels/create" element={<CreateReelPage />} />
+            <Route path="create/post" element={<CreatePostPage />} />
             <Route path="stories" element={<StoriesPage />} />
             <Route path="story/create" element={<CreateStoryPage />} />
             <Route path="camera" element={<CameraPage />} />
@@ -147,6 +150,7 @@ function App() {
             <Route path="monetization" element={<MonetizationDashboardPage />} />
             <Route path="ai" element={<AiStudioPage />} />
             <Route path="post/:id" element={<PostDetailPage />} />
+            <Route path="desktop" element={<DesktopFeedPage />} />
           </Route>
           
           {/* Live routes outside UserLayout for full screen immersion */}
@@ -165,7 +169,6 @@ function App() {
         {/* Catch-all 404 Route */}
         <Route path="*" element={<NotFound404 />} />
       </Routes>
-      <AiAssistantDrawer />
     </Suspense>
   );
 }

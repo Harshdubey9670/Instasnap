@@ -50,11 +50,11 @@ export const PostCaption = ({
     day: "numeric",
   });
 
-  const textColor = isDark ? "#ffffff" : "#0f172a";
-  const captionColor = isDark ? "#f1f5f9" : "#1e293b";
-  const mutedColor = isDark ? "#94a3b8" : "#64748b";
-  const timeColor = isDark ? "#64748b" : "#94a3b8";
-  const bgBase = isDark ? "#0a0510" : "#ffffff";
+  const textColor = isDark ? "#ffffff" : "#1A1A1A";
+  const captionColor = isDark ? "#fff7f5" : "#1A1A1A";
+  const mutedColor = isDark ? "rgba(255, 247, 245, 0.72)" : "#9B9B9B";
+  const timeColor = isDark ? "rgba(255, 247, 245, 0.55)" : "#9B9B9B";
+  const bgBase = isDark ? "#620d0b" : "#ffffff";
 
   return (
     <View style={[styles.container, { backgroundColor: bgBase }]}>

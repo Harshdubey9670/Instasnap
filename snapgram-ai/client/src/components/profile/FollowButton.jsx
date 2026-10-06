@@ -16,7 +16,7 @@ export const dispatchFollowEvent = (userId, status) => {
   );
 };
 
-export const FollowButton = ({ userId, targetUser, onToggle, className }) => {
+export const FollowButton = ({ userId, targetUser, onToggle, className, icon: Icon, hideWhenFollowing = false }) => {
   const { user: authUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const { toast } = useToast();
@@ -138,16 +138,19 @@ export const FollowButton = ({ userId, targetUser, onToggle, className }) => {
   };
 
   if (!authUser || String(authUser._id) === String(userId)) return null;
+  if (hideWhenFollowing && (isFollowing || isRequested)) return null;
 
   return (
-    <Button 
-      variant={isFollowing || isRequested ? 'glass' : 'primary'} 
+    <Button
+      variant={isFollowing || isRequested ? 'glass' : 'primary'}
       onClick={handleToggleFollow}
       disabled={isLoading}
       className={className || `min-w-[100px] h-9 px-4 text-sm font-medium ${isFollowing ? 'hover:border-red-500/50 hover:text-red-400' : ''}`}
     >
       {isLoading ? (
-        <Loader2 className="w-4 h-4 animate-spin mx-auto" />
+        <Loader2 className={Icon ? 'w-4 h-4 animate-spin' : 'w-4 h-4 animate-spin mx-auto'} />
+      ) : Icon ? (
+        <Icon className="w-full h-full" />
       ) : isFollowing ? (
         'Following'
       ) : isRequested ? (

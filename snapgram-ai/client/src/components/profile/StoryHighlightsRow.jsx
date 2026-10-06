@@ -78,7 +78,7 @@ export const StoryHighlightsRow = ({ userId, isOwnProfile }) => {
             onClick={() => setActiveHighlight(item)}
             className="flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer group"
           >
-            <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 via-primary-500 to-purple-500 group-hover:scale-105 transition-transform">
+            <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-[#FFB347] via-[#FF6B35] to-[#E55A27] group-hover:scale-105 transition-transform">
               <div className="w-full h-full rounded-full border-2 border-bg-base overflow-hidden">
                 <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover" />
               </div>

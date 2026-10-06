@@ -447,7 +447,7 @@ export default function CameraPage() {
               <Button onClick={handleSaveToVault} variant="outline" className="border-white/20 text-white rounded-2xl bg-white/10 hover:bg-white/20 text-xs font-bold py-3" isLoading={isSavingToVault}>
                 Vault <Lock className="w-4 h-4 ml-1.5" />
               </Button>
-              <Button onClick={handlePublishStory} variant="gradient" className="bg-gradient-to-r from-purple-600 via-primary-500 to-pink-500 text-white rounded-2xl text-xs font-bold py-3 shadow-lg" isLoading={isPostingStory}>
+              <Button onClick={handlePublishStory} variant="gradient" className="bg-gradient-to-r from-secondary-600 via-primary-500 to-primary-300 text-white rounded-2xl text-xs font-bold py-3 shadow-lg" isLoading={isPostingStory}>
                 Your Story ✨
               </Button>
               <Button onClick={handlePublish} variant="gradient" className="col-span-2 sm:col-span-1 rounded-2xl text-xs font-bold py-3" isLoading={isUploading}>
@@ -544,7 +544,7 @@ export default function CameraPage() {
 
               <button 
                 onClick={() => setNightMode(!nightMode)} 
-                className={`p-3 rounded-full glass ${nightMode ? 'text-indigo-400 bg-white/20' : 'text-white'}`}
+                className={`p-3 rounded-full glass ${nightMode ? 'text-primary-300 bg-white/20' : 'text-white'}`}
               >
                 <Moon className="w-5 h-5" />
               </button>

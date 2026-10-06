@@ -1,6 +1,7 @@
 import React from 'react';
 import { Camera, Check, CheckCheck, AlertCircle, Play, Sparkles } from 'lucide-react';
 import { format } from 'date-fns';
+import { VoiceNotePlayer } from './VoiceNotePlayer';
 
 const MessageBubble = ({ 
   msg, 
@@ -42,10 +43,10 @@ const MessageBubble = ({
         /* Standard / Story Share Message Bubble */
         <div 
           onDoubleClick={() => setReactionMenuMsgId(msg._id)}
-          className={`max-w-[80%] sm:max-w-[75%] p-3.5 text-sm relative leading-relaxed ${
-            isMine 
-              ? `bg-gradient-to-r from-primary-600 to-secondary-600 text-white shadow-glow ${isFirstInGroup ? 'rounded-2xl rounded-tr-sm' : 'rounded-2xl rounded-tr-sm rounded-br-sm'}` 
-              : `bg-bg-base text-text-primary border border-border-soft shadow-sm ${isFirstInGroup ? 'rounded-2xl rounded-tl-sm' : 'rounded-2xl rounded-tl-sm rounded-bl-sm'}`
+          className={`max-w-[80%] sm:max-w-[75%] p-3.5 text-sm relative leading-relaxed backdrop-blur-md ${
+            isMine
+              ? `bg-gradient-to-r from-[#FF6B35] to-[#E55A27] text-white shadow-[0_4px_16px_rgba(255,107,53,0.3)] border border-white/20 ${isFirstInGroup ? 'rounded-2xl rounded-tr-sm' : 'rounded-2xl rounded-tr-sm rounded-br-sm'}`
+              : `bg-white dark:bg-white/12 text-text-primary dark:text-white border border-black/8 dark:border-white/15 shadow-sm ${isFirstInGroup ? 'rounded-2xl rounded-tl-sm' : 'rounded-2xl rounded-tl-sm rounded-bl-sm'}`
           } ${msg.status === 'sending' ? 'opacity-70 grayscale' : ''}`}
         >
           {/* Shared Story Bubble */}
@@ -121,10 +122,7 @@ const MessageBubble = ({
 
           {/* Voice Note Player */}
           {msg.messageType === 'voice' ? (
-            <div className="flex items-center gap-3 pr-2">
-              <audio src={msg.mediaUrl} controls className="h-8 max-w-[200px]" />
-              <span className="text-xs font-mono">{msg.duration || 0}s</span>
-            </div>
+            <VoiceNotePlayer src={msg.mediaUrl} duration={msg.duration} isMine={isMine} />
           ) : (
             msg.text && <p>{msg.text}</p>
           )}
@@ -158,7 +156,7 @@ const MessageBubble = ({
             {msg.status === 'sending' ? (
               <span className="animate-pulse">...</span>
             ) : msg.status === 'seen' ? (
-              <CheckCheck className="w-3.5 h-3.5 text-blue-500 inline" />
+              <CheckCheck className="w-3.5 h-3.5 text-primary-400 inline" />
             ) : msg.status === 'delivered' ? (
               <CheckCheck className="w-3.5 h-3.5 text-text-secondary inline" />
             ) : (

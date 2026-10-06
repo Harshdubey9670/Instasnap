@@ -124,7 +124,7 @@ export default function TrendingHashtagsScreen() {
               <View style={styles.loadingContainer}>
                 <ActivityIndicator
                   size="large"
-                  color="#a855f7"
+                  color="#ee7565"
                 />
               </View>
             ) : hashtags.length === 0 ? (
@@ -161,7 +161,7 @@ export default function TrendingHashtagsScreen() {
                         <View style={styles.topCardBgIcon}>
                           <Hash
                             size={92}
-                            color="#a855f7"
+                            color="#ee7565"
                           />
                         </View>
 
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 14,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     alignItems: "center",
     justifyContent: "center",
     marginRight: 12,
@@ -502,7 +502,7 @@ const styles = StyleSheet.create({
   },
 
   firstTopCard: {
-    borderColor: "rgba(168,85,247,0.35)",
+    borderColor: "rgba(238, 117, 101,0.35)",
   },
 
   topCardBgIcon: {

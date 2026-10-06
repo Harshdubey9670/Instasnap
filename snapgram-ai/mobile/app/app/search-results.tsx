@@ -114,12 +114,12 @@ export default function SearchResultsScreen() {
   const { effectiveTheme } = useTheme();
   const isDark = effectiveTheme === "dark";
 
-  const bgBase       = isDark ? "#0a0510" : "#f8fafc";
+  const bgBase       = isDark ? "#620d0b" : "#f8fafc";
   const bgCard       = isDark ? "#18122b" : "#ffffff";
-  const bgCardBorder = isDark ? "#2d1f4a" : "#e2e8f0";
-  const textPrimary  = isDark ? "#f8fafc" : "#0f172a";
-  const textSecond   = isDark ? "#94a3b8" : "#64748b";
-  const divider      = isDark ? "#2d1f4a" : "#e2e8f0";
+  const bgCardBorder = isDark ? "#6e1815" : "rgba(255, 255, 255, 0.15)";
+  const textPrimary  = isDark ? "#f8fafc" : "#FFF7F5";
+  const textSecond   = isDark ? "rgba(255, 247, 245, 0.55)" : "rgba(255, 247, 245, 0.6)";
+  const divider      = isDark ? "#6e1815" : "rgba(255, 255, 255, 0.15)";
 
   const handleBack = () => {
     if (router.canGoBack()) {
@@ -571,7 +571,7 @@ export default function SearchResultsScreen() {
           {user.isVerified ? (
             <BadgeCheck
               size={16}
-              color="#3b82f6"
+              color="#ff8878"
             />
           ) : null}
         </View>
@@ -615,7 +615,7 @@ export default function SearchResultsScreen() {
       >
         <Hash
           size={24}
-          color="#a855f7"
+          color="#ee7565"
         />
       </View>
 
@@ -676,7 +676,7 @@ export default function SearchResultsScreen() {
           >
             <ImageIcon
               size={28}
-              color="#94a3b8"
+              color="rgba(255, 247, 245, 0.55)"
             />
           </View>
         )}
@@ -893,7 +893,7 @@ export default function SearchResultsScreen() {
         >
           <Search
             size={44}
-            color="#94a3b8"
+            color="rgba(255, 247, 245, 0.55)"
           />
 
           <Text
@@ -926,7 +926,7 @@ export default function SearchResultsScreen() {
           >
             <ActivityIndicator
               size="large"
-              color="#a855f7"
+              color="#ee7565"
             />
 
             <Text
@@ -1001,7 +1001,7 @@ export default function SearchResultsScreen() {
             {loadingMore ? (
               <ActivityIndicator
                 size="small"
-                color="#a855f7"
+                color="#ee7565"
                 style={
                   styles.bottomLoader
                 }
@@ -1221,7 +1221,7 @@ export default function SearchResultsScreen() {
           {loadingMore ? (
             <ActivityIndicator
               size="small"
-              color="#a855f7"
+              color="#ee7565"
               style={
                 styles.bottomLoader
               }
@@ -1271,7 +1271,7 @@ export default function SearchResultsScreen() {
         >
           <Search
             size={18}
-            color="#64748b"
+            color="rgba(255, 247, 245, 0.6)"
           />
 
           <Text
@@ -1297,7 +1297,7 @@ export default function SearchResultsScreen() {
         >
           <Filter
             size={19}
-            color="#0f172a"
+            color="#FFF7F5"
           />
         </Pressable>
       </View>
@@ -1456,7 +1456,7 @@ function ImagePreview({
       >
         <ImageIcon
           size={26}
-          color="#94a3b8"
+          color="rgba(255, 247, 245, 0.55)"
         />
       </View>
 
@@ -1546,7 +1546,7 @@ function FilterModal({
           >
             <Filter
               size={20}
-              color="#0f172a"
+              color="#FFF7F5"
             />
 
             <Text
@@ -1568,7 +1568,7 @@ function FilterModal({
           >
             <X
               size={20}
-              color="#64748b"
+              color="rgba(255, 247, 245, 0.6)"
             />
           </Pressable>
         </View>
@@ -1691,7 +1691,7 @@ function FilterModal({
                 )
               }
               placeholder="e.g. New York"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="rgba(255, 247, 245, 0.55)"
               style={
                 styles.filterInput
               }
@@ -1913,9 +1913,9 @@ function FilterModal({
               }
               trackColor={{
                 false:
-                  "#cbd5e1",
+                  "rgba(255, 255, 255, 0.2)",
                 true:
-                  "#a855f7",
+                  "#ee7565",
               }}
               thumbColor="#ffffff"
             />
@@ -1974,7 +1974,7 @@ const styles =
     screen: {
       flex: 1,
       backgroundColor:
-        "#f8fafc",
+        "#851613",
     },
 
     header: {
@@ -1990,9 +1990,9 @@ const styles =
         10,
       borderBottomWidth: 1,
       borderBottomColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
       backgroundColor:
-        "#ffffff",
+        "rgba(255, 255, 255, 0.1)",
     },
 
     backButton: {
@@ -2008,7 +2008,7 @@ const styles =
     backButtonText: {
       fontSize: 34,
       lineHeight: 34,
-      color: "#0f172a",
+      color: "#FFF7F5",
       marginTop:
         -4,
     },
@@ -2025,7 +2025,7 @@ const styles =
         12,
       borderRadius: 12,
       backgroundColor:
-        "#f1f5f9",
+        "rgba(255, 255, 255, 0.08)",
     },
 
     headerQuery: {
@@ -2033,7 +2033,7 @@ const styles =
       fontSize: 14,
       fontWeight:
         "500",
-      color: "#0f172a",
+      color: "#FFF7F5",
     },
 
     filterButton: {
@@ -2046,7 +2046,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#f1f5f9",
+        "rgba(255, 255, 255, 0.08)",
     },
 
     titleContainer: {
@@ -2062,14 +2062,14 @@ const styles =
       lineHeight: 30,
       fontWeight:
         "700",
-      color: "#0f172a",
+      color: "#FFF7F5",
     },
 
     subtitle: {
       marginTop: 5,
       fontSize: 14,
       lineHeight: 20,
-      color: "#64748b",
+      color: "rgba(255, 247, 245, 0.6)",
     },
 
     tabsContainer: {
@@ -2087,24 +2087,24 @@ const styles =
         9,
       borderRadius: 999,
       backgroundColor:
-        "#ffffff",
+        "rgba(255, 255, 255, 0.1)",
       borderWidth: 1,
       borderColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
     },
 
     tabSelected: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     tabText: {
       fontSize: 13,
       fontWeight:
         "600",
-      color: "#64748b",
+      color: "rgba(255, 247, 245, 0.6)",
       textTransform:
         "capitalize",
     },
@@ -2137,7 +2137,7 @@ const styles =
       fontSize: 18,
       fontWeight:
         "700",
-      color: "#0f172a",
+      color: "#FFF7F5",
       marginBottom: 2,
     },
 
@@ -2147,11 +2147,11 @@ const styles =
       alignItems:
         "center",
       backgroundColor:
-        "#ffffff",
+        "rgba(255, 255, 255, 0.1)",
       borderRadius: 18,
       borderWidth: 1,
       borderColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
       padding: 14,
       gap: 12,
     },
@@ -2162,7 +2162,7 @@ const styles =
       borderRadius: 26,
       borderWidth: 1,
       borderColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
     },
 
     userContent: {
@@ -2183,13 +2183,13 @@ const styles =
       fontSize: 15,
       fontWeight:
         "700",
-      color: "#0f172a",
+      color: "#FFF7F5",
     },
 
     username: {
       marginTop: 2,
       fontSize: 13,
-      color: "#64748b",
+      color: "rgba(255, 247, 245, 0.6)",
     },
 
     hashtagCard: {
@@ -2198,11 +2198,11 @@ const styles =
       alignItems:
         "center",
       backgroundColor:
-        "#ffffff",
+        "rgba(255, 255, 255, 0.1)",
       borderRadius: 18,
       borderWidth: 1,
       borderColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
       padding: 14,
       gap: 12,
     },
@@ -2227,13 +2227,13 @@ const styles =
       fontSize: 15,
       fontWeight:
         "700",
-      color: "#0f172a",
+      color: "#FFF7F5",
     },
 
     hashtagCount: {
       marginTop: 2,
       fontSize: 13,
-      color: "#64748b",
+      color: "rgba(255, 247, 245, 0.6)",
     },
 
     storyGrid: {
@@ -2252,7 +2252,7 @@ const styles =
       overflow:
         "hidden",
       backgroundColor:
-        "#0f172a",
+        "#620d0b",
       position:
         "relative",
     },
@@ -2264,7 +2264,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
     },
 
     storyGradient: {
@@ -2294,7 +2294,7 @@ const styles =
       borderRadius: 17,
       borderWidth: 2,
       borderColor:
-        "#a855f7",
+        "#ee7565",
       marginBottom: 5,
     },
 
@@ -2325,7 +2325,7 @@ const styles =
       overflow:
         "hidden",
       backgroundColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
       position:
         "relative",
     },
@@ -2337,7 +2337,7 @@ const styles =
       overflow:
         "hidden",
       backgroundColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
     },
 
     imagePlaceholder: {
@@ -2347,7 +2347,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
     },
 
     remoteImage: {
@@ -2432,7 +2432,7 @@ const styles =
     loadingText: {
       marginTop: 12,
       fontSize: 14,
-      color: "#64748b",
+      color: "rgba(255, 247, 245, 0.6)",
     },
 
     errorContainer: {
@@ -2448,7 +2448,7 @@ const styles =
       fontSize: 19,
       fontWeight:
         "700",
-      color: "#0f172a",
+      color: "#FFF7F5",
     },
 
     errorText: {
@@ -2457,7 +2457,7 @@ const styles =
       lineHeight: 20,
       textAlign:
         "center",
-      color: "#64748b",
+      color: "rgba(255, 247, 245, 0.6)",
     },
 
     retryButton: {
@@ -2468,7 +2468,7 @@ const styles =
         11,
       borderRadius: 12,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     retryButtonText: {
@@ -2492,7 +2492,7 @@ const styles =
       fontSize: 19,
       fontWeight:
         "700",
-      color: "#0f172a",
+      color: "#FFF7F5",
     },
 
     emptyText: {
@@ -2501,7 +2501,7 @@ const styles =
         "center",
       fontSize: 14,
       lineHeight: 20,
-      color: "#64748b",
+      color: "rgba(255, 247, 245, 0.6)",
     },
 
     bottomLoader: {
@@ -2525,7 +2525,7 @@ const styles =
       maxHeight:
         "88%",
       backgroundColor:
-        "#ffffff",
+        "rgba(255, 255, 255, 0.1)",
       borderTopLeftRadius:
         28,
       borderTopRightRadius:
@@ -2544,7 +2544,7 @@ const styles =
       height: 5,
       borderRadius: 999,
       backgroundColor:
-        "#cbd5e1",
+        "rgba(255, 255, 255, 0.2)",
       marginBottom: 14,
     },
 
@@ -2559,7 +2559,7 @@ const styles =
         14,
       borderBottomWidth: 1,
       borderBottomColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
     },
 
     filterTitleRow: {
@@ -2574,7 +2574,7 @@ const styles =
       fontSize: 19,
       fontWeight:
         "700",
-      color: "#0f172a",
+      color: "#FFF7F5",
     },
 
     closeButton: {
@@ -2586,7 +2586,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#f1f5f9",
+        "rgba(255, 255, 255, 0.08)",
     },
 
     filterContent: {
@@ -2605,13 +2605,13 @@ const styles =
       fontSize: 14,
       fontWeight:
         "700",
-      color: "#0f172a",
+      color: "#FFF7F5",
     },
 
     filterHint: {
       marginTop: 2,
       fontSize: 12,
-      color: "#64748b",
+      color: "rgba(255, 247, 245, 0.6)",
     },
 
     twoColumn: {
@@ -2632,9 +2632,9 @@ const styles =
       borderRadius: 12,
       borderWidth: 1,
       borderColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
       backgroundColor:
-        "#ffffff",
+        "rgba(255, 255, 255, 0.1)",
       alignItems:
         "center",
       justifyContent:
@@ -2645,16 +2645,16 @@ const styles =
 
     filterOptionSelected: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     filterOptionText: {
       fontSize: 13,
       fontWeight:
         "600",
-      color: "#475569",
+      color: "rgba(255, 247, 245, 0.7)",
       textTransform:
         "capitalize",
     },
@@ -2668,13 +2668,13 @@ const styles =
       borderRadius: 12,
       borderWidth: 1,
       borderColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
       backgroundColor:
-        "#f8fafc",
+        "#851613",
       paddingHorizontal:
         14,
       fontSize: 14,
-      color: "#0f172a",
+      color: "#FFF7F5",
     },
 
     horizontalOptions: {
@@ -2689,23 +2689,23 @@ const styles =
       borderRadius: 999,
       borderWidth: 1,
       borderColor:
-        "#e2e8f0",
+        "rgba(255, 255, 255, 0.15)",
       backgroundColor:
-        "#ffffff",
+        "rgba(255, 255, 255, 0.1)",
     },
 
     smallOptionSelected: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     smallOptionText: {
       fontSize: 12,
       fontWeight:
         "600",
-      color: "#64748b",
+      color: "rgba(255, 247, 245, 0.6)",
     },
 
     smallOptionTextSelected: {
@@ -2745,14 +2745,14 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#f1f5f9",
+        "rgba(255, 255, 255, 0.08)",
     },
 
     resetButtonText: {
       fontSize: 14,
       fontWeight:
         "700",
-      color: "#64748b",
+      color: "rgba(255, 247, 245, 0.6)",
     },
 
     applyButton: {
@@ -2764,7 +2764,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     applyButtonText: {

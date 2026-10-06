@@ -196,6 +196,7 @@ export default function VaultPage() {
 
   const handleRestore = async (id) => {
     await restoreMemory(id);
+    showToast("Memory restored", "success");
     fetchVaultData();
   };
 
@@ -215,13 +216,19 @@ export default function VaultPage() {
     await createVaultAlbum({ name: newAlbumName, isHidden: isHiddenAlbum });
     setShowAlbumModal(false);
     setNewAlbumName("");
+    setIsHiddenAlbum(false);
+    showToast("Album created", "success");
     fetchVaultData();
   };
 
   const handleGenerateShare = async (id) => {
-    const res = await generateShareLink(id);
-    setGeneratedLink(res.shareUrl);
-    setShowShareModal(true);
+    try {
+      const res = await generateShareLink(id);
+      setGeneratedLink(res.shareUrl);
+      setShowShareModal(true);
+    } catch {
+      showToast("Failed to generate share link", "error");
+    }
   };
 
   const handleUpdatePin = async (e) => {
@@ -313,10 +320,10 @@ export default function VaultPage() {
 
   // Main UI
   return (
-    <div className="min-h-screen bg-bg-base text-text-primary p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
-      
+    <div className="min-h-screen text-text-primary p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
+
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border-soft pb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 bg-[rgba(var(--glass-1),0.4)] backdrop-blur-xl border border-white/14 rounded-[24px] shadow-[0_12px_32px_rgba(var(--glass-shadow),0.3)]">
         <div>
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-8 h-8 text-primary-500 bg-primary-500/10 p-1.5 rounded-xl" />
@@ -384,11 +391,20 @@ export default function VaultPage() {
         {/* Date Filter & Search */}
         <div className="flex items-center gap-2 w-full md:w-auto">
           {activeTab === "timeline" && (
-            <button 
+            <button
               onClick={() => setDateFilter(prev => prev === 'flashback' ? 'all' : 'flashback')}
               className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all ${dateFilter === 'flashback' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' : 'glass text-text-secondary'}`}
             >
               <Sparkles className="w-3.5 h-3.5" /> On This Day
+            </button>
+          )}
+
+          {activeTab === "albums" && (
+            <button
+              onClick={() => setShowAlbumModal(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold hero-gradient text-white transition-all shrink-0"
+            >
+              <FolderPlus className="w-3.5 h-3.5" /> New Album
             </button>
           )}
 
@@ -432,6 +448,71 @@ export default function VaultPage() {
             </button>
           </form>
         </div>
+      ) : activeTab === "trash" ? (
+        trashBin.length === 0 ? (
+          <div className="py-20 text-center text-text-secondary">
+            <Trash2 className="w-10 h-10 mx-auto mb-3 opacity-40" />
+            <p className="font-semibold text-text-primary">Trash is empty</p>
+            <p className="text-xs mt-1">Deleted memories show up here and can be restored.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {trashBin.map((m) => (
+              <div key={m._id} className="group relative rounded-2xl overflow-hidden glass-card border border-white/10 shadow-lg">
+                <div className="aspect-square bg-black relative">
+                  {m.mediaType === 'video' ? (
+                    <video src={m.mediaUrl} className="w-full h-full object-cover opacity-60" />
+                  ) : (
+                    <img src={m.mediaUrl} alt={m.title} className="w-full h-full object-cover opacity-60" />
+                  )}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <button
+                      onClick={() => handleRestore(m._id)}
+                      className="flex items-center gap-1.5 px-4 py-2 rounded-full hero-gradient text-white text-xs font-bold shadow-lg hover:scale-105 transition-transform"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" /> Restore
+                    </button>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h4 className="font-bold text-sm text-text-primary truncate">{m.title || "Snap Memory"}</h4>
+                  <p className="text-xs text-text-secondary mt-0.5">
+                    Deleted {new Date(m.deletedAt || m.updatedAt).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      ) : activeTab === "albums" ? (
+        albums.length === 0 ? (
+          <div className="py-20 text-center text-text-secondary">
+            <FolderPlus className="w-10 h-10 mx-auto mb-3 opacity-40" />
+            <p className="font-semibold text-text-primary">No albums yet</p>
+            <p className="text-xs mt-1">Create an album to group memories together.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {albums.map((album) => (
+              <div key={album._id} className="group relative rounded-2xl overflow-hidden glass-card border border-white/10 shadow-lg">
+                <div className="aspect-square bg-black relative">
+                  <img src={album.coverImage} alt={album.name} className="w-full h-full object-cover" />
+                  {album.isHidden && (
+                    <div className="absolute top-3 right-3 p-2 rounded-full glass text-white" title="Hidden album">
+                      <EyeOff className="w-3.5 h-3.5" />
+                    </div>
+                  )}
+                </div>
+                <div className="p-4">
+                  <h4 className="font-bold text-sm text-text-primary truncate">{album.name}</h4>
+                  <p className="text-xs text-text-secondary mt-0.5">
+                    {album.isPrivate ? "Private album" : "Shared album"}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {memories.map((m) => (
@@ -447,6 +528,9 @@ export default function VaultPage() {
                 <div className="absolute top-3 right-3 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button onClick={() => handleToggleFavorite(m._id)} className="p-2 rounded-full glass text-white hover:text-red-400">
                     <Heart className={`w-4 h-4 ${m.isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
+                  </button>
+                  <button onClick={() => handleGenerateShare(m._id)} className="p-2 rounded-full glass text-white hover:text-primary-400">
+                    <Share2 className="w-4 h-4" />
                   </button>
                   <button onClick={() => handleDownloadMemory(m.mediaUrl, m.title)} className="p-2 rounded-full glass text-white hover:text-primary-400">
                     <Download className="w-4 h-4" />
@@ -497,6 +581,63 @@ export default function VaultPage() {
                 <button type="submit" className="flex-1 py-2.5 hero-gradient text-white rounded-xl font-bold text-sm">Save Memory</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Create Album Modal */}
+      {showAlbumModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="glass-card w-full max-w-md p-6 rounded-3xl space-y-4">
+            <h3 className="font-bold text-lg text-text-primary flex items-center gap-2">
+              <FolderPlus className="w-5 h-5 text-primary-500" /> New Album
+            </h3>
+            <form onSubmit={handleCreateAlbum} className="space-y-3">
+              <input
+                type="text"
+                placeholder="Album Name"
+                value={newAlbumName}
+                onChange={(e) => setNewAlbumName(e.target.value)}
+                className="w-full p-3 rounded-xl bg-bg-surface border border-border-soft text-sm text-text-primary"
+                autoFocus
+              />
+              <div className="flex items-center gap-2">
+                <input type="checkbox" id="hidden-album" checked={isHiddenAlbum} onChange={() => setIsHiddenAlbum(!isHiddenAlbum)} className="accent-primary-500" />
+                <label htmlFor="hidden-album" className="text-xs text-text-secondary">Hide this album from the Albums grid</label>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button type="button" onClick={() => setShowAlbumModal(false)} className="flex-1 py-2.5 glass text-text-secondary rounded-xl font-bold text-sm">Cancel</button>
+                <button type="submit" disabled={!newAlbumName} className="flex-1 py-2.5 hero-gradient text-white rounded-xl font-bold text-sm disabled:opacity-50">Create Album</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Share Link Modal */}
+      {showShareModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="glass-card w-full max-w-md p-6 rounded-3xl space-y-4 text-center">
+            <div className="w-14 h-14 bg-primary-500/10 rounded-full flex items-center justify-center text-primary-500 mx-auto">
+              <Share2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-lg text-text-primary">Share Memory</h3>
+              <p className="text-xs text-text-secondary mt-1">This link expires in 24 hours.</p>
+            </div>
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-bg-surface border border-border-soft">
+              <span className="flex-1 text-xs text-text-primary truncate text-left">{generatedLink}</span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(generatedLink);
+                  showToast("Link copied to clipboard!", "success");
+                }}
+                className="shrink-0 px-3 py-1.5 hero-gradient text-white rounded-lg text-xs font-bold"
+              >
+                Copy
+              </button>
+            </div>
+            <button onClick={() => setShowShareModal(false)} className="w-full py-2.5 glass text-text-secondary rounded-xl font-bold text-sm">Close</button>
           </div>
         </div>
       )}

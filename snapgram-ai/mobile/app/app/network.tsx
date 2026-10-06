@@ -473,7 +473,7 @@ export default function NetworkScreen() {
               }
             >
               {item.fullName ||
-                "InstaSnap User"}
+                "NUVYELO User"}
             </Text>
           </View>
         </Pressable>
@@ -493,7 +493,7 @@ export default function NetworkScreen() {
         >
           <MessageCircle
             size={15}
-            color="#a855f7"
+            color="#ee7565"
           />
 
           <Text
@@ -585,7 +585,7 @@ export default function NetworkScreen() {
               >
                 <Sparkles
                   size={12}
-                  color="#a855f7"
+                  color="#ee7565"
                 />
 
                 <Text
@@ -777,7 +777,7 @@ export default function NetworkScreen() {
             >
               <UserPlus
                 size={19}
-                color="#a855f7"
+                color="#ee7565"
               />
 
               <Text
@@ -807,7 +807,7 @@ export default function NetworkScreen() {
             >
               <Users
                 size={19}
-                color="#a855f7"
+                color="#ee7565"
               />
 
               <Text
@@ -839,7 +839,7 @@ export default function NetworkScreen() {
         >
           <ActivityIndicator
             size="large"
-            color="#a855f7"
+            color="#ee7565"
           />
 
           <Text
@@ -973,7 +973,7 @@ const styles =
       textAlign:
         "center",
       color:
-        "#a855f7",
+        "#ee7565",
       fontSize: 19,
       fontWeight:
         "800",
@@ -1003,15 +1003,15 @@ const styles =
 
     activeTab: {
       backgroundColor:
-        "rgba(168,85,247,0.10)",
+        "rgba(238, 117, 101,0.10)",
       borderWidth: 1,
       borderColor:
-        "rgba(168,85,247,0.28)",
+        "rgba(238, 117, 101,0.28)",
     },
 
     highlightTab: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     tabText: {
@@ -1024,7 +1024,7 @@ const styles =
 
     activeTabText: {
       color:
-        "#a855f7",
+        "#ee7565",
     },
 
     sectionHeader: {
@@ -1116,7 +1116,7 @@ const styles =
       borderRadius: 25,
       borderWidth: 2,
       borderColor:
-        "#c084fc",
+        "#ffaea3",
     },
 
     quickCard: {
@@ -1153,7 +1153,7 @@ const styles =
       borderRadius: 26,
       borderWidth: 2,
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     userText: {
@@ -1188,7 +1188,7 @@ const styles =
 
     mutualText: {
       color:
-        "#a855f7",
+        "#ee7565",
       fontSize: 9,
       fontWeight:
         "700",
@@ -1200,9 +1200,9 @@ const styles =
       borderRadius: 11,
       borderWidth: 1,
       borderColor:
-        "rgba(168,85,247,0.28)",
+        "rgba(238, 117, 101,0.28)",
       backgroundColor:
-        "rgba(168,85,247,0.06)",
+        "rgba(238, 117, 101,0.06)",
       flexDirection:
         "row",
       alignItems:
@@ -1215,7 +1215,7 @@ const styles =
 
     chatButtonText: {
       color:
-        "#a855f7",
+        "#ee7565",
       fontSize: 10,
       fontWeight:
         "800",
@@ -1227,7 +1227,7 @@ const styles =
       paddingHorizontal: 12,
       borderRadius: 12,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       flexDirection:
         "row",
       alignItems:

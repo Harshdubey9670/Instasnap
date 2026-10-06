@@ -71,7 +71,7 @@ export const PostActions = ({
   };
 
   const iconColor = isDark ? "#ffffff" : "#0f172a";
-  const bgBase = isDark ? "#0a0510" : "#ffffff";
+  const bgBase = isDark ? "#620d0b" : "#ffffff";
 
   return (
     <View
@@ -140,8 +140,8 @@ export const PostActions = ({
           >
             <Bookmark
               size={26}
-              color={isSaved ? "#a855f7" : iconColor}
-              fill={isSaved ? "#a855f7" : "none"}
+              color={isSaved ? "#ee7565" : iconColor}
+              fill={isSaved ? "#ee7565" : "none"}
               strokeWidth={2}
             />
           </Pressable>

@@ -121,14 +121,14 @@ const styles =
   StyleSheet.create({
     hashtag: {
       color:
-        "#a855f7",
+        "#ee7565",
       fontWeight:
         "500",
     },
 
     mention: {
       color:
-        "#38bdf8",
+        "#ff8878",
       fontWeight:
         "500",
     },

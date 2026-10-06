@@ -78,6 +78,17 @@ const reelSchema = new mongoose.Schema(
         ref: 'User',
       },
     ],
+    // Counter kept in sync with the shares array via $inc in incrementShares
+    sharesCount: {
+      type: Number,
+      default: 0,
+    },
+    saves: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
     // Track view count for trending algorithm
     viewsCount: {
       type: Number,

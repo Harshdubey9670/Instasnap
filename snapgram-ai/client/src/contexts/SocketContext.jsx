@@ -19,11 +19,13 @@ export const SocketContextProvider = ({ children }) => {
     const rawToken = localStorage.getItem('token');
     const token = rawToken?.startsWith('Bearer ') ? rawToken.slice(7).trim() : rawToken;
     
-    if (user && token) {
-      const socketInstance = io(import.meta.env.VITE_API_URL || "http://localhost:5001", {
+    if (user) {
+      const socketUrl = import.meta.env.VITE_API_URL || (typeof window !== 'undefined' && window.location.origin ? window.location.origin : "http://localhost:5001");
+      const socketInstance = io(socketUrl, {
         auth: {
-          token: token,
+          token: token || undefined,
         },
+        withCredentials: true,
         transports: ["polling", "websocket"],
         reconnection: true,
         reconnectionAttempts: 5,

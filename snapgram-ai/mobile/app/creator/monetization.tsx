@@ -112,13 +112,13 @@ function getThemeColors(isDark: boolean) {
     border: isDark ? "#334155" : "#e2e8f0",
     textPrimary: isDark ? "#f1f5f9" : "#0f172a",
     textSecondary: isDark ? "#94a3b8" : "#64748b",
-    primary: "#a855f7",
+    primary: "#ee7565",
     emerald: "#10b981",
     teal: "#14b8a6",
     rose: "#f43f5e",
     amber: "#f59e0b",
-    blue: "#3b82f6",
-    purple: "#8b5cf6",
+    blue: "#ff8878",
+    purple: "#ee7565",
   };
 }
 

@@ -145,13 +145,13 @@ export const EditProfileModal = ({
   const darkMode = effectiveTheme === "dark";
   const colors = useMemo(
     () => ({
-      background: darkMode ? "#0a0510" : "#f8fafc",
-      surface: darkMode ? "#130a1c" : "#ffffff",
-      surfaceHover: darkMode ? "#1e112c" : "#f1f5f9",
+      background: darkMode ? "#620d0b" : "#f8fafc",
+      surface: darkMode ? "#4a0f0d" : "#ffffff",
+      surfaceHover: darkMode ? "#5c1210" : "#f1f5f9",
       textPrimary: darkMode ? "#f8fafc" : "#0f172a",
       textSecondary: darkMode ? "#94a3b8" : "#64748b",
-      border: darkMode ? "#2d1b3b" : "#e2e8f0",
-      primary: "#a855f7",
+      border: darkMode ? "#6e1815" : "#e2e8f0",
+      primary: "#ee7565",
     }),
     [darkMode],
   );
@@ -555,7 +555,7 @@ export const EditProfileModal = ({
                   hitSlop={{ top: 15, bottom: 15, left: 20, right: 20 }}
                   style={{ marginTop: 8, paddingVertical: 8, paddingHorizontal: 16 }}
                 >
-                  <Text style={{ color: "#a855f7", fontWeight: "700", fontSize: 14 }}>
+                  <Text style={{ color: "#ee7565", fontWeight: "700", fontSize: 14 }}>
                     {uploadingAvatar ? "Uploading..." : "Change Profile Photo"}
                   </Text>
                 </TouchableOpacity>
@@ -611,7 +611,7 @@ export const EditProfileModal = ({
                             {
                               borderColor: selected ? colors.primary : colors.border,
                               backgroundColor: selected
-                                ? "rgba(168,85,247,0.12)"
+                                ? "rgba(238, 117, 101,0.12)"
                                 : colors.surface,
                             },
                           ]}
@@ -646,7 +646,7 @@ export const EditProfileModal = ({
                             {
                               borderColor: selected ? colors.primary : colors.border,
                               backgroundColor: selected
-                                ? "rgba(168,85,247,0.12)"
+                                ? "rgba(238, 117, 101,0.12)"
                                 : "transparent",
                             },
                           ]}
@@ -709,7 +709,7 @@ export const EditProfileModal = ({
                     <View style={styles.verificationTitle}>
                       <Text style={[styles.settingTitle, { color: colors.textPrimary }]}>Verification Badge</Text>
                       {user?.isVerified ? (
-                        <BadgeCheck size={17} color="#3b82f6" fill="#3b82f6" />
+                        <BadgeCheck size={17} color="#ff8878" fill="#ff8878" />
                       ) : null}
                     </View>
                     <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
@@ -825,11 +825,11 @@ const styles = StyleSheet.create({
   settingTitle: { fontSize: 14, fontWeight: "700" },
   settingDescription: { marginTop: 4, fontSize: 12, lineHeight: 17 },
   verificationTitle: { flexDirection: "row", alignItems: "center", gap: 6 },
-  requestButton: { minHeight: 34, paddingHorizontal: 12, borderRadius: 9, backgroundColor: "#ec4899", alignItems: "center", justifyContent: "center" },
+  requestButton: { minHeight: 34, paddingHorizontal: 12, borderRadius: 9, backgroundColor: "#f43f5e", alignItems: "center", justifyContent: "center" },
   requestButtonText: { color: "#ffffff", fontSize: 12, fontWeight: "700" },
   footer: { padding: 14, borderTopWidth: StyleSheet.hairlineWidth, flexDirection: "row", gap: 10 },
   footerButton: { flex: 1, minHeight: 48, borderRadius: 12, alignItems: "center", justifyContent: "center" },
-  saveButton: { backgroundColor: "#a855f7" },
+  saveButton: { backgroundColor: "#ee7565" },
   cancelText: { fontSize: 14, fontWeight: "700" },
   saveText: { color: "#ffffff", fontSize: 14, fontWeight: "800" },
   pressed: { opacity: 0.75, transform: [{ scale: 0.99 }] },

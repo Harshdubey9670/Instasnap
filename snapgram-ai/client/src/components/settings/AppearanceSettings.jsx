@@ -25,7 +25,7 @@ const AppearanceSettings = () => {
     <div className="space-y-8 pb-10">
       <div>
         <h2 className="text-2xl font-bold hero-text mb-2">Appearance</h2>
-        <p className="text-text-secondary">Customize how InstaSnap AI looks on your device.</p>
+        <p className="text-text-secondary">Customize how NUVYELO AI looks on your device.</p>
       </div>
 
       <div className="bg-bg-surface border border-border-soft rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">

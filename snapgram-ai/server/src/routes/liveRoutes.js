@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const liveController = require('../controllers/liveController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect, requireVerified } = require('../middleware/authMiddleware');
 
 router.use(protect);
 
-router.post('/start', liveController.startLiveStream);
+router.post('/start', requireVerified, liveController.startLiveStream);
 router.post('/:id/end', liveController.endLiveStream);
 router.get('/active', liveController.getActiveStreams);
 router.get('/:id', liveController.getStream);

@@ -30,6 +30,13 @@ const postSchema = new mongoose.Schema({
   scheduledAt: {
     type: Date
   },
+  // Per-post audience control — 'closeFriends' restricts visibility to the
+  // author's Close Friends list (reuses User.closeFriends, same list Stories use).
+  audience: {
+    type: String,
+    enum: ['everyone', 'closeFriends'],
+    default: 'everyone'
+  },
   location: {
     type: String,
     trim: true,

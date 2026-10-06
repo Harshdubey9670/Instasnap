@@ -126,11 +126,11 @@ const DeleteAccountModal = ({
             {
               backgroundColor:
                 dark
-                  ? "#130a1c"
+                  ? "#4a0f0d"
                   : "#ffffff",
               borderColor:
                 dark
-                  ? "#2d1b3b"
+                  ? "#6e1815"
                   : "#e2e8f0",
             },
           ]}
@@ -141,7 +141,7 @@ const DeleteAccountModal = ({
               {
                 borderBottomColor:
                   dark
-                    ? "#2d1b3b"
+                    ? "#6e1815"
                     : "#e2e8f0",
               },
             ]}
@@ -250,11 +250,11 @@ const DeleteAccountModal = ({
                   {
                     backgroundColor:
                       dark
-                        ? "#0a0510"
+                        ? "#620d0b"
                         : "#f8fafc",
                     borderColor:
                       dark
-                        ? "#2d1b3b"
+                        ? "#6e1815"
                         : "#e2e8f0",
                     color:
                       dark
@@ -521,7 +521,7 @@ const AccountSettings =
             {
               backgroundColor:
                 dark
-                  ? "#0a0510"
+                  ? "#620d0b"
                   : "#f8fafc",
             },
           ]}
@@ -681,11 +681,11 @@ const AccountSettings =
                   {
                     backgroundColor:
                       dark
-                        ? "#0a0510"
+                        ? "#620d0b"
                         : "#f8fafc",
                     borderColor:
                       dark
-                        ? "#2d1b3b"
+                        ? "#6e1815"
                         : "#e2e8f0",
                   },
                 ]}
@@ -733,7 +733,7 @@ const AccountSettings =
               {
                 backgroundColor:
                   dark
-                    ? "#130a1c"
+                    ? "#4a0f0d"
                     : "#ffffff",
               },
             ]}
@@ -850,11 +850,11 @@ const SettingsCard = ({
       {
         backgroundColor:
           dark
-            ? "#130a1c"
+            ? "#4a0f0d"
             : "#ffffff",
         borderColor:
           dark
-            ? "#2d1b3b"
+            ? "#6e1815"
             : "#e2e8f0",
       },
     ]}
@@ -869,7 +869,7 @@ const SettingsCard = ({
               : "#0f172a",
           borderBottomColor:
             dark
-              ? "#2d1b3b"
+              ? "#6e1815"
               : "#e2e8f0",
         },
       ]}

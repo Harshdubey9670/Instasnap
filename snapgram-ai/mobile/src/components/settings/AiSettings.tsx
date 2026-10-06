@@ -113,7 +113,7 @@ const AiSettings =
           >
             <Sparkles
               size={24}
-              color="#a855f7"
+              color="#ee7565"
             />
 
             <Text
@@ -152,10 +152,10 @@ const AiSettings =
             {
               backgroundColor:
                 dark
-                  ? "#130a1c"
+                  ? "#4a0f0d"
                   : "#ffffff",
               borderColor:
-                "rgba(168,85,247,0.22)",
+                "rgba(238, 117, 101,0.22)",
             },
           ]}
         >
@@ -240,7 +240,7 @@ const AiSettings =
             >
               <BrainCircuit
                 size={20}
-                color="#ec4899"
+                color="#f43f5e"
               />
 
               <Text
@@ -374,7 +374,7 @@ const styles =
       padding: 14,
       borderRadius: 16,
       backgroundColor:
-        "rgba(168,85,247,0.10)",
+        "rgba(238, 117, 101,0.10)",
     },
 
     botIcon: {
@@ -386,7 +386,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     globalCopy: {

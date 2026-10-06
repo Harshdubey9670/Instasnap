@@ -947,7 +947,7 @@ export default function CameraScreen() {
       >
         <ActivityIndicator
           size="large"
-          color="#a855f7"
+          color="#ee7565"
         />
       </View>
     );
@@ -964,7 +964,7 @@ export default function CameraScreen() {
       >
         <Camera
           size={54}
-          color="#a855f7"
+          color="#ee7565"
         />
 
         <Text
@@ -1267,7 +1267,7 @@ export default function CameraScreen() {
                   }
                   color={
                     nightMode
-                      ? "#a78bfa"
+                      ? "#ff8878"
                       : "#ffffff"
                   }
                 />
@@ -2364,7 +2364,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       marginTop: 16,
     },
 
@@ -2933,7 +2933,7 @@ const styles =
     filterPreviewCircleActive: {
       borderWidth: 2,
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     filterPanelName: {
@@ -3079,7 +3079,7 @@ const styles =
         "row",
       gap: 5,
       backgroundColor:
-        "#8b5cf6",
+        "#ee7565",
     },
 
     gradientActionText: {
@@ -3102,7 +3102,7 @@ const styles =
         "row",
       gap: 5,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     sendActionText: {
@@ -3129,7 +3129,7 @@ const styles =
         "#17121d",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
     },
 
     captionCard: {
@@ -3140,7 +3140,7 @@ const styles =
         "#17121d",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
     },
 
     modalHeader: {
@@ -3196,7 +3196,7 @@ const styles =
 
     switchActive: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     zoomSettings: {
@@ -3219,17 +3219,17 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#0d0a11",
+        "#3c0a09",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
     },
 
     zoomOptionActive: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     zoomOptionText: {
@@ -3250,10 +3250,10 @@ const styles =
       padding: 13,
       borderRadius: 14,
       backgroundColor:
-        "#0d0a11",
+        "#3c0a09",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
       color:
         "#ffffff",
       textAlignVertical:

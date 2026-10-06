@@ -1399,7 +1399,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderWidth: 2,
       borderColor:
         "#000000",
@@ -1544,7 +1544,7 @@ const styles =
         13,
       borderRadius: 999,
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     createButtonText: {

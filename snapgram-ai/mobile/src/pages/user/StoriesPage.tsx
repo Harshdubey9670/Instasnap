@@ -41,15 +41,15 @@ const StoriesPage = () => {
   const [activeTab, setActiveTab] = useState("feed");
 
   const colors = {
-    bg: dark ? "#0d0a14" : "#fafafa",
+    bg: dark ? "#3c0a09" : "#fafafa",
     text: dark ? "#f8fafc" : "#0f172a",
     textSecondary: dark ? "#94a3b8" : "#64748b",
-    primary: "#a855f7",
-    card: dark ? "#1a0d27" : "#fff",
+    primary: "#ee7565",
+    card: dark ? "#551210" : "#fff",
     cardBorder: dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
-    tabActive: "#a855f7",
-    tabBg: dark ? "rgba(168,85,247,0.12)" : "rgba(168,85,247,0.08)",
-    surface: dark ? "#1e112c" : "#f1f5f9",
+    tabActive: "#ee7565",
+    tabBg: dark ? "rgba(238, 117, 101,0.12)" : "rgba(238, 117, 101,0.08)",
+    surface: dark ? "#5c1210" : "#f1f5f9",
   };
 
   useEffect(() => {
@@ -181,7 +181,7 @@ const StoriesPage = () => {
                 style={[styles.createStoryCard, { backgroundColor: colors.card, borderColor: colors.primary }]}
                 onPress={() => router.push("/create-story" as any)}
               >
-                <View style={[styles.createStoryIcon, { backgroundColor: "rgba(168,85,247,0.1)" }]}>
+                <View style={[styles.createStoryIcon, { backgroundColor: "rgba(238, 117, 101,0.1)" }]}>
                   <Plus size={28} color={colors.primary} />
                 </View>
                 <Text style={[styles.createStoryText, { color: colors.text }]}>Create Story</Text>
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     borderWidth: 2, borderColor: "transparent", overflow: "hidden",
     alignItems: "center", justifyContent: "center",
   },
-  storyRingActive: { borderColor: "#a855f7" },
+  storyRingActive: { borderColor: "#ee7565" },
   storyGroupInfo: { flex: 1 },
   storyGroupUser: { fontSize: 14, fontWeight: "700" },
   storyGroupTime: { fontSize: 12, marginTop: 2 },

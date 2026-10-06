@@ -48,7 +48,7 @@ export default function UsernameLookupScreen() {
     <View style={styles.screen}>
       <ActivityIndicator
         size="large"
-        color="#a855f7"
+        color="#ee7565"
       />
 
       <Text style={styles.text}>

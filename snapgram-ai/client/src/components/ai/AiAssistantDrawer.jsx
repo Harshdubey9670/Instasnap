@@ -4,6 +4,7 @@ import { chatAssistant, generateImage } from '../../services/aiService';
 import api from '../../services/api';
 import { trackEvent } from '../../utils/analytics';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../ui/Toast';
 
 export const AiAssistantDrawer = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,7 @@ export const AiAssistantDrawer = () => {
     { sender: 'bot', text: 'Hello! I am your SnapGram AI Copilot.\n\nTip: You can now ask me to generate images! Start your message with "/image" or "Generate an image of...".' }
   ]);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const chatEndRef = useRef(null);
 
@@ -37,7 +39,7 @@ export const AiAssistantDrawer = () => {
         const cleanPrompt = query.replace('/image', '').trim() || "A beautiful cinematic shot";
         const res = await generateImage(cleanPrompt);
         if (res.success) {
-           setMessages([...newMessages, { sender: 'bot', imageUrl: res.data.url, prompt: res.data.prompt }]);
+           setMessages([...newMessages, { sender: 'bot', imageUrl: res.data.url, publicId: res.data.public_id, prompt: res.data.prompt }]);
         } else {
            throw new Error("Failed to generate");
         }
@@ -64,22 +66,26 @@ export const AiAssistantDrawer = () => {
            mediaUrl: imageUrl
         });
         trackEvent('ai_image_shared', 'chat');
+        toast.success("Sent to chat");
         // Close AI drawer so they can see the chat
         setIsOpen(false);
       } catch (err) {
-        alert("Failed to share to chat");
+        toast.error("Failed to share to chat");
       }
     } else {
-      alert("Please open a specific chat to share this image directly!");
+      toast.info("Open a specific chat first", "Then share this image directly from there.");
     }
   };
 
-  const handleCreatePost = (imageUrl, prompt) => {
+  const handleCreatePost = (imageUrl, prompt, publicId) => {
     trackEvent('ai_image_shared', 'post');
-    // Navigate to post creation page passing the image URL as state
-    // Note: We are simulating this by redirecting with a query param for simplicity in this demo
     setIsOpen(false);
-    alert("Image ready! In a full implementation, this would navigate to the Create Post screen pre-filled with this image.");
+    navigate('/app/create/post', {
+      state: {
+        prefillMedia: [{ url: imageUrl, public_id: publicId, type: 'image' }],
+        prefillCaption: prompt || '',
+      },
+    });
   };
 
   return (
@@ -87,7 +93,7 @@ export const AiAssistantDrawer = () => {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-[88px] md:bottom-6 right-4 md:right-6 z-50 p-3.5 bg-gradient-to-r from-primary-500 via-purple-600 to-pink-500 text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center gap-2 font-bold text-xs"
+        className="fixed bottom-[88px] md:bottom-6 right-4 md:right-6 z-50 p-3.5 bg-gradient-to-r from-primary-500 via-primary-600 to-pink-500 text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all flex items-center gap-2 font-bold text-xs"
         aria-label="AI Copilot Assistant"
       >
         <Sparkles className="w-5 h-5 animate-pulse" />
@@ -98,7 +104,7 @@ export const AiAssistantDrawer = () => {
       {isOpen && (
         <div className="fixed bottom-[140px] md:bottom-20 right-4 md:right-6 z-50 w-[calc(100vw-32px)] md:w-96 h-[500px] bg-bg-surface border border-border-soft rounded-3xl shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl animate-fade-in">
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-primary-600 to-purple-600 text-white flex items-center justify-between">
+          <div className="p-4 bg-gradient-to-r from-primary-600 to-primary-600 text-white flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Bot className="w-5 h-5" />
               <span className="font-extrabold text-sm">SnapGram AI Copilot</span>
@@ -138,8 +144,8 @@ export const AiAssistantDrawer = () => {
                             <Send className="w-3 h-3" />
                             <span className="font-semibold text-[10px]">Send to Chat</span>
                           </button>
-                          <button 
-                            onClick={() => handleCreatePost(m.imageUrl, m.prompt)}
+                          <button
+                            onClick={() => handleCreatePost(m.imageUrl, m.prompt, m.publicId)}
                             className="flex items-center justify-center gap-1.5 py-1.5 bg-bg-base border border-border-soft text-text-primary rounded-lg hover:bg-bg-surface-hover transition-colors"
                           >
                             <PlusSquare className="w-3 h-3" />

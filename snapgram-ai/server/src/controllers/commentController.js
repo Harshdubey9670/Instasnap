@@ -1,5 +1,6 @@
 const Comment = require('../models/Comment');
 const Post = require('../models/Post');
+const logger = require('../utils/logger');
 
 // @desc    Get comments for a post
 // @route   GET /api/posts/:postId/comments
@@ -45,7 +46,9 @@ exports.getComments = async (req, res, next) => {
 exports.addComment = async (req, res, next) => {
   try {
     const { postId } = req.params;
-    const { text, parentComment } = req.body;
+    // Destructure text and parentComment separately so parentComment can be re-assigned
+    const { text } = req.body;
+    let parentComment = req.body.parentComment || null;
 
     if (!text || text.trim() === '') {
       return res.status(400).json({ success: false, message: 'Comment text is required' });
@@ -69,7 +72,11 @@ exports.addComment = async (req, res, next) => {
       if (!parent) {
         return res.status(404).json({ success: false, message: 'Parent comment not found' });
       }
-      // If the parent is already a reply, link it to the top-level parent instead (single-level nesting)
+      // Validate parent belongs to the same post
+      if (parent.post && parent.post.toString() !== postId) {
+        return res.status(400).json({ success: false, message: 'Parent comment does not belong to this post' });
+      }
+      // If the parent is already a reply, link to top-level parent instead (single-level nesting)
       if (parent.parentComment) {
         parentComment = parent.parentComment;
       }
@@ -102,7 +109,7 @@ exports.addComment = async (req, res, next) => {
         sender: req.user.id,
         type: 'comment',
         post: post._id,
-      }).catch(err => console.error('[Notification Error]', err));
+      }).catch(err => logger.error('[Notification Error]', err));
     }
 
     // Notification for Parent Comment Owner (if reply)
@@ -112,10 +119,10 @@ exports.addComment = async (req, res, next) => {
         Notification.create({
           recipient: parent.user,
           sender: req.user.id,
-          type: 'mention', // or 'reply'
+          type: 'reply',
           message: 'replied to your comment',
           post: post._id,
-        }).catch(err => console.error('[Notification Error]', err));
+        }).catch(err => logger.error('[Notification Error]', err));
       }
     }
 
@@ -128,7 +135,7 @@ exports.addComment = async (req, res, next) => {
           type: 'mention',
           message: 'mentioned you in a comment',
           post: post._id,
-        }).catch(err => console.error('[Notification Error]', err));
+        }).catch(err => logger.error('[Notification Error]', err));
       }
     });
 

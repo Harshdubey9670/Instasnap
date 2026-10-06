@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   confirmBtn: {
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
   },
   viewportContainer: {
     alignItems: "center",
@@ -506,11 +506,11 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: "#1e112c",
+    backgroundColor: "#5c1210",
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#2d1b3b",
+    borderColor: "#6e1815",
   },
   sliderTrack: {
     flex: 1,
@@ -523,7 +523,7 @@ const styles = StyleSheet.create({
   sliderFill: {
     height: 6,
     borderRadius: 3,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
   },
   sliderThumb: {
     position: "absolute",
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#ffffff",
     borderWidth: 2,
-    borderColor: "#a855f7",
+    borderColor: "#ee7565",
     marginLeft: -10,
     shadowColor: "#000000",
     shadowOffset: { width: 0, height: 2 },
@@ -564,8 +564,8 @@ const styles = StyleSheet.create({
     borderColor: "#262626",
   },
   actionPillActive: {
-    backgroundColor: "rgba(168, 85, 247, 0.15)",
-    borderColor: "#a855f7",
+    backgroundColor: "rgba(238, 117, 101, 0.15)",
+    borderColor: "#ee7565",
   },
   actionPillText: {
     color: "#94a3b8",
@@ -573,11 +573,11 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   actionPillTextActive: {
-    color: "#a855f7",
+    color: "#ee7565",
     fontWeight: "700",
   },
   saveBtn: {
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",

@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Avatar } from '../ui/Avatar';
 import { FollowButton } from '../profile/FollowButton';
 import { AccountSwitcherModal } from '../profile/AccountSwitcherModal';
+import { SpatialGlassCard } from '../ui/spatial/SpatialGlassCard';
 import api from '../../services/api';
 
 export const SuggestedUsersSidebar = () => {
@@ -38,15 +39,15 @@ export const SuggestedUsersSidebar = () => {
     return () => window.removeEventListener('user_follow_updated', handleFollowUpdated);
   }, []);
 
-  if (loading) return <div className="hidden lg:block w-[320px] shrink-0" />;
+  if (loading) return <div className="w-full h-40 rounded-[26px] bg-white/5 animate-pulse" />;
 
   return (
-    <div className="hidden xl:flex flex-col w-[320px] shrink-0 sticky top-0 self-start h-full overflow-y-auto hide-scrollbar py-4 pl-4">
+    <SpatialGlassCard variant="elevated" className="w-full p-5">
       {/* Current User Profile Mini */}
       {authUser && (
         <div className="flex items-center justify-between mb-6">
           <Link to="/app/profile" className="flex items-center gap-3 min-w-0">
-            <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-primary-500/20 bg-bg-surface-hover">
+            <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-white/20 bg-white/10">
               <Avatar
                 src={authUser.profilePicture || authUser.avatar}
                 fallback={authUser.username?.charAt(0)?.toUpperCase()}
@@ -64,7 +65,7 @@ export const SuggestedUsersSidebar = () => {
           </Link>
           <button
           onClick={() => setIsAccountSwitcherOpen(true)}
-            className="text-xs font-semibold text-primary-500 hover:text-primary-400 transition-colors ml-3 shrink-0"
+            className="text-xs font-semibold text-primary-300 hover:text-primary-200 transition-colors ml-3 shrink-0"
             aria-label="Switch account"
           >
             Switch
@@ -88,7 +89,7 @@ export const SuggestedUsersSidebar = () => {
             {users.map(user => (
               <div key={user._id} className="flex items-center justify-between">
                 <Link to={`/app/profile/${user._id}`} className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-border-soft bg-bg-surface-hover">
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 border border-white/15 bg-white/10">
                     <Avatar
                       src={user.profilePicture || user.avatar}
                       fallback={user.username?.charAt(0)?.toUpperCase()}
@@ -114,7 +115,7 @@ export const SuggestedUsersSidebar = () => {
       )}
 
       {/* Footer Links */}
-      <div className="mt-8 text-xs text-text-secondary space-y-4">
+      <div className="mt-8 text-[11px] text-text-secondary space-y-3">
         <div className="flex flex-wrap gap-x-2 gap-y-1">
           <a href="#" className="hover:underline">About</a>
           <a href="#" className="hover:underline">Help</a>
@@ -124,7 +125,7 @@ export const SuggestedUsersSidebar = () => {
           <a href="#" className="hover:underline">Privacy</a>
           <a href="#" className="hover:underline">Terms</a>
         </div>
-        <p>© 2026 INSTASNAP AI</p>
+        <p>© 2026 NUVYELO AI</p>
       </div>
 
       {/* Account Switcher Modal */}
@@ -132,6 +133,6 @@ export const SuggestedUsersSidebar = () => {
         isOpen={isAccountSwitcherOpen}
         onClose={() => setIsAccountSwitcherOpen(false)}
       />
-    </div>
+    </SpatialGlassCard>
   );
 };

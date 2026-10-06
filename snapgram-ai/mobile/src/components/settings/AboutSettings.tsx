@@ -27,12 +27,12 @@ const AboutSettings =
 
     const surface =
       dark
-        ? "#130a1c"
+        ? "#4a0f0d"
         : "#ffffff";
 
     const base =
       dark
-        ? "#0a0510"
+        ? "#620d0b"
         : "#f8fafc";
 
     const text =
@@ -47,7 +47,7 @@ const AboutSettings =
 
     const border =
       dark
-        ? "#2d1b3b"
+        ? "#6e1815"
         : "#e2e8f0";
 
     return (
@@ -78,7 +78,7 @@ const AboutSettings =
               },
             ]}
           >
-            Learn more about InstaSnap AI.
+            Learn more about NUVYELO AI.
           </Text>
         </View>
 
@@ -113,7 +113,7 @@ const AboutSettings =
               },
             ]}
           >
-            InstaSnap AI
+            NUVYELO AI
           </Text>
 
           <Text
@@ -325,7 +325,7 @@ const styles =
       borderRadius: 16,
 
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
 
       marginBottom: 16,
     },

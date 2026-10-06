@@ -1224,7 +1224,7 @@ export default function CreateStoryScreen() {
             >
               <UploadCloud
                 size={31}
-                color="#a855f7"
+                color="#ee7565"
               />
             </View>
 
@@ -1492,7 +1492,7 @@ export default function CreateStoryScreen() {
                 >
                   <AtSign
                     size={15}
-                    color="#c084fc"
+                    color="#ffaea3"
                   />
 
                   <Text
@@ -1667,7 +1667,7 @@ export default function CreateStoryScreen() {
                   color={
                     selectedFilter !==
                     "none"
-                      ? "#f472b6"
+                      ? "#fb7185"
                       : "#ffffff"
                   }
                 />
@@ -1706,7 +1706,7 @@ export default function CreateStoryScreen() {
               >
                 <Wand2
                   size={17}
-                  color="#c084fc"
+                  color="#ffaea3"
                 />
               </Pressable>
             </View>
@@ -1732,7 +1732,7 @@ export default function CreateStoryScreen() {
               >
                 <Sparkles
                   size={15}
-                  color="#f472b6"
+                  color="#fb7185"
                 />
 
                 <Text
@@ -1967,7 +1967,7 @@ export default function CreateStoryScreen() {
                 icon={
                   <AtSign
                     size={16}
-                    color="#c084fc"
+                    color="#ffaea3"
                   />
                 }
                 onPress={() =>
@@ -2359,7 +2359,7 @@ export default function CreateStoryScreen() {
                 >
                   <Loader2
                     size={25}
-                    color="#a855f7"
+                    color="#ee7565"
                   />
                 </View>
               ) : pickerUsers.length ===
@@ -2529,7 +2529,7 @@ export default function CreateStoryScreen() {
                 >
                   <Type
                     size={18}
-                    color="#a855f7"
+                    color="#ee7565"
                   />
 
                   <Text
@@ -3005,7 +3005,7 @@ export default function CreateStoryScreen() {
               >
                 <Music2
                   size={18}
-                  color="#a855f7"
+                  color="#ee7565"
                 />
 
                 <Text
@@ -3098,7 +3098,7 @@ export default function CreateStoryScreen() {
               >
                 <Wand2
                   size={18}
-                  color="#c084fc"
+                  color="#ffaea3"
                 />
 
                 <Text
@@ -3315,7 +3315,7 @@ const styles =
     filterOverlay: {
       ...StyleSheet.absoluteFillObject,
       backgroundColor:
-        "rgba(168,85,247,0.06)",
+        "rgba(238, 117, 101,0.06)",
     },
 
     emptyCanvas: {
@@ -3336,10 +3336,10 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "rgba(168,85,247,0.10)",
+        "rgba(238, 117, 101,0.10)",
       borderWidth: 1,
       borderColor:
-        "rgba(168,85,247,0.22)",
+        "rgba(238, 117, 101,0.22)",
       marginBottom: 15,
     },
 
@@ -3710,7 +3710,7 @@ const styles =
 
     mentionText: {
       color:
-        "#c084fc",
+        "#ffaea3",
       fontSize: 10,
       fontWeight:
         "900",
@@ -3799,9 +3799,9 @@ const styles =
 
     filterButtonActive: {
       backgroundColor:
-        "#ec4899",
+        "#f43f5e",
       borderColor:
-        "#ec4899",
+        "#f43f5e",
     },
 
     filterButtonText: {
@@ -3902,7 +3902,7 @@ const styles =
         "#17121d",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
     },
 
     musicPickerCard: {
@@ -3915,7 +3915,7 @@ const styles =
         "#17121d",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
     },
 
     musicPickerWrap: {
@@ -3951,10 +3951,10 @@ const styles =
       paddingHorizontal: 12,
       borderRadius: 12,
       backgroundColor:
-        "#0d0a11",
+        "#3c0a09",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
       color:
         "#ffffff",
       fontSize: 12,
@@ -4010,17 +4010,17 @@ const styles =
         "center",
       borderRadius: 10,
       backgroundColor:
-        "#0d0a11",
+        "#3c0a09",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
     },
 
     optionButtonActive: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     optionButtonText: {
@@ -4045,17 +4045,17 @@ const styles =
         "center",
       borderRadius: 10,
       backgroundColor:
-        "#0d0a11",
+        "#3c0a09",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
     },
 
     alignButtonActive: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     sliderSection: {
@@ -4079,10 +4079,10 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#0d0a11",
+        "#3c0a09",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
     },
 
     adjustButtonText: {
@@ -4106,7 +4106,7 @@ const styles =
     adjustFill: {
       height: "100%",
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     rotationRow: {
@@ -4128,10 +4128,10 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#0d0a11",
+        "#3c0a09",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
     },
 
     rotationButtonText: {
@@ -4186,10 +4186,10 @@ const styles =
       marginBottom: 7,
       borderRadius: 13,
       backgroundColor:
-        "#0d0a11",
+        "#3c0a09",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
     },
 
     privacyOptionActive: {
@@ -4223,10 +4223,10 @@ const styles =
       paddingHorizontal: 12,
       borderRadius: 12,
       backgroundColor:
-        "#0d0a11",
+        "#3c0a09",
       borderWidth: 1,
       borderColor:
-        "#30243b",
+        "#701d19",
       color:
         "#ffffff",
       fontSize: 11,
@@ -4308,9 +4308,9 @@ const styles =
 
     checkCircleActive: {
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     generateAiButton: {
@@ -4324,7 +4324,7 @@ const styles =
       gap: 7,
       borderRadius: 13,
       backgroundColor:
-        "#9333ea",
+        "#ca4840",
     },
 
     generateAiText: {

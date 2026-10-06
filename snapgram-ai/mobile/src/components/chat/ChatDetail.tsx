@@ -1811,7 +1811,7 @@ const ChatDetail = () => {
         >
           <ActivityIndicator
             size="large"
-            color="#a855f7"
+            color="#ee7565"
           />
         </View>
       );
@@ -1961,7 +1961,7 @@ const ChatDetail = () => {
             >
               <Clock
                 size={14}
-                color="#9333ea"
+                color="#ca4840"
               />
               <Text style={styles.disappearingPillText}>
                 {disappearingMode === "off" ? "24h" : disappearingMode}
@@ -2067,7 +2067,7 @@ const ChatDetail = () => {
             >
               <ActivityIndicator
                 size="small"
-                color="#a855f7"
+                color="#ee7565"
               />
             </View>
           ) : null}
@@ -2292,7 +2292,7 @@ const ChatDetail = () => {
                     >
                       <VideoIcon
                         size={24}
-                        color="#a855f7"
+                        color="#ee7565"
                       />
                     </View>
                   ) : (
@@ -2303,7 +2303,7 @@ const ChatDetail = () => {
                     >
                       <Paperclip
                         size={22}
-                        color="#a855f7"
+                        color="#ee7565"
                       />
                     </View>
                   )}
@@ -2743,7 +2743,7 @@ const styles =
       justifyContent: "center",
     },
     avatarFallbackText: {
-      color: "#9333ea",
+      color: "#ca4840",
       fontSize: 16,
       fontWeight: "700",
     },
@@ -2791,15 +2791,15 @@ const styles =
       paddingHorizontal: 10,
       paddingVertical: 5,
       borderRadius: 16,
-      backgroundColor: "rgba(168,85,247,0.08)",
+      backgroundColor: "rgba(238, 117, 101,0.08)",
       borderWidth: 1,
-      borderColor: "rgba(168,85,247,0.22)",
+      borderColor: "rgba(238, 117, 101,0.22)",
       marginRight: 4,
       gap: 4,
     },
 
     disappearingPillText: {
-      color: "#9333ea",
+      color: "#ca4840",
       fontSize: 13,
       fontWeight: "700",
     },
@@ -2813,7 +2813,7 @@ const styles =
     },
 
     headerActionActive: {
-      backgroundColor: "rgba(168,85,247,0.18)",
+      backgroundColor: "rgba(238, 117, 101,0.18)",
     },
 
     disappearingBar: {
@@ -2851,8 +2851,8 @@ const styles =
     },
 
     modeButtonActive: {
-      backgroundColor: "#a855f7",
-      borderColor: "#a855f7",
+      backgroundColor: "#ee7565",
+      borderColor: "#ee7565",
     },
 
     modeText: {
@@ -2957,10 +2957,10 @@ const styles =
       borderRadius: 18,
 
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       borderWidth: 1,
       borderColor:
-        "#c084fc",
+        "#ffaea3",
 
       shadowColor:
         "#000000",
@@ -3138,7 +3138,7 @@ const styles =
       borderRadius: 14,
       backgroundColor: "#ffffff",
       borderWidth: 1.5,
-      borderColor: "#a855f7",
+      borderColor: "#ee7565",
       color: "#111827",
       fontSize: 14,
     },
@@ -3149,11 +3149,11 @@ const styles =
       alignItems: "center",
       justifyContent: "center",
       borderRadius: 21,
-      backgroundColor: "rgba(236,72,153,0.35)",
+      backgroundColor: "rgba(244, 63, 94,0.35)",
     },
 
     sendButtonActive: {
-      backgroundColor: "#ec4899",
+      backgroundColor: "#f43f5e",
     },
 
     sendButtonDisabled: {

@@ -81,6 +81,12 @@ const userSchema = new mongoose.Schema({
     trim: true,
     default: '',
   },
+  location: {
+    type: String,
+    trim: true,
+    maxlength: [100, 'Location cannot exceed 100 characters'],
+    default: '',
+  },
   followers: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -92,6 +98,10 @@ const userSchema = new mongoose.Schema({
   savedPosts: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Post'
+  }],
+  savedReels: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Reel'
   }],
   hiddenPosts: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -142,9 +152,21 @@ const userSchema = new mongoose.Schema({
   },
   otp: {
     type: String,
+    select: false,  // Never returned in queries unless explicitly requested with +otp
   },
   otpExpires: {
     type: Date,
+    select: false,  // Never returned in queries unless explicitly requested with +otpExpires
+  },
+  otpPurpose: {
+    type: String,
+    enum: ['verification', 'password_reset'],
+    select: false,
+  },
+  otpAttempts: {
+    type: Number,
+    default: 0,
+    select: false,
   },
   role: {
     type: String,
@@ -161,6 +183,11 @@ const userSchema = new mongoose.Schema({
     trim: true,
     default: ''
   },
+  interests: [{
+    type: String,
+    trim: true,
+    maxlength: [30, 'Interest cannot exceed 30 characters'],
+  }],
   isPrivate: {
     type: Boolean,
     default: false
@@ -182,12 +209,15 @@ const userSchema = new mongoose.Schema({
     enum: ['none', 'pending', 'approved', 'rejected'],
     default: 'none'
   },
-  sessions: [{
-    token: { type: String, required: true },
-    deviceString: { type: String, default: 'Unknown Device' },
-    ip: { type: String, default: 'Unknown IP' },
-    lastActive: { type: Date, default: Date.now }
-  }]
+  sessions: {
+    type: [{
+      token: { type: String, required: true },
+      deviceString: { type: String, default: 'Unknown Device' },
+      ip: { type: String, default: 'Unknown IP' },
+      lastActive: { type: Date, default: Date.now }
+    }],
+    select: false,
+  }
 }, {
   timestamps: true
 });

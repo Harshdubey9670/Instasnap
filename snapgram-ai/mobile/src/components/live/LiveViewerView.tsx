@@ -501,7 +501,7 @@ export const LiveViewerView =
         >
           <ActivityIndicator
             size="large"
-            color="#a855f7"
+            color="#ee7565"
           />
         </View>
       );

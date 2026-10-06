@@ -198,7 +198,7 @@ const styles =
     brand: {
       fontSize: 24,
       fontWeight: "900",
-      color: "#a855f7",
+      color: "#ee7565",
     },
 
     centerLinks: {

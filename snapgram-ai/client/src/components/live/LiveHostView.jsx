@@ -6,11 +6,13 @@ import { startLiveStream, endLiveStream } from '../../services/liveService';
 import { LiveChat } from './LiveChat';
 import { LiveLikes } from './LiveLikes';
 import { X, Users, Video, Mic, MicOff, VideoOff, Settings } from 'lucide-react';
+import { useToast } from '../ui/Toast';
 
 export const LiveHostView = () => {
   const navigate = useNavigate();
   const { user } = useSelector(state => state.auth);
   const { socket } = useSocket();
+  const { toast } = useToast();
   const videoRef = useRef(null);
   const streamRef = useRef(null);
   const peersRef = useRef({}); // Store peer connections
@@ -32,7 +34,7 @@ export const LiveHostView = () => {
         }
       } catch (error) {
         console.error("Camera access denied or unavailable", error);
-        alert("Camera access is required to go live.");
+        toast.error("Camera access is required to go live.");
         navigate('/app');
       }
     };
@@ -139,7 +141,7 @@ export const LiveHostView = () => {
       }
     } catch (error) {
       console.error("Failed to start stream", error);
-      alert("Failed to start stream");
+      toast.error("Failed to start stream");
     }
   };
 
@@ -225,7 +227,7 @@ export const LiveHostView = () => {
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10">
           <div className="bg-black/40 backdrop-blur-xl p-8 rounded-3xl flex flex-col items-center pointer-events-auto shadow-2xl border border-white/10">
-            <div className="w-20 h-20 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 rounded-full flex items-center justify-center mb-6 shadow-lg">
+            <div className="w-20 h-20 bg-gradient-to-tr from-[#FFB347] via-[#FF6B35] to-[#E55A27] rounded-full flex items-center justify-center mb-6 shadow-lg shadow-[#FF6B35]/25">
               <Video className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-white text-2xl font-bold mb-2 tracking-tight">Ready to go live?</h2>
@@ -234,7 +236,7 @@ export const LiveHostView = () => {
             </p>
             <button
               onClick={handleGoLive}
-              className="w-full bg-gradient-to-r from-primary-500 to-purple-600 hover:from-primary-600 hover:to-purple-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-primary-500/25 active:scale-95"
+              className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-primary-500/25 active:scale-95"
             >
               Go Live Now
             </button>

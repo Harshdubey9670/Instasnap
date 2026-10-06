@@ -213,7 +213,7 @@ exports.getContentPerformance = async (req, res, next) => {
       caption: r.caption || '',
       likesCount: r.likes ? r.likes.length : 0,
       commentsCount: r.commentsCount || (r.comments ? r.comments.length : 0),
-      sharesCount: r.shares ? r.shares.length : 0,
+      sharesCount: Math.max(r.sharesCount || 0, r.shares ? r.shares.length : 0),
       viewsCount: r.viewsCount || 0,
       impressions: (r.viewsCount || 0) + 120,
       reach: Math.floor((r.viewsCount || 0) * 0.85),

@@ -92,7 +92,7 @@ const PopularCreatorsCarousel = () => {
                   />
                   {creator.isVerified && (
                     <div className="absolute bottom-0 right-0 bg-bg-base rounded-full p-0.5 shadow-sm">
-                      <BadgeCheck className="w-6 h-6 text-blue-500 fill-blue-500/10" />
+                      <BadgeCheck className="w-6 h-6 text-primary-400 fill-primary-400/10" />
                     </div>
                   )}
                 </div>

@@ -50,7 +50,7 @@ const styles =
         screen: {
             flex: 1,
             backgroundColor:
-                "#f8fafc",
+                "#851613",
         },
 
         content: {

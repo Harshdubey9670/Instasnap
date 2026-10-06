@@ -335,7 +335,7 @@ const styles =
       fontSize: 10,
       lineHeight: 16,
       fontWeight: "800",
-      color: "#c084fc",
+      color: "#ffaea3",
     },
 
     messageText: {
@@ -377,7 +377,7 @@ const styles =
       justifyContent:
         "center",
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
       shadowColor:
         "#000000",
       shadowOffset: {

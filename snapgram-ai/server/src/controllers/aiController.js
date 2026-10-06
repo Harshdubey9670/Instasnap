@@ -4,8 +4,16 @@ const User = require('../models/User');
 exports.chatAssistant = async (req, res, next) => {
   try {
     const { prompt, conversationHistory } = req.body;
-    if (!prompt) return res.status(400).json({ success: false, message: 'Prompt is required' });
-    const data = await aiService.chatAssistant(prompt, conversationHistory);
+    if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
+      return res.status(400).json({ success: false, message: 'A valid text prompt is required' });
+    }
+    if (prompt.length > 4000) {
+      return res.status(400).json({ success: false, message: 'Prompt exceeds maximum length of 4000 characters' });
+    }
+    const safeHistory = Array.isArray(conversationHistory)
+      ? conversationHistory.filter(msg => msg && typeof msg === 'object' && (typeof msg.content === 'string' || typeof msg.text === 'string'))
+      : [];
+    const data = await aiService.chatAssistant(prompt.trim(), safeHistory);
     res.status(200).json({ success: true, data });
   } catch (err) { next(err); }
 };

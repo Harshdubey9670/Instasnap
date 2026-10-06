@@ -63,7 +63,7 @@ export const SuggestedUsersCarousel = () => {
   }
 
   const textColor = isDark ? "#ffffff" : "#0f172a";
-  const seeAllColor = isDark ? "#c084fc" : "#a855f7";
+  const seeAllColor = isDark ? "#ffaea3" : "#ee7565";
 
   return (
     <View style={styles.container}>
@@ -212,8 +212,8 @@ const SuggestedUserCard = ({
     }
   };
 
-  const cardBg = isDark ? "#130a1c" : "#ffffff";
-  const cardBorder = isDark ? "#2d1b3b" : "#e2e8f0";
+  const cardBg = isDark ? "#4a0f0d" : "#ffffff";
+  const cardBorder = isDark ? "#6e1815" : "#e2e8f0";
   const usernameColor = isDark ? "#ffffff" : "#0f172a";
   const categoryColor = isDark ? "#94a3b8" : "#64748b";
 
@@ -257,7 +257,7 @@ const SuggestedUserCard = ({
                 style={[
                   styles.letterText,
                   {
-                    color: isDark ? "#ffffff" : "#7c3aed",
+                    color: isDark ? "#ffffff" : "#ca4840",
                   },
                 ]}
               >
@@ -306,7 +306,7 @@ const SuggestedUserCard = ({
         {isLoading ? (
           <ActivityIndicator
             size="small"
-            color={isFollowing || isRequested ? "#c084fc" : "#ffffff"}
+            color={isFollowing || isRequested ? "#ffaea3" : "#ffffff"}
           />
         ) : (
           <Text
@@ -316,7 +316,7 @@ const SuggestedUserCard = ({
                 color:
                   isFollowing || isRequested
                     ? isDark
-                      ? "#c084fc"
+                      ? "#ffaea3"
                       : "#64748b"
                     : "#ffffff",
               },
@@ -423,8 +423,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   primaryFollowButton: {
-    backgroundColor: "#a855f7",
-    shadowColor: "#a855f7",
+    backgroundColor: "#ee7565",
+    shadowColor: "#ee7565",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 6,

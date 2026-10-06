@@ -608,7 +608,7 @@ export const CommentModal = ({
             {
               backgroundColor:
                 dark
-                  ? "#0a0510"
+                  ? "#620d0b"
                   : "#f8fafc",
             },
           ]}
@@ -646,7 +646,7 @@ export const CommentModal = ({
               {
                 borderBottomColor:
                   dark
-                    ? "#2d1b3b"
+                    ? "#6e1815"
                     : "#e2e8f0",
               },
             ]}
@@ -785,7 +785,7 @@ export const CommentModal = ({
               >
                 <Loader2
                   size={28}
-                  color="#a855f7"
+                  color="#ee7565"
                 />
                 <Text
                   style={[
@@ -942,11 +942,11 @@ export const CommentModal = ({
                 {
                   backgroundColor:
                     dark
-                      ? "#130a1c"
+                      ? "#4a0f0d"
                       : "#ffffff",
                   borderTopColor:
                     dark
-                      ? "#2d1b3b"
+                      ? "#6e1815"
                       : "#e2e8f0",
                 },
               ]}
@@ -991,11 +991,11 @@ export const CommentModal = ({
                 {
                   backgroundColor:
                     dark
-                      ? "#130a1c"
+                      ? "#4a0f0d"
                       : "#ffffff",
                   borderColor:
                     dark
-                      ? "#2d1b3b"
+                      ? "#6e1815"
                       : "#e2e8f0",
                 },
               ]}
@@ -1052,7 +1052,7 @@ export const CommentModal = ({
                     : "rgba(255,255,255,0.96)",
                 borderTopColor:
                   dark
-                    ? "#2d1b3b"
+                    ? "#6e1815"
                     : "#e2e8f0",
               },
             ]}
@@ -1083,11 +1083,11 @@ export const CommentModal = ({
                 {
                   backgroundColor:
                     dark
-                      ? "#0a0510"
+                      ? "#620d0b"
                       : "#f8fafc",
                   borderColor:
                     dark
-                      ? "#2d1b3b"
+                      ? "#6e1815"
                       : "#e2e8f0",
                 },
               ]}
@@ -1174,12 +1174,12 @@ export const CommentModal = ({
                 {isSubmitting ? (
                   <Loader2
                     size={20}
-                    color="#a855f7"
+                    color="#ee7565"
                   />
                 ) : (
                   <Send
                     size={20}
-                    color="#a855f7"
+                    color="#ee7565"
                   />
                 )}
               </Pressable>
@@ -1719,11 +1719,11 @@ const CommentItem = ({
                 {
                   backgroundColor:
                     dark
-                      ? "#130a1c"
+                      ? "#4a0f0d"
                       : "#ffffff",
                   borderColor:
                     dark
-                      ? "#2d1b3b"
+                      ? "#6e1815"
                       : "#e2e8f0",
                 },
               ]}
@@ -1839,7 +1839,7 @@ const CommentItem = ({
               >
                 <Pin
                   size={11}
-                  color="#a855f7"
+                  color="#ee7565"
                 />
 
                 <Text
@@ -2206,7 +2206,7 @@ const styles =
 
     mention: {
       color:
-        "#a855f7",
+        "#ee7565",
       fontWeight:
         "600",
     },
@@ -2322,7 +2322,7 @@ const styles =
 
     pinnedText: {
       color:
-        "#a855f7",
+        "#ee7565",
       fontSize: 10,
       fontWeight:
         "700",
@@ -2384,7 +2384,7 @@ const styles =
 
     cancelText: {
       color:
-        "#a855f7",
+        "#ee7565",
       fontSize: 11,
       fontWeight:
         "700",

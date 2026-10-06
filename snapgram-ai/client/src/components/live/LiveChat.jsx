@@ -68,7 +68,7 @@ export const LiveChat = ({ streamId, isHost }) => {
         <button
           type="submit"
           disabled={!inputText.trim()}
-          className="p-2.5 bg-gradient-to-r from-primary-500 to-purple-600 rounded-full text-white disabled:opacity-40 transition-all flex-shrink-0 shadow-lg active:scale-95"
+          className="p-2.5 bg-gradient-to-r from-primary-500 to-primary-600 rounded-full text-white disabled:opacity-40 transition-all flex-shrink-0 shadow-lg active:scale-95"
         >
           <Send className="w-4 h-4" />
         </button>

@@ -32,15 +32,15 @@ const HashtagPage = () => {
   const [relatedHashtags, setRelatedHashtags] = useState<any[]>([]);
 
   const colors = {
-    bg: dark ? "#0d0a14" : "#fafafa",
+    bg: dark ? "#3c0a09" : "#fafafa",
     text: dark ? "#f8fafc" : "#0f172a",
     textSecondary: dark ? "#94a3b8" : "#64748b",
-    primary: "#a855f7",
-    card: dark ? "#1a0d27" : "#fff",
+    primary: "#ee7565",
+    card: dark ? "#551210" : "#fff",
     cardBorder: dark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)",
-    tabActive: "#a855f7",
-    tabBg: dark ? "rgba(168,85,247,0.12)" : "rgba(168,85,247,0.08)",
-    surface: dark ? "#1e112c" : "#f1f5f9",
+    tabActive: "#ee7565",
+    tabBg: dark ? "rgba(238, 117, 101,0.12)" : "rgba(238, 117, 101,0.08)",
+    surface: dark ? "#5c1210" : "#f1f5f9",
   };
 
   const fetchPosts = useCallback(async (pageNum: number, tab: string, reset = false) => {
@@ -109,7 +109,7 @@ const HashtagPage = () => {
         {coverMedia ? (
           <Image source={{ uri: coverMedia }} style={StyleSheet.absoluteFill} resizeMode="cover" />
         ) : (
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(168,85,247,0.2)" }]} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(238, 117, 101,0.2)" }]} />
         )}
         <View style={styles.heroOverlay}>
           <Pressable onPress={() => router.back()} style={styles.backBtn} hitSlop={12}>
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   heroContent: { alignItems: "center", paddingBottom: 16 },
   hashIconCircle: {
     width: 56, height: 56, borderRadius: 28,
-    backgroundColor: "#a855f7",
+    backgroundColor: "#ee7565",
     alignItems: "center", justifyContent: "center", marginBottom: 8,
   },
   hashIconText: { color: "#fff", fontSize: 24, fontWeight: "900" },

@@ -20,7 +20,7 @@ export const GradientText: React.FC<GradientTextProps> = ({
   text,
   fontSize = 28,
   fontWeight = "800",
-  colors = ["#c084fc", "#ec4899"],
+  colors = ["#ffaea3", "#f43f5e"],
   style,
   letterSpacing = -0.5,
 }) => {

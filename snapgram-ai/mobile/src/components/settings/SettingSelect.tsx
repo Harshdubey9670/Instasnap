@@ -142,11 +142,11 @@ export const SettingSelect = ({
             {
               backgroundColor:
                 dark
-                  ? "#0a0510"
+                  ? "#620d0b"
                   : "#f8fafc",
               borderColor:
                 dark
-                  ? "#2d1b3b"
+                  ? "#6e1815"
                   : "#e2e8f0",
             },
             disabled &&
@@ -217,11 +217,11 @@ export const SettingSelect = ({
               {
                 backgroundColor:
                   dark
-                    ? "#130a1c"
+                    ? "#4a0f0d"
                     : "#ffffff",
                 borderColor:
                   dark
-                    ? "#2d1b3b"
+                    ? "#6e1815"
                     : "#e2e8f0",
               },
             ]}
@@ -232,7 +232,7 @@ export const SettingSelect = ({
                 {
                   borderBottomColor:
                     dark
-                      ? "#2d1b3b"
+                      ? "#6e1815"
                       : "#e2e8f0",
                 },
               ]}
@@ -307,7 +307,7 @@ export const SettingSelect = ({
                         {
                           borderBottomColor:
                             dark
-                              ? "#2d1b3b"
+                              ? "#6e1815"
                               : "#e2e8f0",
                         },
                       ]}
@@ -333,7 +333,7 @@ export const SettingSelect = ({
                           size={
                             20
                           }
-                          color="#a855f7"
+                          color="#ee7565"
                         />
                       ) : null}
                     </Pressable>
@@ -505,7 +505,7 @@ const styles =
 
     activeOption: {
       backgroundColor:
-        "rgba(168,85,247,0.08)",
+        "rgba(238, 117, 101,0.08)",
     },
 
     optionText: {

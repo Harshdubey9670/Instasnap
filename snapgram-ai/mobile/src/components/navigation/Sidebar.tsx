@@ -108,7 +108,7 @@ export const Sidebar = ({
   // ── Derived colours from token system ──────────────────────────────────────
   const sidebarBg        = colors.bgBase;
   const sidebarBorder    = colors.borderSoft;
-  const activeItemBg     = colors.bgSurface;  // ✅ dark: #130a1c (not white!)
+  const activeItemBg     = colors.bgSurface;  // ✅ dark: #4a0f0d (not white!)
   const navTextColor     = colors.textSecondary;
   const navTextActiveColor = colors.textPrimary;
   const activeIconColor  = colors.textPrimary; // ✅ theme-aware
@@ -144,7 +144,7 @@ export const Sidebar = ({
             end={{ x: 1, y: 0 }}
             style={styles.logoGradient}
           >
-            <Text style={styles.logoText}>InstaSnap</Text>
+            <Text style={styles.logoText}>NUVYELO</Text>
           </LinearGradient>
         </View>
 

@@ -41,7 +41,7 @@ export const PostHeader = ({
   const usernameColor = isDark ? "#ffffff" : "#0f172a";
   const locationColor = isDark ? "#94a3b8" : "#64748b";
   const dotsColor = isDark ? "#ffffff" : "#64748b";
-  const gapBg = isDark ? "#0a0510" : "#ffffff";
+  const gapBg = isDark ? "#620d0b" : "#ffffff";
 
   return (
     <View style={[styles.container, { backgroundColor: gapBg }]}>
@@ -53,7 +53,7 @@ export const PostHeader = ({
       >
         {/* Gradient avatar ring */}
         <LinearGradient
-          colors={["#a855f7", "#ec4899"]}
+          colors={["#ee7565", "#f43f5e"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.avatarGradientRing}

@@ -159,13 +159,13 @@ export const StoryHighlightsRow = ({
   const colors = useMemo(
     () => ({
       background: darkMode
-        ? "#0a0510"
+        ? "#620d0b"
         : "#f8fafc",
       surface: darkMode
-        ? "#130a1c"
+        ? "#4a0f0d"
         : "#ffffff",
       surfaceHover: darkMode
-        ? "#1e112c"
+        ? "#5c1210"
         : "#f1f5f9",
       textPrimary: darkMode
         ? "#f8fafc"
@@ -174,9 +174,9 @@ export const StoryHighlightsRow = ({
         ? "#94a3b8"
         : "#64748b",
       border: darkMode
-        ? "#2d1b3b"
+        ? "#6e1815"
         : "#e2e8f0",
-      primary: "#a855f7",
+      primary: "#ee7565",
     }),
     [darkMode],
   );
@@ -414,8 +414,8 @@ export const StoryHighlightsRow = ({
         <LinearGradient
           colors={[
             "#facc15",
-            "#a855f7",
-            "#9333ea",
+            "#ee7565",
+            "#ca4840",
           ]}
           start={{
             x: 0,

@@ -19,12 +19,42 @@ try {
 exports.chatAssistant = async (prompt, conversationHistory = []) => {
   try {
     if (ai) {
+      // Build multi-turn contents array from conversation history.
+      // Gemini expects alternating user/model roles; bound to last 20 turns.
+      const MAX_HISTORY_TURNS = 20;
+      const recentHistory = conversationHistory.slice(-MAX_HISTORY_TURNS);
+
+      const sanitizedHistory = [];
+      for (const msg of recentHistory) {
+        const role = (msg.role === 'assistant' || msg.role === 'model') ? 'model' : 'user';
+        const text = (typeof msg.content === 'string' ? msg.content : (typeof msg.text === 'string' ? msg.text : '')).trim();
+        if (!text) continue;
+        if (sanitizedHistory.length > 0 && sanitizedHistory[sanitizedHistory.length - 1].role === role) {
+          sanitizedHistory[sanitizedHistory.length - 1].parts[0].text += `\n${text}`;
+        } else {
+          sanitizedHistory.push({ role, parts: [{ text }] });
+        }
+      }
+      // Gemini requires the conversation to end on model before appending the user prompt
+      if (sanitizedHistory.length > 0 && sanitizedHistory[sanitizedHistory.length - 1].role === 'user') {
+        sanitizedHistory.pop();
+      }
+
+      const contents = [
+        ...sanitizedHistory,
+        {
+          role: 'user',
+          parts: [{ text: prompt.trim() }],
+        },
+      ];
+
       const response = await ai.models.generateContent({
         model: 'gemini-1.5-flash',
-        contents: prompt,
+        contents,
         config: {
-          systemInstruction: 'You are SnapGram AI Copilot, an intelligent, helpful, and concise assistant built into the SnapGram social media app. You help creators brainstorm ideas, give advice on content strategy, and answer questions. Keep your answers concise, engaging, and directly address the user\'s prompt.',
-        }
+          systemInstruction:
+            'You are SnapGram AI Copilot, an intelligent, helpful, and concise assistant built into the SnapGram social media app. You help creators brainstorm ideas, give advice on content strategy, and answer questions. Keep your answers concise, engaging, and directly address the user\'s prompt.',
+        },
       });
       return { reply: response.text, timestamp: new Date() };
     } else {
@@ -38,6 +68,7 @@ exports.chatAssistant = async (prompt, conversationHistory = []) => {
     return { reply: `I encountered an error connecting to the AI model: ${error.message}`, timestamp: new Date() };
   }
 };
+
 
 // 1.5. AI Image Generator
 exports.generateImage = async (prompt) => {

@@ -216,7 +216,7 @@ const MessageBubble = ({
         >
           {isMine ? (
             <LinearGradient
-              colors={["#9333ea", "#ec4899"]}
+              colors={["#ca4840", "#f43f5e"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={StyleSheet.absoluteFillObject}
@@ -591,7 +591,7 @@ const MessageBubble = ({
             "seen" || msg.status === "delivered" ? (
             <CheckCheck
               size={14}
-              color="#3b82f6"
+              color="#ff8878"
             />
           ) : (
             <Check
@@ -767,7 +767,7 @@ const styles =
     },
 
     mine: {
-      backgroundColor: "#9333ea",
+      backgroundColor: "#ca4840",
     },
 
     other: {
@@ -827,14 +827,14 @@ const styles =
 
     snapMine: {
       backgroundColor:
-        "rgba(168,85,247,0.18)",
+        "rgba(238, 117, 101,0.18)",
       borderColor:
-        "rgba(168,85,247,0.45)",
+        "rgba(238, 117, 101,0.45)",
     },
 
     snapOther: {
       backgroundColor:
-        "#130a1c",
+        "#4a0f0d",
       borderColor:
         "rgba(255,255,255,0.10)",
     },
@@ -851,7 +851,7 @@ const styles =
       borderRadius: 20,
 
       backgroundColor:
-        "#a855f7",
+        "#ee7565",
     },
 
     snapTitle: {
@@ -1005,7 +1005,7 @@ const styles =
     },
 
     fileText: {
-      color: "#38bdf8",
+      color: "#ff8878",
       fontSize: 12,
       fontWeight: "700",
       textDecorationLine: "underline",
@@ -1101,12 +1101,12 @@ const styles =
       borderRadius: 17,
       alignItems: "center",
       justifyContent: "center",
-      backgroundColor: "rgba(168,85,247,0.25)",
+      backgroundColor: "rgba(238, 117, 101,0.25)",
     },
 
     voicePlayText: {
       fontSize: 12,
-      color: "#c084fc",
+      color: "#ffaea3",
     },
 
     voiceBar: {
@@ -1120,7 +1120,7 @@ const styles =
     voiceProgress: {
       width: "30%",
       height: "100%",
-      backgroundColor: "#a855f7",
+      backgroundColor: "#ee7565",
     },
 
     voiceDuration: {
